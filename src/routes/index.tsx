@@ -112,6 +112,8 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
   const wa =
     "https://wa.me/5585920109136?text=" +
     encodeURIComponent("Olá! Quero conhecer o ND7 e transformar a gestão da minha empresa.");
+  const [cycle, setCycle] = useState("Mensal");
+  const cycles = ["Mensal", "Trimestral", "Semestral", "Anual"];
   return (
     <div className="overflow-hidden bg-[#fcfbff] text-slate-900">
       <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-[#fcfbff]/80 backdrop-blur-xl">
@@ -307,38 +309,138 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
+      <section className="mx-auto max-w-6xl px-5 py-24">
+        <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-600">
+              Clareza que move o negócio
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+              Sua operação não precisa depender de planilhas, memória ou sorte.
+            </h2>
+            <p className="mt-5 leading-7 text-slate-600">
+              Centralize o que aconteceu, o que está acontecendo e o que precisa acontecer em
+              seguida. Assim, cada pessoa da equipe sabe exatamente qual é o próximo melhor passo.
+            </p>
+            <button
+              onClick={start}
+              className="mt-7 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-xl"
+            >
+              Organizar minha operação <ArrowRight className="ml-2 inline h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              ["Visão 360°", "Entenda cada cliente antes, durante e depois da venda."],
+              ["Processos replicáveis", "Crie um padrão de excelência que toda a equipe consegue seguir."],
+              ["Prioridades visíveis", "Transforme pendências em ações claras, no tempo certo."],
+              ["Gestão sem ruído", "Acompanhe a operação sem precisar cobrar atualizações por mensagem."],
+            ].map(([title, text], index) => (
+              <article
+                key={title}
+                className={`lift-card rounded-2xl border border-slate-200 p-6 ${index === 0 ? "bg-violet-600 text-white" : "bg-white"}`}
+              >
+                <span className={`text-3xl font-black ${index === 0 ? "text-violet-200" : "text-violet-200"}`}>
+                  0{index + 1}
+                </span>
+                <h3 className="mt-6 font-bold">{title}</h3>
+                <p className={`mt-2 text-sm leading-6 ${index === 0 ? "text-violet-100" : "text-slate-600"}`}>
+                  {text}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="border-y border-slate-200 bg-white px-5 py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-600">
+              Flexível por natureza
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+              Um CRM que se adapta ao seu modelo de negócio.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+              Serviços, vendas consultivas, imobiliárias, clínicas, equipes comerciais ou operações
+              internas: comece com o essencial e evolua no seu ritmo.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {["Vendas consultivas", "Serviços e agências", "Saúde e bem-estar", "Equipes B2B"].map((item) => (
+              <div key={item} className="group rounded-2xl border border-slate-200 bg-[#fcfbff] p-5 transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 font-bold text-violet-700 group-hover:bg-violet-600 group-hover:text-white">
+                  ND7
+                </span>
+                <p className="mt-5 text-sm font-bold">{item}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-500">Estruture relações, oportunidades e acompanhamento em um único fluxo.</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       <section id="planos" className="mx-auto max-w-6xl px-5 py-24 text-center">
         <p className="text-xs font-bold uppercase tracking-widest text-violet-600">
           Planos transparentes
         </p>
         <h2 className="mt-3 text-3xl font-bold md:text-4xl">Estrutura para o seu próximo nível.</h2>
-        <div className="mx-auto mt-10 max-w-md rounded-3xl border-2 border-violet-500 bg-white p-7 text-left shadow-xl shadow-violet-100">
-          <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-700">
-            Mais escolhido
-          </span>
-          <h3 className="mt-4 text-xl font-bold">Profissional</h3>
-          <p className="mt-3 text-4xl font-black">
-            R$ 297<span className="text-sm font-medium text-slate-500"> / mês</span>
-          </p>
-          {[
-            "Contatos e negócios ilimitados",
-            "Funis personalizados",
-            "Automação de processos",
-            "Equipe e permissões",
-          ].map((x) => (
-            <p className="mt-4 text-sm text-slate-700">
-              <Check className="mr-2 inline h-4 w-4 text-violet-600" />
-              {x}
-            </p>
+        <p className="mx-auto mt-4 max-w-xl text-slate-600">
+          Escolha a frequência que faz sentido para sua operação. Os valores serão publicados em
+          breve, sem alterar a estrutura do seu plano.
+        </p>
+        <div className="mx-auto mt-8 inline-flex flex-wrap justify-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
+          {cycles.map((item) => (
+            <button
+              key={item}
+              onClick={() => setCycle(item)}
+              className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${cycle === item ? "bg-violet-600 text-white shadow-lg" : "text-slate-500 hover:bg-violet-50 hover:text-violet-700"}`}
+            >
+              {item}
+              {item === "Anual" && <span className="ml-1.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] text-emerald-700">melhor custo</span>}
+            </button>
           ))}
-          <button
-            onClick={start}
-            className="mt-7 w-full rounded-xl bg-violet-600 py-3.5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-lg"
-          >
-            Quero crescer com o ND7
-          </button>
+        </div>
+        <div className="mx-auto mt-7 grid max-w-4xl gap-5 text-left md:grid-cols-[1.1fr_.9fr]">
+          <div className="rounded-3xl border-2 border-violet-500 bg-white p-7 shadow-xl shadow-violet-100">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-700">Plano ND7</span>
+                <h3 className="mt-4 text-2xl font-bold">Profissional</h3>
+              </div>
+              <span className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">{cycle}</span>
+            </div>
+            <p className="mt-5 text-sm text-slate-500">Valor em definição</p>
+            <p className="mt-1 text-3xl font-black tracking-tight">Consulte em breve</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Todas as ferramentas centrais para organizar clientes, vendas e time desde o primeiro dia.</p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {["Contatos e negócios ilimitados", "Funis personalizados", "Automação de processos", "Equipe e permissões", "Painel de indicadores", "Suporte especializado"].map((x) => (
+                <p key={x} className="text-sm text-slate-700"><Check className="mr-2 inline h-4 w-4 text-violet-600" />{x}</p>
+              ))}
+            </div>
+            <button onClick={start} className="mt-7 w-full rounded-xl bg-violet-600 py-3.5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-lg">Quero este plano</button>
+          </div>
+          <aside className="rounded-3xl bg-[#171526] p-7 text-white">
+            <Sparkles className="h-6 w-6 text-violet-300" />
+            <h3 className="mt-5 text-xl font-bold">Cresça com previsibilidade.</h3>
+            <p className="mt-3 text-sm leading-6 text-violet-100">Você poderá escolher mensal, trimestral, semestral ou anual. Quando os valores forem definidos, cada período será apresentado de forma clara no checkout.</p>
+            <div className="mt-7 border-t border-white/10 pt-5 text-sm text-violet-100"><Check className="mr-2 inline h-4 w-4 text-emerald-300"/>Sem surpresa na cobrança<br/><Check className="mr-2 mt-3 inline h-4 w-4 text-emerald-300"/>Gestão centralizada da assinatura</div>
+          </aside>
         </div>
       </section>
+      <section className="bg-slate-50 px-5 py-24">
+        <div className="mx-auto max-w-4xl">
+          <div className="text-center"><p className="text-xs font-bold uppercase tracking-widest text-violet-600">Perguntas frequentes</p><h2 className="mt-3 text-3xl font-bold">Tudo claro antes de começar.</h2></div>
+          <div className="mt-10 space-y-3">
+            {[
+              ["O ND7 serve para o meu nicho?", "Sim. O ND7 foi pensado como uma base flexível de relacionamento e vendas, adaptável a diferentes processos e segmentos."],
+              ["Posso escolher a periodicidade da assinatura?", "Sim. A contratação estará disponível nas modalidades mensal, trimestral, semestral e anual assim que os valores forem publicados."],
+              ["Como funciona a criação de acesso?", "Após a aprovação do pagamento, o sistema cria o acesso da empresa e envia as instruções de entrada por e-mail."],
+              ["Minha equipe poderá usar o sistema?", "Sim. O plano inclui gestão de equipe e permissões para que cada pessoa tenha o nível de acesso adequado."],
+            ].map(([question, answer]) => <details key={question} className="group rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer list-none font-bold">{question}<Plus className="float-right h-5 w-5 text-violet-600 transition group-open:rotate-45"/></summary><p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">{answer}</p></details>)}
+          </div>
+        </div>
+      </section>
+      <section className="bg-gradient-to-r from-violet-700 to-indigo-700 px-5 py-20 text-center text-white"><div className="mx-auto max-w-3xl"><Sparkles className="mx-auto h-7 w-7 text-violet-200"/><h2 className="mt-5 text-3xl font-bold md:text-4xl">Seu próximo crescimento começa com uma operação mais clara.</h2><p className="mx-auto mt-4 max-w-xl text-violet-100">Dê à sua equipe uma plataforma à altura da ambição da sua empresa.</p><button onClick={start} className="mt-8 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-violet-700 transition hover:-translate-y-1 hover:shadow-xl">Conhecer os planos do ND7 <ArrowRight className="ml-2 inline h-4 w-4"/></button></div></section>
       <footer className="border-t border-slate-200 px-5 py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
           <div className="flex items-center gap-2">
