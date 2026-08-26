@@ -155,18 +155,18 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             vender melhor, sem perder o que importa.
           </p>
           <div className="reveal delay-3 mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <button
-              onClick={start}
+            <a
+              href="#planos"
               className="group rounded-xl bg-violet-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-violet-200 transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-violet-300"
             >
-              Começar agora{" "}
+              Ver oferta{" "}
               <ArrowRight className="ml-2 inline h-4 w-4 transition group-hover:translate-x-1" />
-            </button>
+            </a>
             <a
-              href="#como-funciona"
+              href="#planos"
               className="rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-lg"
             >
-              Conhecer o ND7
+              Conhecer a oferta
             </a>
           </div>
           <p className="reveal delay-3 mt-4 text-xs text-slate-400">
@@ -321,12 +321,12 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               Centralize o que aconteceu, o que está acontecendo e o que precisa acontecer em
               seguida. Assim, cada pessoa da equipe sabe exatamente qual é o próximo melhor passo.
             </p>
-            <button
-              onClick={start}
+            <a
+              href="#planos"
               className="mt-7 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-xl"
             >
-              Organizar minha operação <ArrowRight className="ml-2 inline h-4 w-4" />
-            </button>
+              Ver oferta do ND7 <ArrowRight className="ml-2 inline h-4 w-4" />
+            </a>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {[
@@ -439,7 +439,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="bg-gradient-to-r from-violet-700 to-indigo-700 px-5 py-20 text-center text-white"><div className="mx-auto max-w-3xl"><Sparkles className="mx-auto h-7 w-7 text-violet-200"/><h2 className="mt-5 text-3xl font-bold md:text-4xl">Seu próximo crescimento começa com uma operação mais clara.</h2><p className="mx-auto mt-4 max-w-xl text-violet-100">Dê à sua equipe uma plataforma à altura da ambição da sua empresa.</p><button onClick={start} className="mt-8 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-violet-700 transition hover:-translate-y-1 hover:shadow-xl">Conhecer os planos do ND7 <ArrowRight className="ml-2 inline h-4 w-4"/></button></div></section>
+      <section className="bg-gradient-to-r from-violet-700 to-indigo-700 px-5 py-20 text-center text-white"><div className="mx-auto max-w-3xl"><Sparkles className="mx-auto h-7 w-7 text-violet-200"/><h2 className="mt-5 text-3xl font-bold md:text-4xl">Seu próximo crescimento começa com uma operação mais clara.</h2><p className="mx-auto mt-4 max-w-xl text-violet-100">Dê à sua equipe uma plataforma à altura da ambição da sua empresa.</p><a href="#planos" className="mt-8 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-violet-700 transition hover:-translate-y-1 hover:shadow-xl">Conhecer a oferta do ND7 <ArrowRight className="ml-2 inline h-4 w-4"/></a></div></section>
       <footer className="border-t border-slate-200 px-5 py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
           <div className="flex items-center gap-2">
