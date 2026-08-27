@@ -540,7 +540,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             </button>
           ))}
         </div>
-        <div className="mx-auto mt-7 grid max-w-4xl gap-5 text-left md:grid-cols-[1.1fr_.9fr]">
+        <div className="mx-auto mt-7 max-w-2xl text-left">
           <div className="rounded-3xl border-2 border-blue-500 bg-white p-7 shadow-xl shadow-blue-100">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -585,24 +585,6 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               Quero este plano
             </button>
           </div>
-          <aside className="rounded-3xl bg-[#111827] p-7 text-white">
-            <Sparkles className="h-6 w-6 text-blue-300" />
-            <h3 className="mt-5 text-xl font-bold">Cresça com previsibilidade.</h3>
-            <p className="mt-3 text-sm leading-6 text-blue-100">
-              Mensal, trimestral, semestral ou anual: a única diferença é o valor e a frequência de
-              cobrança. O acesso é sempre total, sem módulos restritos.
-            </p>
-            <div className="mt-7 border-t border-white/10 pt-5 text-sm text-blue-100">
-              <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
-              Sem surpresa na cobrança
-              <br />
-              <Check className="mr-2 mt-3 inline h-4 w-4 text-emerald-300" />
-              Gestão centralizada da assinatura
-              <br />
-              <Check className="mr-2 mt-3 inline h-4 w-4 text-emerald-300" />
-              Todos os recursos em qualquer plano
-            </div>
-          </aside>
         </div>
       </section>
       <section className="border-t border-slate-200 bg-[#f8fbff] px-5 py-20">
