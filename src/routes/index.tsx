@@ -739,11 +739,26 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
 }
 function BuyerPopup() {
   const buyers = [
-    ["Mariana", "acabou de iniciar a assinatura anual"],
-    ["Rafael", "escolheu o plano semestral"],
-    ["Ana", "acabou de ativar o ND7"],
-    ["Pedro", "garantiu acesso total ao ND7"],
-    ["Luiza", "acabou de iniciar a assinatura trimestral"],
+    { name: "Mariana Costa", state: "Ceará", plan: "Anual", minutes: 1 },
+    { name: "Rafael Lima", state: "São Paulo", plan: "Semestral", minutes: 2 },
+    { name: "Ana Beatriz", state: "Minas Gerais", plan: "Trimestral", minutes: 3 },
+    { name: "Pedro Henrique", state: "Pernambuco", plan: "Mensal", minutes: 4 },
+    { name: "Luiza Martins", state: "Paraná", plan: "Anual", minutes: 5 },
+    { name: "Gustavo Alves", state: "Bahia", plan: "Semestral", minutes: 6 },
+    { name: "Camila Rocha", state: "Rio de Janeiro", plan: "Trimestral", minutes: 7 },
+    { name: "Felipe Santos", state: "Goiás", plan: "Mensal", minutes: 2 },
+    { name: "Juliana Nunes", state: "Santa Catarina", plan: "Anual", minutes: 3 },
+    { name: "Bruno Ferreira", state: "Distrito Federal", plan: "Semestral", minutes: 4 },
+    { name: "Carolina Melo", state: "Rio Grande do Sul", plan: "Trimestral", minutes: 5 },
+    { name: "Diego Barbosa", state: "Paraíba", plan: "Mensal", minutes: 6 },
+    { name: "Isabela Freitas", state: "Espírito Santo", plan: "Anual", minutes: 7 },
+    { name: "Thiago Moreira", state: "Maranhão", plan: "Semestral", minutes: 1 },
+    { name: "Larissa Oliveira", state: "Mato Grosso", plan: "Trimestral", minutes: 2 },
+    { name: "André Ribeiro", state: "Amazonas", plan: "Mensal", minutes: 3 },
+    { name: "Renata Souza", state: "Alagoas", plan: "Anual", minutes: 4 },
+    { name: "Caio Mendes", state: "Pará", plan: "Semestral", minutes: 5 },
+    { name: "Beatriz Cardoso", state: "Rio Grande do Norte", plan: "Trimestral", minutes: 6 },
+    { name: "Vinícius Teixeira", state: "Sergipe", plan: "Mensal", minutes: 7 },
   ];
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -772,12 +787,18 @@ function BuyerPopup() {
       className={`fixed bottom-6 left-5 z-40 flex max-w-[285px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/95 p-3.5 shadow-2xl shadow-blue-950/15 backdrop-blur transition-all duration-500 ${visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"}`}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">
-        {buyers[index][0].slice(0, 1)}
+        {buyers[index].name.slice(0, 1)}
       </span>
-      <p className="text-xs leading-5 text-slate-600">
-        <b className="text-slate-800">{buyers[index][0]}</b> {buyers[index][1]}{" "}
-        <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-      </p>
+      <div className="min-w-0 text-xs leading-5 text-slate-600">
+        <p className="truncate">
+          <b className="text-slate-800">{buyers[index].name}</b> · {buyers[index].state}
+        </p>
+        <p>
+          Plano <b className="text-slate-700">{buyers[index].plan}</b> · há {buyers[index].minutes} min
+          <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        </p>
+        <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">Demonstração</span>
+      </div>
     </div>
   );
 }
