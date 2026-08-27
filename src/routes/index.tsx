@@ -699,7 +699,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             <p className="text-center text-sm font-bold uppercase tracking-[.16em] text-slate-400">Plano {cycle}</p>
             <div className="mt-4 text-center">
               <span className="text-3xl font-black md:text-4xl">R$</span>{" "}
-              <strong className="text-6xl font-black tracking-tighter text-blue-400 md:text-7xl">{prices[cycle].replace("R$ ", "").replace(",90", "")}</strong>
+              <strong className="text-6xl font-black tracking-tighter text-blue-400 md:text-7xl">{prices[cycle]!.replace("R$ ", "").replace(",90", "")}</strong>
               <span className="text-3xl font-black text-blue-400">,90</span>
               <span className="ml-2 text-base font-medium text-slate-400">/mês</span>
             </div>
@@ -944,14 +944,14 @@ function BuyerPopup() {
       className={`fixed bottom-6 left-5 z-40 flex max-w-[285px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/95 p-3.5 shadow-2xl shadow-blue-950/15 backdrop-blur transition-[opacity,transform] duration-500 ${visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"}`}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">
-        {buyers[index].name.slice(0, 1)}
+        {buyers[index]!.name.slice(0, 1)}
       </span>
       <div className="min-w-0 text-xs leading-5 text-slate-600">
         <p className="truncate">
-          <b className="text-slate-800">{buyers[index].name}</b> · {buyers[index].state}
+          <b className="text-slate-800">{buyers[index]!.name}</b> · {buyers[index]!.state}
         </p>
         <p>
-          Plano <b className="text-slate-700">{buyers[index].plan}</b> · há {buyers[index].minutes}{" "}
+          Plano <b className="text-slate-700">{buyers[index]!.plan}</b> · há {buyers[index]!.minutes}{" "}
           min
           <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
         </p>
@@ -1805,7 +1805,7 @@ function CustomerSettings({
                     <input
                       value={form[key as keyof SettingsData] as string}
                       onChange={(event) =>
-                        setForm((current) => ({ ...current, [key]: event.target.value }))
+                        setForm((current) => ({ ...current, [key as string]: event.target.value }))
                       }
                       className={fieldClass}
                     />
@@ -2110,7 +2110,7 @@ function MessageManager({ company, say }: { company: string; say: (message: stri
             ].map(([id, label]) => (
               <button
                 key={id}
-                onClick={() => setMode(id)}
+                onClick={() => setMode(id as string)}
                 className={`rounded-xl px-3 py-2 text-xs font-bold ${mode === id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`}
               >
                 {label}
@@ -2526,10 +2526,10 @@ function Admin({ open, say }: { open: (company: string) => void; say: (s: string
                     </span>
                   </td>
                   <td>{x[4]}</td>
-                  <td className="font-mono text-xs text-slate-400">nxs-{x[5].toLowerCase()}74f</td>
+                  <td className="font-mono text-xs text-slate-400">nxs-{String(x[5]).toLowerCase()}74f</td>
                   <td>
                     <button
-                      onClick={() => open(x[0])}
+                      onClick={() => open(String(x[0]))}
                       className="rounded-lg border px-2.5 py-1.5 text-xs font-bold text-blue-700"
                     >
                       Acessar empresa
