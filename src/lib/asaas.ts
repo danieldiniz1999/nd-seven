@@ -5,13 +5,13 @@ export type AsaasCustomerInput = {
   name: string;
   email: string;
   cpfCnpj: string;
-  phone?: string;
-  mobilePhone?: string;
-  postalCode?: string;
-  address?: string;
-  addressNumber?: string;
-  complement?: string;
-  province?: string;
+  phone?: string | undefined;
+  mobilePhone?: string | undefined;
+  postalCode?: string | undefined;
+  address?: string | undefined;
+  addressNumber?: string | undefined;
+  complement?: string | undefined;
+  province?: string | undefined;
 };
 
 export type AsaasCreditCardInput = {
@@ -29,7 +29,7 @@ export type AsaasCreditCardHolderInfo = {
   postalCode: string;
   addressNumber: string;
   phone: string;
-  addressComplement?: string;
+  addressComplement?: string | undefined;
 };
 
 export type AsaasSubscriptionInput = {
@@ -38,8 +38,8 @@ export type AsaasSubscriptionInput = {
   value: number;
   cycle: AsaasCycle;
   description: string;
-  creditCard?: AsaasCreditCardInput;
-  creditCardHolderInfo?: AsaasCreditCardHolderInfo;
+  creditCard?: AsaasCreditCardInput | undefined;
+  creditCardHolderInfo?: AsaasCreditCardHolderInfo | undefined;
 };
 
 export type AsaasCustomer = {
@@ -79,7 +79,7 @@ export class AsaasClient {
     this.apiKey =
       apiKey ||
       (typeof process !== "undefined"
-        ? process.env.ASAAS_API_KEY || process.env.ASAAS_ACCESS_TOKEN
+        ? process.env['ASAAS_API_KEY'] || process.env['ASAAS_ACCESS_TOKEN']
         : "") ||
       "";
     this.baseUrl = isSandbox ? "https://sandbox.asaas.com/v3" : "https://api.asaas.com/v3";
@@ -121,7 +121,7 @@ export class AsaasClient {
         `/customers?cpfCnpj=${encodeURIComponent(cleanDoc)}`,
       );
       if (byDoc.data && byDoc.data.length > 0) {
-        return byDoc.data[0];
+        return byDoc.data[0] ?? null;
       }
     }
 
@@ -130,7 +130,7 @@ export class AsaasClient {
         `/customers?email=${encodeURIComponent(email)}`,
       );
       if (byEmail.data && byEmail.data.length > 0) {
-        return byEmail.data[0];
+        return byEmail.data[0] ?? null;
       }
     }
 
@@ -182,8 +182,8 @@ export class AsaasClient {
     };
 
     if (input.creditCard && input.creditCardHolderInfo) {
-      payload.creditCard = input.creditCard;
-      payload.creditCardHolderInfo = input.creditCardHolderInfo;
+      payload['creditCard'] = input.creditCard;
+      payload['creditCardHolderInfo'] = input.creditCardHolderInfo;
     }
 
     return await this.request<{ id: string }>("/subscriptions", {

@@ -34,6 +34,7 @@ import {
   Zap,
 } from "lucide-react";
 import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { RecentBuyersPopup } from "@/components/RecentBuyersPopup";
 
 export const Route = createFileRoute("/")({ component: Nexus });
 type View =
