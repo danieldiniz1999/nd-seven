@@ -2294,7 +2294,7 @@ function MySubscription({ checkout, company }: { checkout: () => void; company: 
             </p>
             <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-bold text-emerald-700">
               <CheckCircle2 className="h-4 w-4" />
-              Ativa e regular
+              Ativa
             </p>
           </div>
           <div>
