@@ -181,6 +181,12 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
     Semestral: "R$ 109,90",
     Anual: "R$ 99,90",
   };
+  const billingByCycle: Record<string, string> = {
+    Mensal: "cobrado mensalmente",
+    Trimestral: "R$ 359,70 a cada 3 meses",
+    Semestral: "R$ 659,40 a cada 6 meses",
+    Anual: "R$ 1.198,80 a cada 12 meses",
+  };
   return (
     <div className="overflow-hidden bg-[#ffffff] text-slate-900">
       <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-[#ffffff]/80 backdrop-blur-xl">
@@ -661,6 +667,11 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               >
                 por mês · acesso total
               </span>
+              <span
+                className={`mt-1 block text-[10px] font-semibold ${cycle === item ? "text-blue-100" : "text-slate-600"}`}
+              >
+                {billingByCycle[item]}
+              </span>
               {item === "Anual" && (
                 <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-700">
                   melhor custo
@@ -687,6 +698,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               {prices[cycle]}
               <span className="text-sm font-medium text-slate-500"> / mês</span>
             </p>
+            <p className="mt-2 text-sm font-bold text-blue-700">{billingByCycle[cycle]}</p>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               O mesmo acesso total ao ND7 em qualquer periodicidade. Você escolhe o prazo; nós não
               bloqueamos recursos.
