@@ -208,14 +208,12 @@
   }
 }
 @keyframes whatsapp-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.45);
-  }
-  70% {
-    box-shadow: 0 0 0 13px rgba(37, 211, 102, 0);
-  }
+  0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.055);
   }
 }
 .reveal {
@@ -272,6 +270,18 @@
 }
 .whatsapp-float {
   animation: whatsapp-pulse 2.2s infinite;
+  will-change: transform;
+}
+
+@media (max-width: 767px) {
+  .hero-orb,
+  .float-y {
+    animation: none;
+  }
+
+  .hero-orb {
+    filter: blur(36px);
+  }
 }
 
 .checkout-page {

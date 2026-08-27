@@ -34,7 +34,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 export const Route = createFileRoute("/")({ component: Nexus });
 type View =
@@ -70,10 +70,18 @@ function Nexus() {
     [impersonating, setImpersonating] = useState(false),
     [activeCompany, setActiveCompany] = useState("Demo v1"),
     [notice, setNotice] = useState("");
-  const say = (t: string) => {
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const say = useCallback((t: string) => {
+    if (noticeTimer.current) clearTimeout(noticeTimer.current);
     setNotice(t);
-    setTimeout(() => setNotice(""), 2800);
-  };
+    noticeTimer.current = setTimeout(() => setNotice(""), 2800);
+  }, []);
+  useEffect(
+    () => () => {
+      if (noticeTimer.current) clearTimeout(noticeTimer.current);
+    },
+    [],
+  );
   useEffect(() => {
     if (!menu) return;
     const previousOverflow = document.body.style.overflow;
@@ -148,34 +156,56 @@ function Nexus() {
               <ChevronDown className="h-4 w-4 text-slate-400" />
             </div>
           </header>
-          {view === "admin" ? (
-            <Admin
-              open={(company) => {
-                setActiveCompany(company);
-                setImpersonating(true);
-                setView("crm");
-                say("Visualizando a empresa como Super Admin.");
-              }}
-              say={say}
-            />
-          ) : view === "subscription" ? (
-            <MySubscription checkout={() => setView("checkout")} company={activeCompany} />
-          ) : view === "pipeline" ? (
-            <SalesPipeline say={say} company={activeCompany} />
-          ) : view === "whatsapp" ? (
-            <WhatsAppConnection company={activeCompany} say={say} />
-          ) : view === "messages" ? (
-            <MessageManager company={activeCompany} say={say} />
-          ) : view === "contacts" || view === "agenda" || view === "team" || view === "settings" ? (
-            <WorkspaceScreen view={view} say={say} company={activeCompany} />
-          ) : (
-            <Dashboard admin={() => setView("admin")} say={say} company={activeCompany} />
-          )}
+          <PanelContent
+            view={view}
+            company={activeCompany}
+            say={say}
+            setView={setView}
+            setActiveCompany={setActiveCompany}
+            setImpersonating={setImpersonating}
+          />
         </main>
       </div>
     </div>
   );
 }
+const PanelContent = memo(function PanelContent({
+  view,
+  company,
+  say,
+  setView,
+  setActiveCompany,
+  setImpersonating,
+}: {
+  view: View;
+  company: string;
+  say: (message: string) => void;
+  setView: (view: View) => void;
+  setActiveCompany: (company: string) => void;
+  setImpersonating: (impersonating: boolean) => void;
+}) {
+  const openCompany = useCallback(
+    (nextCompany: string) => {
+      setActiveCompany(nextCompany);
+      setImpersonating(true);
+      setView("crm");
+      say("Visualizando a empresa como Super Admin.");
+    },
+    [say, setActiveCompany, setImpersonating, setView],
+  );
+  const openCheckout = useCallback(() => setView("checkout"), [setView]);
+  const openAdmin = useCallback(() => setView("admin"), [setView]);
+
+  if (view === "admin") return <Admin open={openCompany} say={say} />;
+  if (view === "subscription") return <MySubscription checkout={openCheckout} company={company} />;
+  if (view === "pipeline") return <SalesPipeline say={say} company={company} />;
+  if (view === "whatsapp") return <WhatsAppConnection company={company} say={say} />;
+  if (view === "messages") return <MessageManager company={company} say={say} />;
+  if (view === "contacts" || view === "agenda" || view === "team" || view === "settings") {
+    return <WorkspaceScreen view={view} say={say} company={company} />;
+  }
+  return <Dashboard admin={openAdmin} say={say} company={company} />;
+});
 
 function Landing({ access, start }: { access: () => void; start: () => void }) {
   const wa =
@@ -940,7 +970,7 @@ function BuyerPopup() {
   }, [buyers.length]);
   return (
     <div
-      className={`fixed bottom-6 left-5 z-40 flex max-w-[285px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/95 p-3.5 shadow-2xl shadow-blue-950/15 backdrop-blur transition-all duration-500 ${visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"}`}
+      className={`fixed bottom-6 left-5 z-40 flex max-w-[285px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/95 p-3.5 shadow-2xl shadow-blue-950/15 backdrop-blur transition-[opacity,transform] duration-500 ${visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"}`}
     >
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">
         {buyers[index].name.slice(0, 1)}
