@@ -10,7 +10,6 @@ import {
   ClipboardList,
   ContactRound,
   CreditCard,
-  Crown,
   LayoutDashboard,
   LayoutGrid,
   List,
@@ -1138,20 +1137,6 @@ function Sidebar({
           setMenu(false);
         }}
       />
-      <div className="mt-auto rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3">
-        <Crown className="h-4 w-4 text-blue-300" />
-        <b className="mt-2 block text-xs text-white">Plano Profissional</b>
-        <p className="mt-1 text-[11px] text-slate-400">Tudo para sua operação crescer.</p>
-        <button
-          onClick={() => {
-            setView("subscription");
-            setMenu(false);
-          }}
-          className="mt-3 w-full rounded-lg bg-blue-500 py-2 text-xs font-bold text-white"
-        >
-          Gerenciar plano
-        </button>
-      </div>
     </aside>
   );
 }
