@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { RecentBuyersPopup } from "@/components/RecentBuyersPopup";
 import {
   ArrowRight,
   Building2,
@@ -96,7 +95,6 @@ function Nexus() {
     return (
       <>
         <Landing access={() => setView("login")} start={() => setView("checkout")} />
-        <RecentBuyersPopup />
       </>
     );
   if (view === "login")
@@ -110,11 +108,10 @@ function Nexus() {
             say("Pagamento iniciado. O acesso será liberado após a confirmação pela Asaas.")
           }
         />
-        <RecentBuyersPopup />
       </>
     );
   return (
-    <div className="min-h-screen bg-[#f8fbff] text-slate-800">
+    <div className="app-shell min-h-screen bg-[#f8fbff] text-slate-800">
       {notice && (
         <div className="fixed right-5 top-5 z-50 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl">
           <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
@@ -140,8 +137,8 @@ function Nexus() {
             say("Você voltou à Central Super Admin.");
           }}
         />
-        <main className="min-h-screen min-w-0 flex-1">
-          <header className="flex h-[72px] items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
+        <main className="app-main min-h-screen min-w-0 flex-1">
+          <header className="app-topbar flex h-[72px] items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
             <div className="flex items-center gap-4">
               <button
                 aria-label="Abrir menu"
@@ -150,7 +147,7 @@ function Nexus() {
               >
                 <Menu className="h-5 w-5" />
               </button>
-              <div className="hidden items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-400 md:flex">
+              <div className="app-search hidden items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-400 md:flex">
                 <Search className="h-4 w-4" />
                 Buscar no ND7 <kbd className="ml-10 rounded bg-white px-1.5 text-[10px]">⌘ K</kbd>
               </div>
@@ -245,7 +242,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
     Anual: "R$ 1.198,80 a cada 12 meses",
   };
   return (
-    <div className="overflow-hidden bg-[#ffffff] text-slate-900">
+    <div className="landing-page overflow-hidden bg-[#ffffff] text-slate-900">
       <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-[#ffffff]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-6xl items-center justify-between px-5">
           <div className="flex items-center gap-3">
@@ -989,7 +986,7 @@ function Sidebar({
 }) {
   return (
     <aside
-      className={`drawer-panel fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col bg-[#111827] p-4 text-slate-300 shadow-2xl shadow-slate-950/40 ${menu ? "drawer-panel-open" : ""}`}
+      className={`app-sidebar drawer-panel fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col bg-[#111827] p-4 text-slate-300 shadow-2xl shadow-slate-950/40 ${menu ? "drawer-panel-open" : ""}`}
     >
       <div className="flex items-center gap-3 px-2">
         <Logo />
@@ -1136,7 +1133,7 @@ function Nav({
   return (
     <button
       onClick={action}
-      className={`mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${active ? "bg-blue-600 text-white" : "hover:bg-white/5 hover:text-white"}`}
+      className={`nav-item mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${active ? "bg-blue-600 text-white" : "hover:bg-white/5 hover:text-white"}`}
     >
       <span className="h-4 w-4">{icon}</span>
       {label}
@@ -2347,7 +2344,7 @@ function Card({
   icon: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="product-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-sm text-slate-500">{label}</span>
         <span className="rounded-lg bg-blue-50 p-2 text-blue-600">{icon}</span>
@@ -2362,7 +2359,7 @@ function Card({
 function FinancialCenter({ company, say }: { company: string; say: (message: string) => void }) {
   const cashflow = [42, 56, 49, 68, 61, 78, 72, 92, 84, 100];
   return (
-    <div className="mx-auto max-w-[1440px] p-5 md:p-8">
+    <div className="financial-center mx-auto max-w-[1440px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-slate-500">Financeiro · visão gerencial</p>
@@ -2407,7 +2404,7 @@ function Dashboard({
   company: string;
 }) {
   return (
-    <div className="mx-auto max-w-[1440px] p-5 md:p-8">
+    <div className="owner-dashboard mx-auto max-w-[1440px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-slate-500">Terça-feira, 26 de agosto</p>
