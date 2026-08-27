@@ -74,6 +74,14 @@ function Nexus() {
     setNotice(t);
     setTimeout(() => setNotice(""), 2800);
   };
+  useEffect(() => {
+    if (!menu) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [menu]);
   if (view === "landing")
     return <Landing access={() => setView("login")} start={() => setView("checkout")} />;
   if (view === "login")
@@ -99,7 +107,7 @@ function Nexus() {
         <button
           aria-label="Fechar menu"
           onClick={() => setMenu(false)}
-          className={`fixed inset-0 z-30 bg-[#071a3d]/55 backdrop-blur-[2px] transition-opacity duration-300 ease-out ${menu ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+          className={`drawer-backdrop fixed inset-0 z-30 bg-[#071a3d]/55 ${menu ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
         />
         <Sidebar
           view={view}
@@ -970,7 +978,7 @@ function Sidebar({
 }) {
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col bg-[#111827] p-4 text-slate-300 shadow-2xl shadow-slate-950/40 transition-transform duration-300 ease-out ${menu ? "translate-x-0" : "-translate-x-full"}`}
+      className={`drawer-panel fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col bg-[#111827] p-4 text-slate-300 shadow-2xl shadow-slate-950/40 ${menu ? "drawer-panel-open" : ""}`}
     >
       <div className="flex items-center gap-3 px-2">
         <Logo />
