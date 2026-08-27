@@ -44,6 +44,7 @@ type View =
   | "checkout"
   | "subscription"
   | "contacts"
+  | "finance"
   | "pipeline"
   | "agenda"
   | "team"
@@ -201,6 +202,7 @@ const PanelContent = memo(function PanelContent({
 
   if (view === "admin") return <Admin open={openCompany} say={say} />;
   if (view === "subscription") return <MySubscription checkout={openCheckout} company={company} />;
+  if (view === "finance") return <FinancialCenter company={company} say={say} />;
   if (view === "pipeline") return <SalesPipeline say={say} company={company} />;
   if (view === "whatsapp") return <WhatsAppConnection company={company} say={say} />;
   if (view === "messages") return <MessageManager company={company} say={say} />;
@@ -879,7 +881,6 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           <p>© 2026 ND7. Relacionamentos que crescem.</p>
         </div>
       </footer>
-      <BuyerPopup />
       <a
         href={wa}
         target="_blank"
@@ -1084,6 +1085,15 @@ function Sidebar({
       />
       <Nav
         icon={<CircleDollarSign />}
+        label="Financeiro"
+        active={view === "finance"}
+        action={() => {
+          setView("finance");
+          setMenu(false);
+        }}
+      />
+      <Nav
+        icon={<CreditCard />}
         label="Minha Assinatura"
         active={view === "subscription"}
         action={() => {
@@ -2340,6 +2350,44 @@ function Card({
     </div>
   );
 }
+function FinancialCenter({ company, say }: { company: string; say: (message: string) => void }) {
+  const cashflow = [42, 56, 49, 68, 61, 78, 72, 92, 84, 100];
+  return (
+    <div className="mx-auto max-w-[1440px] p-5 md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm text-slate-500">Financeiro · visão gerencial</p>
+          <h1 className="mt-1 text-2xl font-bold">Resultados de {company}</h1>
+          <p className="mt-1 text-sm text-slate-500">Acompanhe receita, conversões e previsibilidade de caixa.</p>
+        </div>
+        <button onClick={() => say("Relatório financeiro preparado para exportação.")} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">
+          <TrendingUp className="mr-1 inline h-4 w-4" /> Exportar relatório
+        </button>
+      </div>
+      <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Card label="Faturamento no mês" value="R$ 42.860" trend="18,4%" icon={<CircleDollarSign />} />
+        <Card label="Receita confirmada" value="R$ 36.240" trend="12,8%" icon={<CheckCircle2 />} />
+        <Card label="A receber" value="R$ 18.720" trend="7,2%" icon={<CreditCard />} />
+        <Card label="Ticket médio" value="R$ 3.570" trend="9,6%" icon={<TrendingUp />} />
+      </div>
+      <div className="mt-6 grid gap-6 xl:grid-cols-[1.35fr_.85fr]">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-3"><div><h2 className="font-semibold">Evolução do faturamento</h2><p className="mt-1 text-xs text-slate-500">Entradas confirmadas e projeção para os próximos dias</p></div><b className="text-sm text-emerald-600">+18,4%</b></div>
+          <div className="mt-7 flex h-48 items-end gap-2">{cashflow.map((height, index) => <div key={index} className="group flex flex-1 flex-col justify-end"><span className="mx-auto mb-2 hidden rounded bg-slate-900 px-1.5 py-1 text-[9px] text-white group-hover:block">R$ {(height * 430).toLocaleString("pt-BR")}</span><i className="block rounded-t-md bg-gradient-to-t from-blue-700 to-blue-400" style={{ height: `${height}%` }} /></div>)}</div>
+          <div className="mt-3 flex justify-between text-[10px] font-medium text-slate-400"><span>01 ago</span><span>08 ago</span><span>15 ago</span><span>22 ago</span><span>Hoje</span></div>
+        </section>
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h2 className="font-semibold">Saúde financeira</h2><p className="mt-1 text-xs text-slate-500">Leitura rápida da operação</p>
+          {[['Margem estimada', '38,6%', 'bg-emerald-500'], ['Meta do mês', '86%', 'bg-blue-600'], ['Inadimplência', '3,2%', 'bg-amber-500']].map(([label, value, tone]) => <div key={label} className="mt-6"><div className="flex justify-between text-sm"><span>{label}</span><b>{value}</b></div><div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100"><i className={`block h-full rounded-full ${tone}`} style={{ width: value }} /></div></div>)}
+        </section>
+      </div>
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap justify-between gap-3"><div><h2 className="font-semibold">Conversões que geraram receita</h2><p className="mt-1 text-xs text-slate-500">Negócios ganhos no período e impacto no caixa.</p></div><span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">12 conversões no mês</span></div>
+        <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead className="text-xs text-slate-400"><tr><th className="pb-3">Cliente</th><th>Origem</th><th>Fechamento</th><th>Valor</th><th>Status</th></tr></thead><tbody>{[['Clínica Horizonte','Indicação','Hoje','R$ 8.200'],['Almeida & Costa','Inbound','Ontem','R$ 12.500'],['Núcleo Engenharia','Prospecção','22 ago','R$ 6.800']].map((row) => <tr key={row[0]} className="border-t border-slate-100"><td className="py-4 font-semibold">{row[0]}</td><td>{row[1]}</td><td className="text-slate-500">{row[2]}</td><td className="font-bold">{row[3]}</td><td><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">Receita confirmada</span></td></tr>)}</tbody></table></div>
+      </section>
+    </div>
+  );
+}
 function Dashboard({
   admin,
   say,
@@ -2357,9 +2405,7 @@ function Dashboard({
           <h1 className="mt-1 text-2xl font-bold">
             {company} <span className="text-blue-500">✦</span>
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Aqui está o resumo da operação demonstrativa.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">Decisões melhores começam com uma visão clara da operação.</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -2383,6 +2429,9 @@ function Dashboard({
         <Card label="Negócios em andamento" value="24" trend="6 novos" icon={<ClipboardList />} />
         <Card label="Novos contatos" value="128" trend="23,1%" icon={<ContactRound />} />
         <Card label="Taxa de conversão" value="32,8%" trend="4,2%" icon={<Sparkles />} />
+      </div>
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        {[['Meta mensal', 'R$ 50.000', '86% atingida', 'bg-blue-600'], ['Previsão do funil', 'R$ 78.400', '32 negócios em aberto', 'bg-violet-500'], ['Receita a receber', 'R$ 18.720', 'Próximos 30 dias', 'bg-emerald-500']].map(([label, value, detail, tone]) => <section key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex justify-between"><p className="text-sm font-semibold">{label}</p><span className={`h-2.5 w-2.5 rounded-full ${tone}`} /></div><b className="mt-4 block text-2xl">{value}</b><p className="mt-2 text-xs text-slate-500">{detail}</p><div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100"><i className={`block h-full rounded-full ${tone}`} style={{ width: label === 'Meta mensal' ? '86%' : label === 'Previsão do funil' ? '68%' : '57%' }} /></div></section>)}
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.45fr_.8fr]">
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
