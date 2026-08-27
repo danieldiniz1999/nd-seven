@@ -1440,6 +1440,11 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
 function Checkout({ back, done }: { back: () => void; done: () => void }) {
   const [payment, setPayment] = useState("card");
   const [cycle, setCycle] = useState("Mensal");
+  const [cep, setCep] = useState("");
+  const [phone, setPhone] = useState("");
+  const [document, setDocument] = useState("");
+  const [address, setAddress] = useState({ street: "", neighborhood: "", city: "", state: "" });
+  const [cepMessage, setCepMessage] = useState("");
   const prices: Record<string, string> = {
     Mensal: "R$ 129,90",
     Trimestral: "R$ 119,90",
@@ -1454,6 +1459,58 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
   };
   const input =
     "mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100";
+  const lockedInput =
+    "mt-2 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-3 text-sm text-slate-500 outline-none";
+  const formatCep = (value: string) =>
+    value
+      .replace(/\D/g, "")
+      .slice(0, 8)
+      .replace(/(\d{5})(\d)/, "$1-$2");
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    return digits.replace(/^(\d{2})(\d)/, "($1) $2").replace(/(\d{5})(\d{1,4})$/, "$1-$2");
+  };
+  const formatDocument = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 14);
+    return digits.length <= 11
+      ? digits.replace(/(\d{3})(\d)/g, "$1.").replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+      : digits
+          .replace(/^(\d{2})(\d)/, "$1.$2")
+          .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+          .replace(/\.(\d{3})(\d)/, ".$1/$2")
+          .replace(/(\d{4})(\d)/, "$1-$2");
+  };
+  const handleCep = async (value: string) => {
+    const formatted = formatCep(value);
+    setCep(formatted);
+    const digits = formatted.replace(/\D/g, "");
+    if (digits.length !== 8) {
+      setCepMessage("");
+      return;
+    }
+    setCepMessage("Buscando endereço...");
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+      const data = (await response.json()) as {
+        erro?: boolean;
+        logradouro?: string;
+        bairro?: string;
+        localidade?: string;
+        uf?: string;
+      };
+      if (data.erro) throw new Error("CEP inválido");
+      setAddress({
+        street: data.logradouro ?? "",
+        neighborhood: data.bairro ?? "",
+        city: data.localidade ?? "",
+        state: data.uf ?? "",
+      });
+      setCepMessage("Endereço preenchido automaticamente.");
+    } catch {
+      setAddress({ street: "", neighborhood: "", city: "", state: "" });
+      setCepMessage("Não foi possível localizar este CEP.");
+    }
+  };
   return (
     <div className="min-h-screen bg-[#f6f5fb] px-5 py-5 md:py-8">
       <div className="mx-auto max-w-6xl">
@@ -1506,25 +1563,33 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                 </div>
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                {[
-                  ["Nome completo", "Como devemos chamar você?"],
-                  ["E-mail de acesso", "voce@empresa.com"],
-                  ["Celular / WhatsApp", "(00) 00000-0000"],
-                  ["CPF ou CNPJ", "000.000.000-00"],
-                  ["Nome da empresa", "Como sua empresa será identificada no ND7?"],
-                ].map(([label, placeholder], i) => (
+                {["Nome completo", "E-mail de acesso", "Nome da empresa"].map((label, i) => (
                   <label
                     key={label}
-                    className={`text-xs font-bold ${i === 4 ? "md:col-span-2" : ""}`}
+                    className={`text-xs font-bold ${i === 2 ? "md:col-span-2" : ""}`}
                   >
                     {label}
-                    <input
-                      type={label.includes("E-mail") ? "email" : "text"}
-                      placeholder={placeholder}
-                      className={input}
-                    />
+                    <input type={label.includes("E-mail") ? "email" : "text"} className={input} />
                   </label>
                 ))}
+                <label className="text-xs font-bold">
+                  Celular / WhatsApp
+                  <input
+                    inputMode="numeric"
+                    value={phone}
+                    onChange={(event) => setPhone(formatPhone(event.target.value))}
+                    className={input}
+                  />
+                </label>
+                <label className="text-xs font-bold">
+                  CPF ou CNPJ
+                  <input
+                    inputMode="numeric"
+                    value={document}
+                    onChange={(event) => setDocument(formatDocument(event.target.value))}
+                    className={input}
+                  />
+                </label>
               </div>
             </div>
             <div className="mt-8 border-t pt-7">
@@ -1538,50 +1603,46 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                 </div>
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-6">
-                {[
-                  ["CEP", "00000-000", "md:col-span-2"],
-                  ["Rua / Avenida", "Informe seu endereço", "md:col-span-4"],
-                  ["Número", "000", "md:col-span-2"],
-                  ["Complemento", "Sala, bloco, apto...", "md:col-span-2"],
-                  ["Bairro", "Seu bairro", "md:col-span-2"],
-                  ["Cidade", "Sua cidade", "md:col-span-3"],
-                  ["Estado", "Selecione", "md:col-span-3"],
-                ].map(([label, placeholder, span]) => (
-                  <label key={label} className={`text-xs font-bold ${span}`}>
-                    {label}
-                    {label === "Estado" ? (
-                      <select className={input} defaultValue="">
-                        <option value="" disabled>
-                          Selecione o estado
-                        </option>
-                        {[
-                          "AC",
-                          "AL",
-                          "AP",
-                          "AM",
-                          "BA",
-                          "CE",
-                          "DF",
-                          "ES",
-                          "GO",
-                          "MA",
-                          "MG",
-                          "PA",
-                          "PE",
-                          "PR",
-                          "RJ",
-                          "RS",
-                          "SC",
-                          "SP",
-                        ].map((state) => (
-                          <option key={state}>{state}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input placeholder={placeholder} className={input} />
-                    )}
-                  </label>
-                ))}
+                <label className="text-xs font-bold md:col-span-2">
+                  CEP
+                  <input
+                    inputMode="numeric"
+                    value={cep}
+                    onChange={(event) => void handleCep(event.target.value)}
+                    className={input}
+                  />
+                  {cepMessage && (
+                    <small
+                      className={`mt-1 block font-medium ${cepMessage.startsWith("Endereço") ? "text-emerald-600" : cepMessage.startsWith("Não") ? "text-rose-600" : "text-blue-600"}`}
+                    >
+                      {cepMessage}
+                    </small>
+                  )}
+                </label>
+                <label className="text-xs font-bold md:col-span-4">
+                  Rua / Avenida
+                  <input readOnly value={address.street} className={lockedInput} />
+                </label>
+                <label className="text-xs font-bold md:col-span-2">
+                  Número
+                  <input inputMode="numeric" className={input} />
+                </label>
+                <label className="text-xs font-bold md:col-span-2">
+                  Complemento
+                  <input className={input} />
+                </label>
+                <label className="text-xs font-bold md:col-span-2">
+                  Bairro
+                  <input readOnly value={address.neighborhood} className={lockedInput} />
+                </label>
+                <label className="text-xs font-bold md:col-span-3">
+                  Cidade
+                  <input readOnly value={address.city} className={lockedInput} />
+                </label>
+                <label className="text-xs font-bold md:col-span-3">
+                  Estado
+                  <input readOnly value={address.state} className={lockedInput} />
+                </label>
               </div>
             </div>
             <div className="mt-8 border-t pt-7">
@@ -1616,14 +1677,14 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
               {payment === "card" ? (
                 <div className="mt-5 grid gap-4 md:grid-cols-6">
                   {[
-                    ["Nome impresso no cartão", "Nome como está no cartão", "md:col-span-6"],
-                    ["Número do cartão", "0000 0000 0000 0000", "md:col-span-6"],
-                    ["Validade", "MM/AA", "md:col-span-3"],
-                    ["CVV", "000", "md:col-span-3"],
-                  ].map(([label, placeholder, span]) => (
+                    ["Nome impresso no cartão", "md:col-span-6"],
+                    ["Número do cartão", "md:col-span-6"],
+                    ["Validade", "md:col-span-3"],
+                    ["CVV", "md:col-span-3"],
+                  ].map(([label, span]) => (
                     <label key={label} className={`text-xs font-bold ${span}`}>
                       {label}
-                      <input placeholder={placeholder} className={input} />
+                      <input className={input} />
                     </label>
                   ))}
                 </div>
