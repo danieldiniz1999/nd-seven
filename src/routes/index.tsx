@@ -64,6 +64,7 @@ function Logo() {
 function Nexus() {
   const [view, setView] = useState<View>("landing"),
     [menu, setMenu] = useState(false),
+    [impersonating, setImpersonating] = useState(false),
     [notice, setNotice] = useState("");
   const say = (t: string) => {
     setNotice(t);
@@ -96,7 +97,19 @@ function Nexus() {
           onClick={() => setMenu(false)}
           className={`fixed inset-0 z-30 bg-[#071a3d]/55 backdrop-blur-[2px] transition-opacity duration-300 ease-out ${menu ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
         />
-        <Sidebar view={view} setView={setView} menu={menu} setMenu={setMenu} />
+        <Sidebar
+          view={view}
+          setView={setView}
+          menu={menu}
+          setMenu={setMenu}
+          impersonating={impersonating}
+          returnToAdmin={() => {
+            setImpersonating(false);
+            setView("admin");
+            setMenu(false);
+            say("Você voltou à Central Super Admin.");
+          }}
+        />
         <main className="min-h-screen min-w-0 flex-1">
           <header className="flex h-[72px] items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
             <div className="flex items-center gap-4">
@@ -126,6 +139,7 @@ function Nexus() {
           {view === "admin" ? (
             <Admin
               open={() => {
+                setImpersonating(true);
                 setView("crm");
                 say("Visualizando a empresa como Super Admin.");
               }}
@@ -602,11 +616,15 @@ function Sidebar({
   setView,
   menu,
   setMenu,
+  impersonating,
+  returnToAdmin,
 }: {
   view: View;
   setView: (v: View) => void;
   menu: boolean;
   setMenu: (b: boolean) => void;
+  impersonating: boolean;
+  returnToAdmin: () => void;
 }) {
   return (
     <aside
@@ -627,6 +645,20 @@ function Sidebar({
           <X className="h-5 w-5" />
         </button>
       </div>
+      {impersonating && (
+        <button
+          onClick={returnToAdmin}
+          className="mt-6 flex w-full items-center gap-3 rounded-xl border border-blue-400/30 bg-blue-500/15 px-3 py-3 text-left text-sm font-bold text-blue-100 transition hover:bg-blue-500/25"
+        >
+          <ShieldCheck className="h-5 w-5" />
+          <span>
+            Voltar ao Super Admin
+            <small className="mt-0.5 block text-[10px] font-normal text-blue-200">
+              Sair da visualização desta empresa
+            </small>
+          </span>
+        </button>
+      )}
       <p className="mt-9 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
         Visão geral
       </p>
