@@ -2753,13 +2753,12 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
   };
   const formatDocument = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 14);
-    return digits.length <= 11
-      ? digits.replace(/(\d{3})(\d)/g, "$1.").replace(/(\d{3})(\d{1,2})$/, "$1-$2")
-      : digits
-          .replace(/^(\d{2})(\d)/, "$1.$2")
-          .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-          .replace(/\.(\d{3})(\d)/, ".$1/$2")
-          .replace(/(\d{4})(\d)/, "$1-$2");
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    if (digits.length <= 11)
+      return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+    return `${digits.slice(0, 2)}.${digits.slice(2, 5)}.${digits.slice(5, 8)}/${digits.slice(8, 12)}-${digits.slice(12)}`;
   };
   const formatCardNumber = (value: string) =>
     value
@@ -3097,7 +3096,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Ex: João da Silva"
                     className={input}
                   />
                 </label>
@@ -3107,7 +3105,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="voce@suaempresa.com.br"
                     className={input}
                   />
                 </label>
@@ -3117,7 +3114,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     type="text"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="Sua Empresa Ltda"
                     className={input}
                   />
                 </label>
@@ -3127,17 +3123,18 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     inputMode="numeric"
                     value={phone}
                     onChange={(event) => setPhone(formatPhone(event.target.value))}
-                    placeholder="(11) 99999-9999"
                     className={input}
                   />
                 </label>
                 <label className="text-xs font-bold">
                   CPF ou CNPJ
                   <input
+                    type="tel"
                     inputMode="numeric"
+                    autoComplete="off"
+                    maxLength={18}
                     value={document}
                     onChange={(event) => setDocument(formatDocument(event.target.value))}
-                    placeholder="000.000.000-00"
                     className={input}
                   />
                 </label>
@@ -3160,7 +3157,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     inputMode="numeric"
                     value={cep}
                     onChange={(event) => void handleCep(event.target.value)}
-                    placeholder="00000-000"
                     className={input}
                   />
                   {cepMessage && (
@@ -3181,7 +3177,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     inputMode="numeric"
                     value={addressNumber}
                     onChange={(e) => setAddressNumber(e.target.value)}
-                    placeholder="123"
                     className={input}
                   />
                 </label>
@@ -3190,7 +3185,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                   <input
                     value={complement}
                     onChange={(e) => setComplement(e.target.value)}
-                    placeholder="Sala 01"
                     className={input}
                   />
                 </label>
@@ -3253,7 +3247,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
               </div>
               {payment === "card" ? (
                 <div className="mt-6 grid gap-6 lg:grid-cols-[.82fr_1.18fr]">
-                  <div className="relative aspect-[1.58/1] overflow-hidden rounded-2xl bg-gradient-to-br from-[#071a3d] via-blue-700 to-sky-500 p-5 text-white shadow-xl shadow-blue-200">
+                  <div className="card-preview relative flex min-h-[200px] flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-[#071a3d] via-blue-700 to-sky-500 p-5 text-white shadow-xl shadow-blue-200">
                     <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10" />
                     <div className="absolute -bottom-16 left-10 h-36 w-36 rounded-full bg-cyan-300/20" />
                     <div className="relative flex items-start justify-between">
@@ -3263,10 +3257,10 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                       </span>
                     </div>
                     <div className="relative mt-8 h-8 w-11 rounded-md border border-amber-100/50 bg-gradient-to-br from-amber-100 to-amber-400" />
-                    <p className="absolute bottom-[52px] left-5 right-5 font-mono text-sm tracking-[.14em]">
+                    <p className="relative mt-auto whitespace-nowrap font-mono text-sm tracking-[.14em]">
                       {cardNumber || "•••• •••• •••• ••••"}
                     </p>
-                    <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-3">
+                    <div className="relative mt-3 grid grid-cols-[minmax(0,1fr)_auto_auto] items-end gap-3">
                       <div>
                         <small className="block text-[8px] uppercase tracking-wider text-blue-100">
                           Titular
@@ -3298,7 +3292,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         value={cardName}
                         onChange={(event) => setCardName(event.target.value.toUpperCase())}
                         autoComplete="cc-name"
-                        placeholder="NOME COMO NO CARTÃO"
                         className={input}
                       />
                     </label>
@@ -3309,7 +3302,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         autoComplete="cc-number"
                         value={cardNumber}
                         onChange={(event) => setCardNumber(formatCardNumber(event.target.value))}
-                        placeholder="0000 0000 0000 0000"
                         className={input}
                       />
                     </label>
@@ -3320,7 +3312,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         autoComplete="cc-exp"
                         value={cardExpiry}
                         onChange={(event) => setCardExpiry(formatExpiry(event.target.value))}
-                        placeholder="MM/AA"
                         className={input}
                       />
                     </label>
@@ -3333,7 +3324,6 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         onChange={(event) =>
                           setCardCvv(event.target.value.replace(/\D/g, "").slice(0, 4))
                         }
-                        placeholder="123"
                         className={input}
                       />
                     </label>

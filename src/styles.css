@@ -193,26 +193,71 @@
 
 .app-sidebar {
   border-right: 1px solid rgba(148, 163, 184, 0.16);
-  background: linear-gradient(180deg, #111827 0%, #101624 100%) !important;
+  background:
+    radial-gradient(circle at 22% 8%, rgba(59, 130, 246, 0.18), transparent 13rem),
+    linear-gradient(180deg, #111827 0%, #101624 100%) !important;
   box-shadow: 20px 0 55px -32px rgba(15, 23, 42, 0.8) !important;
 }
 
 .app-sidebar .nav-item {
+  position: relative;
+  overflow: hidden;
   border: 1px solid transparent;
   border-radius: 0.8rem !important;
   font-weight: 550;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  isolation: isolate;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 180ms ease;
+}
+
+.app-sidebar .nav-item::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background: linear-gradient(100deg, rgba(96, 165, 250, 0.15), rgba(129, 140, 248, 0.06));
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .app-sidebar .nav-item:hover {
-  border-color: rgba(255, 255, 255, 0.08);
-  transform: translateX(2px);
+  border-color: rgba(147, 197, 253, 0.16);
+  color: #fff;
+  transform: translateX(3px) scale(1.01);
+  box-shadow: 0 12px 22px -18px rgba(59, 130, 246, 0.8);
+}
+
+.app-sidebar .nav-item:hover::before {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .app-sidebar .nav-item.bg-blue-600 {
   border-color: rgba(147, 197, 253, 0.25);
   background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
   box-shadow: 0 10px 22px -14px rgba(37, 99, 235, 0.9);
+}
+
+.app-sidebar .nav-item.bg-blue-600::before {
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0.13), transparent);
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.card-preview {
+  container-type: inline-size;
+}
+
+@container (max-width: 290px) {
+  .card-preview {
+    min-height: 188px;
+    padding: 1rem;
+  }
+
+  .card-preview p {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
 }
 
 .owner-dashboard > div > section,
@@ -257,6 +302,99 @@ a:focus-visible,
 input:focus-visible {
   outline: 3px solid rgba(59, 130, 246, 0.28);
   outline-offset: 2px;
+}
+
+/* Shared product language across CRM, finance, settings and support screens. */
+.app-main {
+  background:
+    radial-gradient(circle at 75% -15%, rgba(59, 130, 246, 0.07), transparent 27rem),
+    #f7f8fb;
+}
+
+.app-main > div {
+  animation: screen-enter 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.app-main > div > section,
+.app-main > div > div > section {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02), 0 18px 38px -34px rgba(15, 23, 42, 0.34) !important;
+}
+
+.app-main button:not(.nav-item) {
+  transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 160ms ease, background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.app-main button:not(.nav-item):hover {
+  transform: translateY(-1px);
+}
+
+.app-main input,
+.app-main textarea,
+.app-main select {
+  border-radius: 0.75rem !important;
+}
+
+.app-main table thead {
+  color: #64748b;
+}
+
+.app-main table tbody tr {
+  transition: background-color 150ms ease;
+}
+
+.app-main table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.035);
+}
+
+.landing-page {
+  background:
+    radial-gradient(circle at 50% -8%, rgba(59, 130, 246, 0.1), transparent 38rem),
+    #fff;
+}
+
+.landing-page h1,
+.landing-page h2,
+.app-main h1,
+.app-main h2 {
+  letter-spacing: -0.035em;
+}
+
+.landing-page .lift-card {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02), 0 16px 36px -32px rgba(15, 23, 42, 0.3);
+}
+
+.checkout-page {
+  background:
+    radial-gradient(circle at 5% 4%, rgba(59, 130, 246, 0.14), transparent 25rem),
+    radial-gradient(circle at 96% 22%, rgba(14, 165, 233, 0.09), transparent 22rem),
+    #f7f8fb;
+}
+
+.checkout-form,
+.checkout-summary {
+  border-radius: 1.25rem !important;
+}
+
+.checkout-form {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 22px 55px -42px rgba(15, 23, 42, 0.34) !important;
+}
+
+.checkout-form input {
+  min-height: 2.85rem;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+.checkout-form input:focus {
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12) !important;
+}
+
+@keyframes screen-enter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes reveal-up {
