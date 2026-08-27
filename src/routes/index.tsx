@@ -201,7 +201,10 @@ const PanelContent = memo(function PanelContent({
   if (view === "pipeline") return <SalesPipeline say={say} company={company} />;
   if (view === "whatsapp") return <WhatsAppConnection company={company} say={say} />;
   if (view === "messages") return <MessageManager company={company} say={say} />;
-  if (view === "contacts" || view === "agenda" || view === "team" || view === "settings") {
+  if (view === "settings") {
+    return <CustomerSettings company={company} onCompanyUpdate={setActiveCompany} say={say} />;
+  }
+  if (view === "contacts" || view === "agenda" || view === "team") {
     return <WorkspaceScreen view={view} say={say} company={company} />;
   }
   return <Dashboard admin={openAdmin} say={say} company={company} />;
@@ -1413,7 +1416,7 @@ function WorkspaceScreen({
   say,
   company,
 }: {
-  view: "contacts" | "agenda" | "team" | "settings";
+  view: "contacts" | "agenda" | "team";
   say: (message: string) => void;
   company: string;
 }) {
@@ -1436,12 +1439,6 @@ function WorkspaceScreen({
       "Convidar pessoa",
       UsersRound,
     ],
-    settings: [
-      "Configurações",
-      "Personalize sua empresa, processos e preferências do ND7.",
-      "Salvar alterações",
-      Settings,
-    ],
   } as const;
   const [title, description, action, Icon] = content[view];
   return (
@@ -1459,6 +1456,319 @@ function WorkspaceScreen({
         >
           {action}
         </button>
+      </div>
+    </div>
+  );
+}
+function CustomerSettings({
+  company,
+  onCompanyUpdate,
+  say,
+}: {
+  company: string;
+  onCompanyUpdate: (company: string) => void;
+  say: (message: string) => void;
+}) {
+  const defaults = (name: string) => ({
+    companyName: name,
+    legalName: name,
+    document: "",
+    email: "",
+    phone: "",
+    segment: "Serviços",
+    city: "",
+    state: "",
+    defaultStage: "Novo lead",
+    currency: "BRL (R$)",
+    timezone: "America/Fortaleza",
+    weekStart: "Segunda-feira",
+    automaticTasks: true,
+    dealReminders: true,
+    newLead: true,
+    dailySummary: true,
+    paymentAlerts: true,
+    whatsappAlerts: false,
+    twoFactor: false,
+  });
+  type SettingsData = ReturnType<typeof defaults>;
+  const [tab, setTab] = useState<"empresa" | "processo" | "notificacoes" | "seguranca">("empresa");
+  const [form, setForm] = useState<SettingsData>(() => defaults(company));
+  const fieldClass =
+    "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+  useEffect(() => {
+    const saved = window.localStorage.getItem(`nd7:settings:${company}`);
+    setForm(
+      saved
+        ? { ...defaults(company), ...(JSON.parse(saved) as Partial<SettingsData>) }
+        : defaults(company),
+    );
+  }, [company]);
+  const save = () => {
+    const nextCompany = form.companyName.trim() || company;
+    const data = { ...form, companyName: nextCompany };
+    window.localStorage.setItem(`nd7:settings:${company}`, JSON.stringify(data));
+    window.localStorage.setItem(`nd7:settings:${nextCompany}`, JSON.stringify(data));
+    onCompanyUpdate(nextCompany);
+    say("Configurações salvas com sucesso.");
+  };
+  const toggle = (key: keyof SettingsData) =>
+    setForm((current) => ({ ...current, [key]: !current[key] }));
+  const Toggle = ({
+    label,
+    description,
+    value,
+    setting,
+  }: {
+    label: string;
+    description: string;
+    value: boolean;
+    setting: keyof SettingsData;
+  }) => (
+    <label className="flex cursor-pointer items-center justify-between gap-5 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-200">
+      <span>
+        <b className="block text-sm text-slate-800">{label}</b>
+        <small className="mt-1 block max-w-lg text-xs leading-5 text-slate-500">
+          {description}
+        </small>
+      </span>
+      <input
+        type="checkbox"
+        checked={value}
+        onChange={() => toggle(setting)}
+        className="peer sr-only"
+      />
+      <span className="relative h-6 w-11 shrink-0 rounded-full bg-slate-200 transition peer-checked:bg-blue-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow-sm after:transition peer-checked:after:translate-x-5" />
+    </label>
+  );
+  const tabs = [
+    ["empresa", "Empresa", Building2],
+    ["processo", "Processos", Workflow],
+    ["notificacoes", "Notificações", MessageSquareText],
+    ["seguranca", "Segurança", LockKeyhole],
+  ] as const;
+  return (
+    <div className="mx-auto max-w-[1200px] p-5 md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm text-slate-500">Administração da empresa</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight">Configurações</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Ajuste como o ND7 trabalha para a sua operação.
+          </p>
+        </div>
+        <button
+          onClick={save}
+          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700"
+        >
+          <Check className="mr-1 inline h-4 w-4" /> Salvar alterações
+        </button>
+      </div>
+      <div className="mt-7 grid gap-6 lg:grid-cols-[230px_1fr]">
+        <nav className="flex gap-2 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm lg:flex-col lg:overflow-visible">
+          {tabs.map(([id, label, Icon]) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              className={`flex shrink-0 items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold transition ${tab === id ? "bg-blue-600 text-white shadow-lg shadow-blue-100" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}
+            >
+              <Icon className="h-4 w-4" /> {label}
+            </button>
+          ))}
+          <div className="hidden border-t border-slate-100 px-3 pt-5 text-xs leading-5 text-slate-500 lg:block">
+            As alterações ficam salvas neste dispositivo nesta versão demonstrativa.
+          </div>
+        </nav>
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+          {tab === "empresa" && (
+            <>
+              <span className="inline-flex rounded-2xl bg-blue-100 p-3 text-blue-700">
+                <Building2 className="h-6 w-6" />
+              </span>
+              <h2 className="mt-5 text-xl font-bold">Dados da empresa</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Essas informações identificam sua empresa dentro do ND7.
+              </p>
+              <div className="mt-7 grid gap-5 md:grid-cols-2">
+                {[
+                  ["Nome exibido", "companyName"],
+                  ["Razão social", "legalName"],
+                  ["CPF ou CNPJ", "document"],
+                  ["E-mail administrativo", "email"],
+                  ["Telefone ou WhatsApp", "phone"],
+                  ["Segmento de atuação", "segment"],
+                  ["Cidade", "city"],
+                  ["Estado", "state"],
+                ].map(([label, key]) => (
+                  <label key={key} className="text-sm font-bold text-slate-700">
+                    {label}
+                    <input
+                      value={form[key as keyof SettingsData] as string}
+                      onChange={(event) =>
+                        setForm((current) => ({ ...current, [key]: event.target.value }))
+                      }
+                      className={fieldClass}
+                    />
+                  </label>
+                ))}
+              </div>
+            </>
+          )}
+          {tab === "processo" && (
+            <>
+              <span className="inline-flex rounded-2xl bg-violet-100 p-3 text-violet-700">
+                <Workflow className="h-6 w-6" />
+              </span>
+              <h2 className="mt-5 text-xl font-bold">Processo comercial</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Defina preferências que orientam a rotina da sua equipe.
+              </p>
+              <div className="mt-7 grid gap-5 md:grid-cols-2">
+                <label className="text-sm font-bold text-slate-700">
+                  Etapa padrão para novos negócios
+                  <select
+                    value={form.defaultStage}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, defaultStage: event.target.value }))
+                    }
+                    className={fieldClass}
+                  >
+                    {["Novo lead", "Contato inicial", "Diagnóstico"].map((option) => (
+                      <option key={option}>{option}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-sm font-bold text-slate-700">
+                  Moeda padrão
+                  <select
+                    value={form.currency}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, currency: event.target.value }))
+                    }
+                    className={fieldClass}
+                  >
+                    <option>BRL (R$)</option>
+                    <option>USD (US$)</option>
+                    <option>EUR (€)</option>
+                  </select>
+                </label>
+                <label className="text-sm font-bold text-slate-700">
+                  Fuso horário
+                  <select
+                    value={form.timezone}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, timezone: event.target.value }))
+                    }
+                    className={fieldClass}
+                  >
+                    <option>America/Fortaleza</option>
+                    <option>America/Sao_Paulo</option>
+                    <option>America/Manaus</option>
+                  </select>
+                </label>
+                <label className="text-sm font-bold text-slate-700">
+                  Início da semana
+                  <select
+                    value={form.weekStart}
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, weekStart: event.target.value }))
+                    }
+                    className={fieldClass}
+                  >
+                    <option>Segunda-feira</option>
+                    <option>Domingo</option>
+                  </select>
+                </label>
+              </div>
+              <div className="mt-7 space-y-3">
+                <Toggle
+                  label="Criar tarefas de acompanhamento"
+                  description="Gera uma tarefa de retorno ao criar um novo negócio."
+                  value={form.automaticTasks}
+                  setting="automaticTasks"
+                />
+                <Toggle
+                  label="Lembrar negócios sem avanço"
+                  description="Sinaliza oportunidades que ficaram paradas na mesma etapa."
+                  value={form.dealReminders}
+                  setting="dealReminders"
+                />
+              </div>
+            </>
+          )}
+          {tab === "notificacoes" && (
+            <>
+              <span className="inline-flex rounded-2xl bg-amber-100 p-3 text-amber-700">
+                <MessageSquareText className="h-6 w-6" />
+              </span>
+              <h2 className="mt-5 text-xl font-bold">Notificações e alertas</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Escolha quais eventos merecem a atenção da sua equipe.
+              </p>
+              <div className="mt-7 space-y-3">
+                <Toggle
+                  label="Novos leads"
+                  description="Avise quando uma nova oportunidade entrar no funil."
+                  value={form.newLead}
+                  setting="newLead"
+                />
+                <Toggle
+                  label="Resumo diário"
+                  description="Receba um panorama das atividades e negociações do dia."
+                  value={form.dailySummary}
+                  setting="dailySummary"
+                />
+                <Toggle
+                  label="Assinatura e pagamentos"
+                  description="Receba alertas sobre status, vencimentos e atualizações da assinatura."
+                  value={form.paymentAlerts}
+                  setting="paymentAlerts"
+                />
+                <Toggle
+                  label="Alertas por WhatsApp"
+                  description="Habilite avisos para eventos importantes no canal conectado."
+                  value={form.whatsappAlerts}
+                  setting="whatsappAlerts"
+                />
+              </div>
+            </>
+          )}
+          {tab === "seguranca" && (
+            <>
+              <span className="inline-flex rounded-2xl bg-emerald-100 p-3 text-emerald-700">
+                <LockKeyhole className="h-6 w-6" />
+              </span>
+              <h2 className="mt-5 text-xl font-bold">Segurança da conta</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Mantenha o acesso à empresa sob controle.
+              </p>
+              <div className="mt-7 space-y-3">
+                <Toggle
+                  label="Verificação em duas etapas"
+                  description="Solicite uma camada extra de confirmação para novos acessos."
+                  value={form.twoFactor}
+                  setting="twoFactor"
+                />
+              </div>
+              <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <b className="text-sm">Sessão atual</b>
+                    <p className="mt-1 text-xs text-slate-500">Este dispositivo · acesso atual</p>
+                  </div>
+                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                    Ativa
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => say("As demais sessões foram encerradas nesta demonstração.")}
+                className="mt-5 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+              >
+                Encerrar outras sessões
+              </button>
+            </>
+          )}
+        </section>
       </div>
     </div>
   );
