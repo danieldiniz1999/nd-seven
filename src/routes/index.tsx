@@ -91,11 +91,20 @@ function Nexus() {
         </div>
       )}
       <div className="flex">
+        <button
+          aria-label="Fechar menu"
+          onClick={() => setMenu(false)}
+          className={`fixed inset-0 z-30 bg-[#071a3d]/55 backdrop-blur-[2px] transition-opacity duration-300 ease-out ${menu ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
+        />
         <Sidebar view={view} setView={setView} menu={menu} setMenu={setMenu} />
         <main className="min-h-screen min-w-0 flex-1">
           <header className="flex h-[72px] items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
             <div className="flex items-center gap-4">
-              <button className="md:hidden" onClick={() => setMenu(true)}>
+              <button
+                aria-label="Abrir menu"
+                className="rounded-lg p-2 text-slate-600 transition hover:bg-blue-50 hover:text-blue-700"
+                onClick={() => setMenu(true)}
+              >
                 <Menu className="h-5 w-5" />
               </button>
               <div className="hidden items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-400 md:flex">
@@ -601,7 +610,7 @@ function Sidebar({
 }) {
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-[#111827] p-4 text-slate-300 transition-transform md:static ${menu ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+      className={`fixed inset-y-0 left-0 z-40 flex w-[280px] flex-col bg-[#111827] p-4 text-slate-300 shadow-2xl shadow-slate-950/40 transition-transform duration-300 ease-out ${menu ? "translate-x-0" : "-translate-x-full"}`}
     >
       <div className="flex items-center gap-3 px-2">
         <Logo />
@@ -611,7 +620,10 @@ function Sidebar({
             CRM inteligente
           </small>
         </div>
-        <button className="ml-auto md:hidden" onClick={() => setMenu(false)}>
+        <button
+          className="ml-auto rounded-lg p-2 transition hover:bg-white/10"
+          onClick={() => setMenu(false)}
+        >
           <X className="h-5 w-5" />
         </button>
       </div>
@@ -622,25 +634,37 @@ function Sidebar({
         icon={<LayoutDashboard />}
         label="Painel"
         active={view === "crm"}
-        action={() => setView("crm")}
+        action={() => {
+          setView("crm");
+          setMenu(false);
+        }}
       />
       <Nav
         icon={<ContactRound />}
         label="Contatos"
         active={view === "contacts"}
-        action={() => setView("contacts")}
+        action={() => {
+          setView("contacts");
+          setMenu(false);
+        }}
       />
       <Nav
         icon={<ClipboardList />}
         label="Funil de Vendas"
         active={view === "pipeline"}
-        action={() => setView("pipeline")}
+        action={() => {
+          setView("pipeline");
+          setMenu(false);
+        }}
       />
       <Nav
         icon={<CalendarDays />}
         label="Agenda"
         active={view === "agenda"}
-        action={() => setView("agenda")}
+        action={() => {
+          setView("agenda");
+          setMenu(false);
+        }}
       />
       <p className="mt-6 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
         Gerenciar
@@ -649,26 +673,38 @@ function Sidebar({
         icon={<UsersRound />}
         label="Equipe"
         active={view === "team"}
-        action={() => setView("team")}
+        action={() => {
+          setView("team");
+          setMenu(false);
+        }}
       />
       <Nav
         icon={<CircleDollarSign />}
         label="Minha Assinatura"
         active={view === "subscription"}
-        action={() => setView("subscription")}
+        action={() => {
+          setView("subscription");
+          setMenu(false);
+        }}
       />
       <Nav
         icon={<Settings />}
         label="Configurações"
         active={view === "settings"}
-        action={() => setView("settings")}
+        action={() => {
+          setView("settings");
+          setMenu(false);
+        }}
       />
       <div className="mt-auto rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3">
         <Crown className="h-4 w-4 text-blue-300" />
         <b className="mt-2 block text-xs text-white">Plano Profissional</b>
         <p className="mt-1 text-[11px] text-slate-400">Tudo para sua operação crescer.</p>
         <button
-          onClick={() => setView("subscription")}
+          onClick={() => {
+            setView("subscription");
+            setMenu(false);
+          }}
           className="mt-3 w-full rounded-lg bg-blue-500 py-2 text-xs font-bold text-white"
         >
           Gerenciar plano
