@@ -12,11 +12,14 @@ import {
   CreditCard,
   Crown,
   LayoutDashboard,
+  LayoutGrid,
+  List,
   LockKeyhole,
   Menu,
   MapPin,
   MoreHorizontal,
   MousePointerClick,
+  MoveRight,
   Plus,
   Search,
   Settings,
@@ -31,7 +34,18 @@ import {
 import { useState, type ReactNode } from "react";
 
 export const Route = createFileRoute("/")({ component: Nexus });
-type View = "landing" | "crm" | "admin" | "login" | "checkout" | "subscription";
+type View =
+  | "landing"
+  | "crm"
+  | "admin"
+  | "login"
+  | "checkout"
+  | "subscription"
+  | "contacts"
+  | "pipeline"
+  | "agenda"
+  | "team"
+  | "settings";
 const businesses = [
   ["Almeida & Costa", "Mariana Almeida", "Profissional", "Ativa", "R$ 297", "AC"],
   ["Núcleo Engenharia", "Rafael Nunes", "Essencial", "Pendente", "R$ 147", "NE"],
@@ -110,6 +124,10 @@ function Nexus() {
             />
           ) : view === "subscription" ? (
             <MySubscription checkout={() => setView("checkout")} />
+          ) : view === "pipeline" ? (
+            <SalesPipeline say={say} />
+          ) : view === "contacts" || view === "agenda" || view === "team" || view === "settings" ? (
+            <WorkspaceScreen view={view} say={say} />
           ) : (
             <Dashboard admin={() => setView("admin")} say={say} />
           )}
@@ -606,20 +624,45 @@ function Sidebar({
         active={view === "crm"}
         action={() => setView("crm")}
       />
-      <Nav icon={<ContactRound />} label="Contatos" />
-      <Nav icon={<ClipboardList />} label="Negócios" />
-      <Nav icon={<CalendarDays />} label="Agenda" />
+      <Nav
+        icon={<ContactRound />}
+        label="Contatos"
+        active={view === "contacts"}
+        action={() => setView("contacts")}
+      />
+      <Nav
+        icon={<ClipboardList />}
+        label="Funil de Vendas"
+        active={view === "pipeline"}
+        action={() => setView("pipeline")}
+      />
+      <Nav
+        icon={<CalendarDays />}
+        label="Agenda"
+        active={view === "agenda"}
+        action={() => setView("agenda")}
+      />
       <p className="mt-6 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
         Gerenciar
       </p>
-      <Nav icon={<UsersRound />} label="Equipe" />
+      <Nav
+        icon={<UsersRound />}
+        label="Equipe"
+        active={view === "team"}
+        action={() => setView("team")}
+      />
       <Nav
         icon={<CircleDollarSign />}
         label="Minha Assinatura"
         active={view === "subscription"}
         action={() => setView("subscription")}
       />
-      <Nav icon={<Settings />} label="Configurações" />
+      <Nav
+        icon={<Settings />}
+        label="Configurações"
+        active={view === "settings"}
+        action={() => setView("settings")}
+      />
       <div className="mt-auto rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3">
         <Crown className="h-4 w-4 text-blue-300" />
         <b className="mt-2 block text-xs text-white">Plano Profissional</b>
@@ -653,6 +696,260 @@ function Nav({
       <span className="h-4 w-4">{icon}</span>
       {label}
     </button>
+  );
+}
+function SalesPipeline({ say }: { say: (message: string) => void }) {
+  const stages = ["Novo lead", "Qualificação", "Proposta", "Negociação", "Fechado ganho"];
+  const [layout, setLayout] = useState<"kanban" | "grid" | "list">("kanban");
+  const [dragged, setDragged] = useState<string | null>(null);
+  const [deals, setDeals] = useState([
+    {
+      id: "1",
+      title: "Plano corporativo",
+      company: "Almeida & Costa",
+      value: "R$ 18.500",
+      stage: "Novo lead",
+      owner: "MA",
+    },
+    {
+      id: "2",
+      title: "Consultoria comercial",
+      company: "Núcleo Engenharia",
+      value: "R$ 8.200",
+      stage: "Qualificação",
+      owner: "RN",
+    },
+    {
+      id: "3",
+      title: "Expansão de unidades",
+      company: "Clínica Horizonte",
+      value: "R$ 24.000",
+      stage: "Proposta",
+      owner: "AC",
+    },
+    {
+      id: "4",
+      title: "Renovação anual",
+      company: "Studio Mosaico",
+      value: "R$ 12.600",
+      stage: "Negociação",
+      owner: "PL",
+    },
+    {
+      id: "5",
+      title: "Pacote de implantação",
+      company: "Vértice Soluções",
+      value: "R$ 9.800",
+      stage: "Fechado ganho",
+      owner: "VS",
+    },
+  ]);
+  const move = (id: string, target: string) => {
+    setDeals((all) => all.map((deal) => (deal.id === id ? { ...deal, stage: target } : deal)));
+    say(`Negócio movido para ${target}.`);
+  };
+  const card = (deal: (typeof deals)[number], compact = false) => (
+    <article
+      draggable
+      onDragStart={() => setDragged(deal.id)}
+      className={`cursor-grab rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md active:cursor-grabbing ${compact ? "flex items-center justify-between gap-4" : ""}`}
+      key={deal.id}
+    >
+      <div>
+        <div className="flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-blue-500" />
+          <p className="text-sm font-bold">{deal.title}</p>
+        </div>
+        <p className="mt-1 text-xs text-slate-500">{deal.company}</p>
+      </div>
+      <div
+        className={compact ? "flex items-center gap-4" : "mt-4 flex items-center justify-between"}
+      >
+        <b className="text-sm text-slate-700">{deal.value}</b>
+        <span className="rounded-full bg-blue-100 px-2 py-1 text-[10px] font-bold text-blue-700">
+          {deal.owner}
+        </span>
+        {!compact && (
+          <select
+            aria-label={`Mover ${deal.title}`}
+            value={deal.stage}
+            onChange={(event) => move(deal.id, event.target.value)}
+            className="ml-2 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-blue-700"
+          >
+            <option value={deal.stage}>Mover</option>
+            {stages
+              .filter((stage) => stage !== deal.stage)
+              .map((stage) => (
+                <option key={stage} value={stage}>
+                  {stage}
+                </option>
+              ))}
+          </select>
+        )}
+      </div>
+    </article>
+  );
+  return (
+    <div className="mx-auto max-w-[1440px] p-5 md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm text-slate-500">Vendas e oportunidades</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight">Funil de Vendas</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Acompanhe cada oportunidade ao longo da jornada do cliente.
+          </p>
+        </div>
+        <button
+          onClick={() => say("Novo negócio criado.")}
+          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200"
+        >
+          <Plus className="mr-1 inline h-4 w-4" />
+          Novo negócio
+        </button>
+      </div>
+      <div className="mt-7 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+        <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
+          {[
+            ["kanban", <LayoutDashboard className="h-4 w-4" />, "Kanban"],
+            ["grid", <LayoutGrid className="h-4 w-4" />, "Grade"],
+            ["list", <List className="h-4 w-4" />, "Lista"],
+          ].map(([id, icon, label]) => (
+            <button
+              key={String(id)}
+              onClick={() => setLayout(id as typeof layout)}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${layout === id ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}
+            >
+              {icon as ReactNode}
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-slate-500">
+          Arraste os cards ou use <b className="text-blue-700">Mover</b> para avançar uma
+          oportunidade.
+        </p>
+      </div>
+      {layout === "kanban" ? (
+        <div className="mt-6 overflow-x-auto">
+          <div className="grid min-w-[1100px] grid-cols-5 gap-4">
+            {stages.map((stage) => (
+              <section
+                key={stage}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={() => {
+                  if (dragged) move(dragged, stage);
+                  setDragged(null);
+                }}
+                className="min-h-[390px] rounded-2xl bg-slate-100 p-3"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <b className="text-xs">{stage}</b>
+                  <span className="rounded bg-white px-2 py-1 text-[10px] font-bold text-slate-500">
+                    {deals.filter((d) => d.stage === stage).length}
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {deals.filter((d) => d.stage === stage).map((d) => card(d))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      ) : layout === "grid" ? (
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {deals.map((deal) => (
+            <div key={deal.id} className="relative">
+              {card(deal)}
+              <span className="absolute right-4 top-4 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
+                {deal.stage}
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="min-w-[800px] space-y-2">
+            {deals.map((deal) => (
+              <div
+                key={deal.id}
+                className="grid grid-cols-[1.5fr_1fr_1fr_1fr_auto] items-center gap-4 rounded-xl border border-slate-100 p-3 hover:bg-blue-50"
+              >
+                <div>
+                  <b className="text-sm">{deal.title}</b>
+                  <p className="text-xs text-slate-500">{deal.company}</p>
+                </div>
+                <span className="text-sm">{deal.value}</span>
+                <span className="rounded-full bg-blue-50 px-2 py-1 text-center text-xs font-bold text-blue-700">
+                  {deal.stage}
+                </span>
+                <span className="text-xs text-slate-500">Responsável: {deal.owner}</span>
+                <select
+                  value={deal.stage}
+                  onChange={(event) => move(deal.id, event.target.value)}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-xs font-bold text-blue-700"
+                >
+                  {stages.map((stage) => (
+                    <option key={stage}>{stage}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+function WorkspaceScreen({
+  view,
+  say,
+}: {
+  view: "contacts" | "agenda" | "team" | "settings";
+  say: (message: string) => void;
+}) {
+  const content = {
+    contacts: [
+      "Contatos",
+      "Centralize clientes, leads e todo o histórico de relacionamento.",
+      "Novo contato",
+      ContactRound,
+    ],
+    agenda: [
+      "Agenda",
+      "Organize compromissos, retornos e próximas ações da equipe.",
+      "Novo compromisso",
+      CalendarDays,
+    ],
+    team: [
+      "Equipe",
+      "Gerencie as pessoas e permissões da sua empresa.",
+      "Convidar pessoa",
+      UsersRound,
+    ],
+    settings: [
+      "Configurações",
+      "Personalize sua empresa, processos e preferências do ND7.",
+      "Salvar alterações",
+      Settings,
+    ],
+  } as const;
+  const [title, description, action, Icon] = content[view];
+  return (
+    <div className="mx-auto max-w-[1200px] p-5 md:p-8">
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <span className="inline-flex rounded-2xl bg-blue-100 p-4 text-blue-700">
+          <Icon className="h-7 w-7" />
+        </span>
+        <h1 className="mt-6 text-2xl font-bold">{title}</h1>
+        <p className="mt-2 max-w-xl text-slate-500">{description}</p>
+        <button
+          onClick={() => say(`${action} aberto.`)}
+          className="mt-7 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white"
+        >
+          {action}
+        </button>
+      </div>
+    </div>
   );
 }
 function MySubscription({ checkout }: { checkout: () => void }) {
