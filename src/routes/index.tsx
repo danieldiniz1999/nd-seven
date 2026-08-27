@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   ArrowRight,
   Building2,
@@ -156,6 +157,7 @@ function Nexus() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <ThemeToggle />
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
                 DD
               </span>
@@ -266,12 +268,15 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               Planos
             </a>
           </nav>
-          <button
-            onClick={access}
-            className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-lg"
-          >
-            Acessar Painel <ArrowRight className="ml-1 inline h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <button
+              onClick={access}
+              className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-lg"
+            >
+              Acessar Painel <ArrowRight className="ml-1 inline h-4 w-4" />
+            </button>
+          </div>
         </div>
       </header>
       <section className="relative pt-36">
@@ -2886,12 +2891,15 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
               <span className="ml-2 text-xs text-slate-400">Checkout seguro</span>
             </div>
           </div>
-          <button
-            onClick={back}
-            className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-white hover:text-blue-700"
-          >
-            ← Voltar para a oferta
-          </button>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <button
+              onClick={back}
+              className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-white hover:text-blue-700"
+            >
+              ← Voltar para a oferta
+            </button>
+          </div>
         </header>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] font-semibold text-slate-500">
           <span>

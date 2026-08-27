@@ -403,3 +403,108 @@ input:focus-visible {
 .checkout-summary {
   box-shadow: 0 26px 55px -22px rgba(7, 26, 61, 0.42);
 }
+
+/* ==========================================================================
+   Dark Theme Adjustments for All Panel Screens
+   ========================================================================== */
+.dark body {
+  background-color: #090d16 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .app-shell {
+  background: #090d16 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .app-topbar {
+  background: rgba(9, 13, 22, 0.85) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .app-search {
+  background: rgba(17, 24, 39, 0.7) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #94a3b8 !important;
+}
+
+.dark .app-sidebar {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(180deg, #090d16 0%, #0d121f 100%) !important;
+}
+
+.dark .bg-white {
+  background-color: #111827 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #0d131f !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .bg-blue-50 {
+  background-color: rgba(37, 99, 235, 0.12) !important;
+}
+
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+.dark .border-slate-200,
+.dark .border-slate-100 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-400 {
+  color: #64748b !important;
+}
+
+.dark table th {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark table td {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #f8fafc !important;
+}
+
+.dark .product-card,
+.dark .owner-dashboard > div > section,
+.dark .financial-center section {
+  background-color: #111827 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
