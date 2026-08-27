@@ -6,7 +6,6 @@ import {
   CalendarDays,
   Check,
   CheckCircle2,
-  ChevronDown,
   CircleDollarSign,
   ClipboardList,
   ContactRound,
@@ -73,8 +72,11 @@ function Nexus() {
     [menu, setMenu] = useState(false),
     [impersonating, setImpersonating] = useState(false),
     [activeCompany, setActiveCompany] = useState("Demo v1"),
-    [notice, setNotice] = useState("");
+    [notice, setNotice] = useState(""),
+    [profilePhoto, setProfilePhoto] = useState<string | null>(null),
+    [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const profileInputRef = useRef<HTMLInputElement | null>(null);
   const say = useCallback((t: string) => {
     if (noticeTimer.current) clearTimeout(noticeTimer.current);
     setNotice(t);
@@ -94,6 +96,25 @@ function Nexus() {
       document.body.style.overflow = previousOverflow;
     };
   }, [menu]);
+  useEffect(() => {
+    setProfilePhoto(window.localStorage.getItem("nd7-profile-photo"));
+  }, []);
+  const updateProfilePhoto = (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
+      say("Escolha uma imagem de até 5 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = String(reader.result);
+      setProfilePhoto(image);
+      window.localStorage.setItem("nd7-profile-photo", image);
+      setProfileDialogOpen(false);
+      say("Foto de perfil atualizada.");
+    };
+    reader.readAsDataURL(file);
+  };
   if (view === "landing")
     return (
       <>
@@ -121,6 +142,24 @@ function Nexus() {
         <div className="fixed right-5 top-5 z-50 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl">
           <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
           {notice}
+        </div>
+      )}
+      {profileDialogOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/35 p-4 backdrop-blur-sm">
+          <button aria-label="Fechar janela de perfil" className="absolute inset-0" onClick={() => setProfileDialogOpen(false)} />
+          <section className="profile-dialog relative w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <button aria-label="Fechar" onClick={() => setProfileDialogOpen(false)} className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X className="h-4 w-4" /></button>
+            <p className="text-xs font-bold uppercase tracking-[.16em] text-blue-600">Perfil</p>
+            <h2 className="mt-2 text-xl font-bold">Sua foto de perfil</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Escolha uma imagem do seu computador ou celular para personalizar seu acesso.</p>
+            <div className="mt-6 flex items-center gap-4 rounded-xl bg-slate-50 p-4">
+              <span className="profile-avatar flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-blue-100 text-sm font-bold text-blue-700">{profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" className="h-full w-full object-cover" /> : "DD"}</span>
+              <div><b className="block text-sm">Daniel Diniz</b><span className="text-xs text-slate-500">Administrador</span></div>
+            </div>
+            <input ref={profileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => updateProfilePhoto(event.target.files?.[0])} />
+            <button onClick={() => profileInputRef.current?.click()} className="mt-5 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700">Escolher foto</button>
+            {profilePhoto && <button onClick={() => { setProfilePhoto(null); window.localStorage.removeItem("nd7-profile-photo"); }} className="mt-3 w-full rounded-xl px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-rose-600">Remover foto</button>}
+          </section>
         </div>
       )}
       <div className="flex">
@@ -158,15 +197,28 @@ function Nexus() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {impersonating && (
+                <button
+                  onClick={() => {
+                    setImpersonating(false);
+                    setView("admin");
+                    say("Você voltou à Central Super Admin.");
+                  }}
+                  className="hidden rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 md:inline-flex"
+                >
+                  <ShieldCheck className="mr-1.5 h-4 w-4" /> Voltar ao Super Admin
+                </button>
+              )}
               <ThemeToggle />
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                DD
-              </span>
-              <span className="hidden text-left md:block">
-                <b className="block text-xs">Daniel Diniz</b>
-                <small className="text-slate-400">Administrador</small>
-              </span>
-              <ChevronDown className="h-4 w-4 text-slate-400" />
+              <button onClick={() => setProfileDialogOpen(true)} className="profile-trigger flex items-center gap-3 rounded-xl p-1.5 text-left" aria-label="Alterar foto do perfil">
+                <span className="profile-avatar flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-xs font-bold text-blue-700">
+                  {profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" className="h-full w-full object-cover" /> : "DD"}
+                </span>
+                <span className="hidden text-left md:block">
+                  <b className="block text-xs">Daniel Diniz</b>
+                  <small className="text-slate-400">Administrador</small>
+                </span>
+              </button>
             </div>
           </header>
           <PanelContent
