@@ -249,3 +249,31 @@
 .whatsapp-float {
   animation: whatsapp-pulse 2.2s infinite;
 }
+
+.checkout-page {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(13, 110, 253, 0.12), transparent 24rem),
+    radial-gradient(circle at 92% 16%, rgba(56, 189, 248, 0.1), transparent 22rem), #f8fbff;
+}
+.checkout-header {
+  position: relative;
+}
+.checkout-header::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(13, 110, 253, 0.45), transparent);
+}
+.checkout-form {
+  box-shadow: 0 28px 60px -38px rgba(7, 26, 61, 0.26);
+}
+.checkout-progress {
+  position: relative;
+  isolation: isolate;
+}
+.checkout-summary {
+  box-shadow: 0 26px 55px -22px rgba(7, 26, 61, 0.42);
+}

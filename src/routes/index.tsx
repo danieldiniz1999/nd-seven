@@ -1582,9 +1582,9 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
     }
   };
   return (
-    <div className="min-h-screen bg-[#f6f5fb] px-5 py-5 md:py-8">
+    <div className="checkout-page min-h-screen px-5 py-5 md:py-8">
       <div className="mx-auto max-w-6xl">
-        <header className="flex items-center justify-between border-b border-slate-200 pb-5">
+        <header className="checkout-header flex items-center justify-between border-b border-slate-200 pb-5">
           <div className="flex items-center gap-3">
             <Logo />
             <div>
@@ -1599,9 +1599,23 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
             ← Voltar para a oferta
           </button>
         </header>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] font-semibold text-slate-500">
+          <span>
+            <ShieldCheck className="mr-1 inline h-3.5 w-3.5 text-blue-600" />
+            Compra protegida
+          </span>
+          <span>
+            <LockKeyhole className="mr-1 inline h-3.5 w-3.5 text-blue-600" />
+            Ambiente criptografado
+          </span>
+          <span>
+            <CircleDollarSign className="mr-1 inline h-3.5 w-3.5 text-blue-600" />
+            Processado pela Asaas
+          </span>
+        </div>
         <div className="mt-8 grid gap-7 lg:grid-cols-[minmax(0,1fr)_380px]">
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-            <div className="flex items-center gap-3 text-xs font-semibold text-slate-500">
+          <section className="checkout-form rounded-3xl border border-slate-200 bg-white p-6 md:p-8">
+            <div className="checkout-progress flex items-center gap-3 text-xs font-semibold text-slate-500">
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white">
                 1
               </span>{" "}
@@ -1615,7 +1629,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
               </span>{" "}
               Confirmação
             </div>
-            <p className="mt-8 text-xs font-bold uppercase tracking-widest text-blue-600">
+            <p className="mt-8 text-xs font-bold uppercase tracking-[.16em] text-blue-600">
               Assinatura ND7
             </p>
             <h1 className="mt-2 text-2xl font-bold">Finalize sua assinatura</h1>
@@ -1877,7 +1891,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
             </div>
           </section>
           <aside className="h-fit lg:sticky lg:top-6">
-            <div className="overflow-hidden rounded-3xl bg-[#111827] text-white shadow-2xl">
+            <div className="checkout-summary overflow-hidden rounded-3xl bg-[#111827] text-white shadow-2xl">
               <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6">
                 <p className="text-xs font-bold uppercase tracking-widest text-blue-200">
                   Resumo do pedido
@@ -1889,6 +1903,10 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     <p className="text-sm text-blue-100">CRM inteligente para sua operação</p>
                   </div>
                 </div>
+                <p className="mt-5 border-t border-white/15 pt-4 text-xs leading-5 text-blue-100">
+                  Você está a poucos minutos de ativar uma operação completa, com todos os recursos
+                  do ND7 liberados.
+                </p>
               </div>
               <div className="p-6">
                 <div>
