@@ -51,6 +51,7 @@ type View =
   | "settings"
   | "whatsapp"
   | "messages";
+type AccessRole = "super_admin" | "owner" | "operator";
 const businesses = [
   ["Demo v1", "Mariana Costa", "Profissional", "Ativa", "R$ 297", "DV1"],
   ["Demo v2", "Rafael Nunes", "Profissional", "Ativa", "R$ 297", "DV2"],
@@ -159,6 +160,7 @@ function Nexus() {
           <PanelContent
             view={view}
             company={activeCompany}
+            accessRole={impersonating ? "super_admin" : "owner"}
             say={say}
             setView={setView}
             setActiveCompany={setActiveCompany}
@@ -172,6 +174,7 @@ function Nexus() {
 const PanelContent = memo(function PanelContent({
   view,
   company,
+  accessRole,
   say,
   setView,
   setActiveCompany,
@@ -179,6 +182,7 @@ const PanelContent = memo(function PanelContent({
 }: {
   view: View;
   company: string;
+  accessRole: AccessRole;
   say: (message: string) => void;
   setView: (view: View) => void;
   setActiveCompany: (company: string) => void;
@@ -201,10 +205,12 @@ const PanelContent = memo(function PanelContent({
   if (view === "pipeline") return <SalesPipeline say={say} company={company} />;
   if (view === "whatsapp") return <WhatsAppConnection company={company} say={say} />;
   if (view === "messages") return <MessageManager company={company} say={say} />;
+  if (view === "team")
+    return <TeamManagement company={company} currentRole={accessRole} say={say} />;
   if (view === "settings") {
     return <CustomerSettings company={company} onCompanyUpdate={setActiveCompany} say={say} />;
   }
-  if (view === "contacts" || view === "agenda" || view === "team") {
+  if (view === "contacts" || view === "agenda") {
     return <WorkspaceScreen view={view} say={say} company={company} />;
   }
   return <Dashboard admin={openAdmin} say={say} company={company} />;
@@ -1416,7 +1422,7 @@ function WorkspaceScreen({
   say,
   company,
 }: {
-  view: "contacts" | "agenda" | "team";
+  view: "contacts" | "agenda";
   say: (message: string) => void;
   company: string;
 }) {
@@ -1432,12 +1438,6 @@ function WorkspaceScreen({
       "Organize compromissos, retornos e próximas ações da equipe.",
       "Novo compromisso",
       CalendarDays,
-    ],
-    team: [
-      "Equipe",
-      "Gerencie as pessoas e permissões da sua empresa.",
-      "Convidar pessoa",
-      UsersRound,
     ],
   } as const;
   const [title, description, action, Icon] = content[view];
@@ -1457,6 +1457,259 @@ function WorkspaceScreen({
           {action}
         </button>
       </div>
+    </div>
+  );
+}
+function TeamManagement({
+  company,
+  currentRole,
+  say,
+}: {
+  company: string;
+  currentRole: AccessRole;
+  say: (message: string) => void;
+}) {
+  type Member = {
+    id: string;
+    name: string;
+    email: string;
+    role: AccessRole;
+    status: "Ativo" | "Inativo";
+  };
+  const defaultMembers = (business: string): Member[] => [
+    {
+      id: "owner",
+      name: "Responsável pela empresa",
+      email: `${business.toLowerCase().replace(/\s/g, ".")}@empresa.com`,
+      role: "owner",
+      status: "Ativo",
+    },
+    {
+      id: "operator-1",
+      name: "Ana Martins",
+      email: "ana@empresa.com",
+      role: "operator",
+      status: "Ativo",
+    },
+    {
+      id: "operator-2",
+      name: "Carlos Lima",
+      email: "carlos@empresa.com",
+      role: "operator",
+      status: "Ativo",
+    },
+  ];
+  const roleLabel: Record<AccessRole, string> = {
+    super_admin: "Super Admin",
+    owner: "Dono",
+    operator: "Operador",
+  };
+  const roleStyle: Record<AccessRole, string> = {
+    super_admin: "bg-violet-100 text-violet-700",
+    owner: "bg-amber-100 text-amber-800",
+    operator: "bg-blue-100 text-blue-700",
+  };
+  const [members, setMembers] = useState<Member[]>(() => defaultMembers(company));
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [newRole, setNewRole] = useState<AccessRole>("operator");
+  const canCreate = currentRole !== "operator";
+  const allowedRoles: AccessRole[] =
+    currentRole === "super_admin" ? ["owner", "operator"] : ["operator"];
+  useEffect(() => {
+    const saved = window.localStorage.getItem(`nd7:team:${company}`);
+    setMembers(saved ? (JSON.parse(saved) as Member[]) : defaultMembers(company));
+    setShowForm(false);
+    setName("");
+    setEmail("");
+    setNewRole(currentRole === "super_admin" ? "owner" : "operator");
+  }, [company, currentRole]);
+  const persist = (next: Member[]) => {
+    setMembers(next);
+    window.localStorage.setItem(`nd7:team:${company}`, JSON.stringify(next));
+  };
+  const invite = () => {
+    if (!name.trim() || !email.trim()) {
+      say("Informe nome e e-mail para criar o acesso.");
+      return;
+    }
+    if (!allowedRoles.includes(newRole)) {
+      say("Seu nível de acesso não permite criar este perfil.");
+      return;
+    }
+    persist([
+      ...members,
+      {
+        id: `${Date.now()}`,
+        name: name.trim(),
+        email: email.trim(),
+        role: newRole,
+        status: "Ativo",
+      },
+    ]);
+    setName("");
+    setEmail("");
+    setNewRole(currentRole === "super_admin" ? "owner" : "operator");
+    setShowForm(false);
+    say(`${roleLabel[newRole]} criado e convite preparado.`);
+  };
+  const canManage = (member: Member) => currentRole === "super_admin" || member.role === "operator";
+  const changeStatus = (member: Member) => {
+    if (!canManage(member)) return;
+    const status = member.status === "Ativo" ? "Inativo" : "Ativo";
+    persist(members.map((item) => (item.id === member.id ? { ...item, status } : item)));
+    say(`Acesso de ${member.name} ${status === "Ativo" ? "ativado" : "inativado"}.`);
+  };
+  return (
+    <div className="mx-auto max-w-[1200px] p-5 md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm text-slate-500">{company} · Gestão de acessos</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight">Equipe e permissões</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Convide as pessoas certas com o nível de acesso adequado.
+          </p>
+        </div>
+        {canCreate ? (
+          <button
+            onClick={() => setShowForm((open) => !open)}
+            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700"
+          >
+            <Plus className="mr-1 inline h-4 w-4" /> Criar acesso
+          </button>
+        ) : (
+          <span className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-500">
+            Operadores não podem criar acessos
+          </span>
+        )}
+      </div>
+      <div className="mt-7 grid gap-3 md:grid-cols-3">
+        {[
+          [
+            "Super Admin",
+            "Acesso absoluto à plataforma e às empresas. Perfil exclusivo.",
+            "super_admin",
+          ],
+          ["Dono", "Responsável pela assinatura e pela criação de operadores.", "owner"],
+          ["Operador", "Usa os módulos da empresa no dia a dia, sem criar acessos.", "operator"],
+        ].map(([title, description, role]) => (
+          <article
+            key={title}
+            className={`rounded-2xl border p-4 ${role === "super_admin" ? "border-violet-200 bg-violet-50" : "border-slate-200 bg-white"}`}
+          >
+            <span
+              className={`inline-flex rounded-lg px-2 py-1 text-[10px] font-black uppercase tracking-wide ${roleStyle[role as AccessRole]}`}
+            >
+              {title}
+            </span>
+            <p className="mt-3 text-xs leading-5 text-slate-600">{description}</p>
+          </article>
+        ))}
+      </div>
+      {showForm && canCreate && (
+        <section className="mt-6 rounded-3xl border border-blue-200 bg-blue-50 p-5 md:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Criar novo acesso</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                {currentRole === "super_admin"
+                  ? "Você pode criar Donos e Operadores."
+                  : "Como Dono, você pode criar somente Operadores."}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowForm(false)}
+              className="rounded-lg p-2 text-slate-500 hover:bg-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="mt-5 grid gap-4 md:grid-cols-[1fr_1fr_180px_auto]">
+            <label className="text-xs font-bold text-slate-700">
+              Nome
+              <input
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+              />
+            </label>
+            <label className="text-xs font-bold text-slate-700">
+              E-mail
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+              />
+            </label>
+            <label className="text-xs font-bold text-slate-700">
+              Nível de acesso
+              <select
+                value={newRole}
+                onChange={(event) => setNewRole(event.target.value as AccessRole)}
+                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+              >
+                {allowedRoles.map((role) => (
+                  <option key={role} value={role}>
+                    {roleLabel[role]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              onClick={invite}
+              className="self-end rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700"
+            >
+              Criar
+            </button>
+          </div>
+        </section>
+      )}
+      <section className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <div>
+            <h2 className="font-bold">Pessoas com acesso</h2>
+            <p className="mt-1 text-xs text-slate-500">
+              {members.filter((member) => member.status === "Ativo").length} acessos ativos
+            </p>
+          </div>
+          <UsersRound className="h-5 w-5 text-blue-600" />
+        </div>
+        <div className="divide-y divide-slate-100">
+          {members.map((member) => (
+            <div key={member.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-600">
+                {member.name.slice(0, 2).toUpperCase()}
+              </span>
+              <div className="min-w-[190px] flex-1">
+                <b className="block text-sm">{member.name}</b>
+                <span className="text-xs text-slate-500">{member.email}</span>
+              </div>
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-bold ${roleStyle[member.role]}`}
+              >
+                {roleLabel[member.role]}
+              </span>
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-bold ${member.status === "Ativo" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}
+              >
+                {member.status}
+              </span>
+              {canManage(member) ? (
+                <button
+                  onClick={() => changeStatus(member)}
+                  className="ml-auto rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-blue-300 hover:text-blue-700"
+                >
+                  {member.status === "Ativo" ? "Inativar" : "Ativar"}
+                </button>
+              ) : (
+                <span className="ml-auto text-xs text-slate-400">Gerenciado pelo Super Admin</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
