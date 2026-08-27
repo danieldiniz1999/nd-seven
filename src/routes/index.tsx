@@ -1138,7 +1138,30 @@ function Nav({
   );
 }
 function SalesPipeline({ say, company }: { say: (message: string) => void; company: string }) {
-  const stages = ["Novo lead", "Qualificação", "Proposta", "Negociação", "Fechado ganho"];
+  const stages = [
+    "Novo lead",
+    "Contato inicial",
+    "Diagnóstico",
+    "Proposta enviada",
+    "Negociação",
+    "Fechado ganho",
+  ];
+  const stageGuidance: Record<string, string> = {
+    "Novo lead": "Ainda não abordado",
+    "Contato inicial": "Conecte e valide interesse",
+    Diagnóstico: "Entenda cenário e necessidade",
+    "Proposta enviada": "Apresente a solução ideal",
+    Negociação: "Alinhe condições e decisão",
+    "Fechado ganho": "Prepare o próximo passo",
+  };
+  const stageTone: Record<string, string> = {
+    "Novo lead": "bg-sky-500",
+    "Contato inicial": "bg-violet-500",
+    Diagnóstico: "bg-amber-500",
+    "Proposta enviada": "bg-blue-600",
+    Negociação: "bg-fuchsia-500",
+    "Fechado ganho": "bg-emerald-500",
+  };
   const [layout, setLayout] = useState<"kanban" | "grid" | "list">("kanban");
   const [dragged, setDragged] = useState<string | null>(null);
   const [deals, setDeals] = useState([
@@ -1155,19 +1178,27 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
       title: "Consultoria comercial",
       company: "Núcleo Engenharia",
       value: "R$ 8.200",
-      stage: "Qualificação",
+      stage: "Contato inicial",
       owner: "RN",
     },
     {
       id: "3",
-      title: "Expansão de unidades",
-      company: "Clínica Horizonte",
-      value: "R$ 24.000",
-      stage: "Proposta",
-      owner: "AC",
+      title: "Diagnóstico de operação",
+      company: "Lumen Partners",
+      value: "R$ 14.400",
+      stage: "Diagnóstico",
+      owner: "LB",
     },
     {
       id: "4",
+      title: "Expansão de unidades",
+      company: "Clínica Horizonte",
+      value: "R$ 24.000",
+      stage: "Proposta enviada",
+      owner: "AC",
+    },
+    {
+      id: "5",
       title: "Renovação anual",
       company: "Studio Mosaico",
       value: "R$ 12.600",
@@ -1175,7 +1206,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
       owner: "PL",
     },
     {
-      id: "5",
+      id: "6",
       title: "Pacote de implantação",
       company: "Vértice Soluções",
       value: "R$ 9.800",
@@ -1270,7 +1301,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
       </div>
       {layout === "kanban" ? (
         <div className="mt-6 overflow-x-auto">
-          <div className="grid min-w-[1100px] grid-cols-5 gap-4">
+          <div className="grid min-w-[1320px] grid-cols-6 gap-4">
             {stages.map((stage) => (
               <section
                 key={stage}
@@ -1279,11 +1310,19 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
                   if (dragged) move(dragged, stage);
                   setDragged(null);
                 }}
-                className="min-h-[390px] rounded-2xl bg-slate-100 p-3"
+                className="min-h-[390px] rounded-2xl border border-slate-200/70 bg-slate-100/80 p-3"
               >
-                <div className="mb-3 flex items-center justify-between">
-                  <b className="text-xs">{stage}</b>
-                  <span className="rounded bg-white px-2 py-1 text-[10px] font-bold text-slate-500">
+                <div className="mb-4 flex items-start justify-between gap-2 px-1">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className={`h-2 w-2 rounded-full ${stageTone[stage]}`} />
+                      <b className="text-xs text-slate-800">{stage}</b>
+                    </div>
+                    <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                      {stageGuidance[stage]}
+                    </p>
+                  </div>
+                  <span className="rounded-lg bg-white px-2 py-1 text-[10px] font-bold text-slate-500 shadow-sm">
                     {deals.filter((d) => d.stage === stage).length}
                   </span>
                 </div>
