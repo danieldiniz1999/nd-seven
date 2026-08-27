@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { RecentBuyersPopup } from "@/components/RecentBuyersPopup";
 import {
   ArrowRight,
   Building2,
@@ -92,17 +93,25 @@ function Nexus() {
     };
   }, [menu]);
   if (view === "landing")
-    return <Landing access={() => setView("login")} start={() => setView("checkout")} />;
+    return (
+      <>
+        <Landing access={() => setView("login")} start={() => setView("checkout")} />
+        <RecentBuyersPopup />
+      </>
+    );
   if (view === "login")
     return <Login back={() => setView("landing")} enter={() => setView("admin")} />;
   if (view === "checkout")
     return (
-      <Checkout
-        back={() => setView("landing")}
-        done={() =>
-          say("Pagamento iniciado. O acesso será liberado após a confirmação pela Asaas.")
-        }
-      />
+      <>
+        <Checkout
+          back={() => setView("landing")}
+          done={() =>
+            say("Pagamento iniciado. O acesso será liberado após a confirmação pela Asaas.")
+          }
+        />
+        <RecentBuyersPopup />
+      </>
     );
   return (
     <div className="min-h-screen bg-[#f8fbff] text-slate-800">
