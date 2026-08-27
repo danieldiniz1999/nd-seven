@@ -2642,17 +2642,35 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
   );
 }
 function Checkout({ back, done }: { back: () => void; done: () => void }) {
-  const [payment, setPayment] = useState("card");
+  const [payment, setPayment] = useState<"card" | "pix" | "boleto">("card");
   const [cycle, setCycle] = useState("Mensal");
-  const [cep, setCep] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
   const [document, setDocument] = useState("");
+  const [cep, setCep] = useState("");
+  const [addressNumber, setAddressNumber] = useState("");
+  const [complement, setComplement] = useState("");
+  const [address, setAddress] = useState({ street: "", neighborhood: "", city: "", state: "" });
+  const [cepMessage, setCepMessage] = useState("");
+
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
-  const [address, setAddress] = useState({ street: "", neighborhood: "", city: "", state: "" });
-  const [cepMessage, setCepMessage] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [pixModalData, setPixModalData] = useState<{
+    qrCodeImage?: string;
+    payload?: string;
+    paymentId?: string;
+  } | null>(null);
+  const [copiedPix, setCopiedPix] = useState(false);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [boletoUrl, setBoletoUrl] = useState<string | null>(null);
+
   const prices: Record<string, string> = {
     Mensal: "R$ 129,90",
     Trimestral: "R$ 119,90",
@@ -2669,6 +2687,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
     "mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100";
   const lockedInput =
     "mt-2 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-3 text-sm text-slate-500 outline-none";
+
   const formatCep = (value: string) =>
     value
       .replace(/\D/g, "")
@@ -2708,6 +2727,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
         : /^(4011|4312|4389|4514|4576|5041|5067|5090|6277|6362|650|6516|6550)/.test(cardDigits)
           ? "ELO"
           : "CARTÃO";
+
   const handleCep = async (value: string) => {
     const formatted = formatCep(value);
     setCep(formatted);
@@ -2739,6 +2759,113 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
       setCepMessage("Não foi possível localizar este CEP.");
     }
   };
+
+  // Poll for PIX payment completion
+  useEffect(() => {
+    if (!pixModalData?.paymentId || paymentConfirmed) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/checkout/status?paymentId=${pixModalData.paymentId}`);
+        const data = (await res.json()) as { isPaid?: boolean };
+        if (data.isPaid) {
+          setPaymentConfirmed(true);
+          clearInterval(interval);
+        }
+      } catch {
+        // silent retry
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pixModalData?.paymentId, paymentConfirmed]);
+
+  const handleSubmitCheckout = async () => {
+    setErrorMessage("");
+    if (!fullName.trim()) {
+      setErrorMessage("Por favor, informe seu nome completo.");
+      return;
+    }
+    if (!email.trim() || !email.includes("@")) {
+      setErrorMessage("Por favor, informe um e-mail válido.");
+      return;
+    }
+    if (!document.trim() || document.replace(/\D/g, "").length < 11) {
+      setErrorMessage("Por favor, informe um CPF ou CNPJ válido.");
+      return;
+    }
+
+    if (payment === "card") {
+      if (!cardName.trim() || cardDigits.length < 13 || cardExpiry.length < 5 || !cardCvv) {
+        setErrorMessage("Por favor, preencha todos os dados do cartão de crédito corretamente.");
+        return;
+      }
+    }
+
+    setLoading(true);
+    try {
+      const expParts = cardExpiry.split("/");
+      const payload = {
+        fullName: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        companyName: companyName.trim() || fullName.trim(),
+        phone: phone.replace(/\D/g, ""),
+        document: document.replace(/\D/g, ""),
+        cycle,
+        paymentMethod: payment,
+        postalCode: cep.replace(/\D/g, ""),
+        address: address.street,
+        addressNumber,
+        complement,
+        province: address.neighborhood,
+        creditCard:
+          payment === "card"
+            ? {
+                holderName: cardName,
+                number: cardDigits,
+                expiryMonth: expParts[0],
+                expiryYear: `20${expParts[1]}`,
+                ccv: cardCvv,
+              }
+            : undefined,
+      };
+
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Falha ao processar pagamento.");
+      }
+
+      if (payment === "pix" && data.pix) {
+        setPixModalData({
+          qrCodeImage: data.pix.qrCodeImage,
+          payload: data.pix.payload,
+          paymentId: data.paymentId,
+        });
+      } else if (payment === "boleto" && data.bankSlipUrl) {
+        setBoletoUrl(data.bankSlipUrl);
+      } else {
+        // Card success or general completed
+        done();
+      }
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : "Ocorreu um erro no processamento.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyPixPayload = () => {
+    if (pixModalData?.payload) {
+      navigator.clipboard.writeText(pixModalData.payload);
+      setCopiedPix(true);
+      setTimeout(() => setCopiedPix(false), 3000);
+    }
+  };
+
   return (
     <div className="checkout-page min-h-screen px-5 py-5 md:py-8">
       <div className="mx-auto max-w-6xl">
@@ -2771,6 +2898,101 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
             Processado pela Asaas
           </span>
         </div>
+
+        {/* PIX Modal / Overlay */}
+        {pixModalData && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-2xl text-center">
+              {paymentConfirmed ? (
+                <div className="py-6">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                    <Check className="h-8 w-8" />
+                  </div>
+                  <h3 className="mt-4 text-xl font-bold text-slate-900">Pagamento Confirmado!</h3>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Sua empresa e usuário foram provisionados com sucesso no ND7.
+                  </p>
+                  <button
+                    onClick={done}
+                    className="mt-6 w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white shadow-lg hover:bg-emerald-700"
+                  >
+                    Acessar Plataforma
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900">Pague com PIX</h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Abra o app do seu banco e escaneie o QR Code abaixo ou use o Copia e Cola.
+                  </p>
+
+                  {pixModalData.qrCodeImage && (
+                    <div className="my-5 flex justify-center">
+                      <img
+                        src={`data:image/png;base64,${pixModalData.qrCodeImage}`}
+                        alt="QR Code PIX"
+                        className="h-48 w-48 rounded-xl border border-slate-200 p-2 shadow-inner"
+                      />
+                    </div>
+                  )}
+
+                  <div className="mt-4">
+                    <button
+                      onClick={copyPixPayload}
+                      className="w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-md hover:bg-blue-700 transition"
+                    >
+                      {copiedPix ? "Código PIX Copiado! ✅" : "Copiar Chave PIX Copia e Cola"}
+                    </button>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
+                    <span className="h-2 w-2 animate-ping rounded-full bg-emerald-500" />
+                    Aguardando confirmação do pagamento em tempo real...
+                  </div>
+
+                  <button
+                    onClick={() => setPixModalData(null)}
+                    className="mt-5 text-xs text-slate-400 hover:text-slate-600"
+                  >
+                    Fechar e alterar método
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Boleto Modal */}
+        {boletoUrl && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-2xl text-center">
+              <h3 className="text-xl font-bold text-slate-900">Boleto Bancário Gerado</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                O boleto foi gerado pelo Asaas. Seu acesso será liberado assim que o pagamento for compensado.
+              </p>
+              <div className="mt-6 flex flex-col gap-3">
+                <a
+                  href={boletoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-md hover:bg-blue-700"
+                >
+                  Abrir e Imprimir Boleto
+                </a>
+                <button
+                  onClick={() => {
+                    setBoletoUrl(null);
+                    done();
+                  }}
+                  className="w-full rounded-xl border border-slate-200 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Concluir
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mt-8 grid gap-7 lg:grid-cols-[minmax(0,1fr)_380px]">
           <section className="checkout-form rounded-3xl border border-slate-200 bg-white p-6 md:p-8">
             <div className="checkout-progress flex items-center gap-3 text-xs font-semibold text-slate-500">
@@ -2794,6 +3016,13 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
             <p className="mt-2 text-sm text-slate-500">
               Seu acesso será criado automaticamente após a aprovação do pagamento.
             </p>
+
+            {errorMessage && (
+              <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                {errorMessage}
+              </div>
+            )}
+
             <div className="mt-8 border-t pt-7">
               <div className="flex items-center gap-3">
                 <span className="rounded-xl bg-blue-100 p-2.5 text-blue-700">
@@ -2805,21 +3034,43 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                 </div>
               </div>
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                {["Nome completo", "E-mail de acesso", "Nome da empresa"].map((label, i) => (
-                  <label
-                    key={label}
-                    className={`text-xs font-bold ${i === 2 ? "md:col-span-2" : ""}`}
-                  >
-                    {label}
-                    <input type={label.includes("E-mail") ? "email" : "text"} className={input} />
-                  </label>
-                ))}
+                <label className="text-xs font-bold">
+                  Nome completo
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Ex: João da Silva"
+                    className={input}
+                  />
+                </label>
+                <label className="text-xs font-bold">
+                  E-mail de acesso
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="voce@suaempresa.com.br"
+                    className={input}
+                  />
+                </label>
+                <label className="text-xs font-bold md:col-span-2">
+                  Nome da empresa
+                  <input
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Sua Empresa Ltda"
+                    className={input}
+                  />
+                </label>
                 <label className="text-xs font-bold">
                   Celular / WhatsApp
                   <input
                     inputMode="numeric"
                     value={phone}
                     onChange={(event) => setPhone(formatPhone(event.target.value))}
+                    placeholder="(11) 99999-9999"
                     className={input}
                   />
                 </label>
@@ -2829,6 +3080,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     inputMode="numeric"
                     value={document}
                     onChange={(event) => setDocument(formatDocument(event.target.value))}
+                    placeholder="000.000.000-00"
                     className={input}
                   />
                 </label>
@@ -2851,6 +3103,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     inputMode="numeric"
                     value={cep}
                     onChange={(event) => void handleCep(event.target.value)}
+                    placeholder="00000-000"
                     className={input}
                   />
                   {cepMessage && (
@@ -2867,11 +3120,22 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                 </label>
                 <label className="text-xs font-bold md:col-span-2">
                   Número
-                  <input inputMode="numeric" className={input} />
+                  <input
+                    inputMode="numeric"
+                    value={addressNumber}
+                    onChange={(e) => setAddressNumber(e.target.value)}
+                    placeholder="123"
+                    className={input}
+                  />
                 </label>
                 <label className="text-xs font-bold md:col-span-2">
                   Complemento
-                  <input className={input} />
+                  <input
+                    value={complement}
+                    onChange={(e) => setComplement(e.target.value)}
+                    placeholder="Sala 01"
+                    className={input}
+                  />
                 </label>
                 <label className="text-xs font-bold md:col-span-2">
                   Bairro
@@ -2899,6 +3163,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
               </div>
               <div className="mt-5 grid gap-3 sm:grid-cols-3">
                 <button
+                  type="button"
                   onClick={() => setPayment("card")}
                   className={`rounded-2xl border p-4 text-left ${payment === "card" ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100" : "border-slate-200"}`}
                 >
@@ -2907,6 +3172,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                   <p className="mt-2 text-xs text-slate-500">Cobrança recorrente automática</p>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setPayment("pix")}
                   className={`rounded-2xl border p-4 text-left ${payment === "pix" ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100" : "border-slate-200"}`}
                 >
@@ -2916,6 +3182,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                   </p>
                 </button>
                 <button
+                  type="button"
                   onClick={() => setPayment("boleto")}
                   className={`rounded-2xl border p-4 text-left ${payment === "boleto" ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100" : "border-slate-200"}`}
                 >
@@ -2974,6 +3241,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         value={cardName}
                         onChange={(event) => setCardName(event.target.value.toUpperCase())}
                         autoComplete="cc-name"
+                        placeholder="NOME COMO NO CARTÃO"
                         className={input}
                       />
                     </label>
@@ -2984,6 +3252,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         autoComplete="cc-number"
                         value={cardNumber}
                         onChange={(event) => setCardNumber(formatCardNumber(event.target.value))}
+                        placeholder="0000 0000 0000 0000"
                         className={input}
                       />
                     </label>
@@ -2994,6 +3263,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         autoComplete="cc-exp"
                         value={cardExpiry}
                         onChange={(event) => setCardExpiry(formatExpiry(event.target.value))}
+                        placeholder="MM/AA"
                         className={input}
                       />
                     </label>
@@ -3006,6 +3276,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                         onChange={(event) =>
                           setCardCvv(event.target.value.replace(/\D/g, "").slice(0, 4))
                         }
+                        placeholder="123"
                         className={input}
                       />
                     </label>
@@ -3013,7 +3284,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                 </div>
               ) : payment === "pix" ? (
                 <div className="mt-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">
-                  Um QR Code PIX será gerado na próxima etapa.
+                  Um QR Code PIX com confirmação automática em tempo real será gerado ao clicar em continuar.
                 </div>
               ) : (
                 <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
@@ -3023,10 +3294,21 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
               )}
             </div>
             <button
-              onClick={done}
-              className="mt-8 w-full rounded-xl bg-blue-600 py-4 text-sm font-bold text-white shadow-xl shadow-blue-200 transition hover:-translate-y-1 hover:bg-blue-700"
+              type="button"
+              disabled={loading}
+              onClick={handleSubmitCheckout}
+              className="mt-8 w-full rounded-xl bg-blue-600 py-4 text-sm font-bold text-white shadow-xl shadow-blue-200 transition hover:-translate-y-1 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Continuar para pagamento seguro <LockKeyhole className="ml-2 inline h-4 w-4" />
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  Processando com segurança...
+                </span>
+              ) : (
+                <>
+                  Continuar para pagamento seguro <LockKeyhole className="ml-2 inline h-4 w-4" />
+                </>
+              )}
             </button>
             <p className="mt-4 text-center text-[11px] text-slate-400">
               <LockKeyhole className="mr-1 inline h-3.5 w-3.5" />
