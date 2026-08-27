@@ -95,6 +95,7 @@ function Nexus() {
     return (
       <>
         <Landing access={() => setView("login")} start={() => setView("checkout")} />
+        <RecentBuyersPopup />
       </>
     );
   if (view === "login")
@@ -108,6 +109,7 @@ function Nexus() {
             say("Pagamento iniciado. O acesso será liberado após a confirmação pela Asaas.")
           }
         />
+        <RecentBuyersPopup />
       </>
     );
   return (
