@@ -424,36 +424,38 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="border-y border-slate-200 bg-white px-5 py-24">
+      <section className="border-y border-slate-200 bg-white px-5 py-18">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
               Flexível por natureza
             </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
               Um CRM que se adapta ao seu modelo de negócio.
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+            <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-600">
               Serviços, vendas consultivas, imobiliárias, clínicas, equipes comerciais ou operações
               internas: comece com o essencial e evolua no seu ritmo.
             </p>
           </div>
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {["Vendas consultivas", "Serviços e agências", "Saúde e bem-estar", "Equipes B2B"].map(
-              (item) => (
+          <div className="mt-7 grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              "Vendas consultivas", "Serviços e agências", "Saúde e bem-estar", "Equipes B2B",
+              "Imobiliárias", "Educação e cursos", "E-commerce", "Jurídico", "Financeiro",
+              "Marketing", "Construção civil", "Franquias",
+            ].map((item) => (
                 <div
                   key={item}
-                  className="group rounded-2xl border border-slate-200 bg-[#ffffff] p-5 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
+                  className="group rounded-xl border border-slate-200 bg-[#ffffff] p-3.5 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 font-bold text-blue-700 group-hover:bg-blue-600 group-hover:text-white">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-[10px] font-bold text-blue-700 group-hover:bg-blue-600 group-hover:text-white">
                     ND7
                   </span>
-                  <p className="mt-5 text-sm font-bold">{item}</p>
-                  <p className="mt-2 text-xs leading-5 text-slate-500">
-                    Estruture relações, oportunidades e acompanhamento em um único fluxo.
+                  <p className="mt-3 text-xs font-bold leading-5">{item}</p>
+                  <p className="mt-1 text-[11px] leading-4 text-slate-500">
+                    Clientes, oportunidades e processos em um só lugar.
                   </p>
                 </div>
-              ),
             )}
           </div>
         </div>
