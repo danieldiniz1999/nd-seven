@@ -166,6 +166,12 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
     encodeURIComponent("Olá! Quero conhecer o ND7 e transformar a gestão da minha empresa.");
   const [cycle, setCycle] = useState("Mensal");
   const cycles = ["Mensal", "Trimestral", "Semestral", "Anual"];
+  const prices: Record<string, string> = {
+    Mensal: "R$ 129,90",
+    Trimestral: "R$ 119,90",
+    Semestral: "R$ 109,90",
+    Anual: "R$ 99,90",
+  };
   return (
     <div className="overflow-hidden bg-[#ffffff] text-slate-900">
       <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-[#ffffff]/80 backdrop-blur-xl">
@@ -453,8 +459,8 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
         </p>
         <h2 className="mt-3 text-3xl font-bold md:text-4xl">Estrutura para o seu próximo nível.</h2>
         <p className="mx-auto mt-4 max-w-xl text-slate-600">
-          Escolha a frequência que faz sentido para sua operação. Os valores serão publicados em
-          breve, sem alterar a estrutura do seu plano.
+          Escolha a frequência que faz sentido para sua operação. Quanto maior o período, menor o
+          valor mensal equivalente.
         </p>
         <div className="mx-auto mt-8 inline-flex flex-wrap justify-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
           {cycles.map((item) => (
@@ -485,8 +491,11 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
                 {cycle}
               </span>
             </div>
-            <p className="mt-5 text-sm text-slate-500">Valor em definição</p>
-            <p className="mt-1 text-3xl font-black tracking-tight">Consulte em breve</p>
+            <p className="mt-5 text-sm text-slate-500">A partir de</p>
+            <p className="mt-1 text-3xl font-black tracking-tight">
+              {prices[cycle]}
+              <span className="text-sm font-medium text-slate-500"> / mês</span>
+            </p>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               Todas as ferramentas centrais para organizar clientes, vendas e time desde o primeiro
               dia.
@@ -517,8 +526,8 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             <Sparkles className="h-6 w-6 text-blue-300" />
             <h3 className="mt-5 text-xl font-bold">Cresça com previsibilidade.</h3>
             <p className="mt-3 text-sm leading-6 text-blue-100">
-              Você poderá escolher mensal, trimestral, semestral ou anual. Quando os valores forem
-              definidos, cada período será apresentado de forma clara no checkout.
+              Você pode escolher mensal, trimestral, semestral ou anual. Cada período tem valor
+              mensal equivalente claro no checkout.
             </p>
             <div className="mt-7 border-t border-white/10 pt-5 text-sm text-blue-100">
               <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
@@ -546,7 +555,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               ],
               [
                 "Posso escolher a periodicidade da assinatura?",
-                "Sim. A contratação estará disponível nas modalidades mensal, trimestral, semestral e anual assim que os valores forem publicados.",
+                "Sim. A contratação está disponível nas modalidades mensal, trimestral, semestral e anual.",
               ],
               [
                 "Como funciona a criação de acesso?",
@@ -1431,6 +1440,18 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
 function Checkout({ back, done }: { back: () => void; done: () => void }) {
   const [payment, setPayment] = useState("card");
   const [cycle, setCycle] = useState("Mensal");
+  const prices: Record<string, string> = {
+    Mensal: "R$ 129,90",
+    Trimestral: "R$ 119,90",
+    Semestral: "R$ 109,90",
+    Anual: "R$ 99,90",
+  };
+  const cycleTotals: Record<string, string> = {
+    Mensal: "R$ 129,90",
+    Trimestral: "R$ 359,70",
+    Semestral: "R$ 659,40",
+    Anual: "R$ 1.198,80",
+  };
   const input =
     "mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100";
   return (
@@ -1657,11 +1678,11 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                   <b>{cycle}</b>
                 </div>
                 <div className="mt-5 flex justify-between">
-                  <span className="text-sm text-blue-100">Valor da assinatura</span>
+                  <span className="text-sm text-blue-100">Valor mensal equivalente</span>
                   <b className="text-right">
-                    A definir
+                    {prices[cycle]}
                     <small className="block text-[10px] font-normal text-blue-200">
-                      antes do pagamento
+                      {cycleTotals[cycle]} a cada ciclo
                     </small>
                   </b>
                 </div>
