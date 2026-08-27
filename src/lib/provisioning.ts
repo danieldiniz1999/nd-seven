@@ -127,7 +127,7 @@ export async function provisionAccount(params: ProvisionAccountParams): Promise<
 
     // Search user by email via admin API
     const { data: userList } = await supabase.auth.admin.listUsers();
-    const existingUser = userList?.users.find((u) => u.email?.toLowerCase() === cleanEmail);
+    const existingUser = userList?.users.find((u: { id: string; email?: string }) => u.email?.toLowerCase() === cleanEmail);
 
     if (existingUser) {
       userId = existingUser.id;
