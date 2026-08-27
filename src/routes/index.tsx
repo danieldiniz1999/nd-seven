@@ -1443,6 +1443,10 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
   const [cep, setCep] = useState("");
   const [phone, setPhone] = useState("");
   const [document, setDocument] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
   const [address, setAddress] = useState({ street: "", neighborhood: "", city: "", state: "" });
   const [cepMessage, setCepMessage] = useState("");
   const prices: Record<string, string> = {
@@ -1480,6 +1484,26 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
           .replace(/\.(\d{3})(\d)/, ".$1/$2")
           .replace(/(\d{4})(\d)/, "$1-$2");
   };
+  const formatCardNumber = (value: string) =>
+    value
+      .replace(/\D/g, "")
+      .slice(0, 16)
+      .replace(/(\d{4})(?=\d)/g, "$1 ");
+  const formatExpiry = (value: string) =>
+    value
+      .replace(/\D/g, "")
+      .slice(0, 4)
+      .replace(/(\d{2})(\d)/, "$1/$2");
+  const cardDigits = cardNumber.replace(/\D/g, "");
+  const cardBrand = /^4/.test(cardDigits)
+    ? "VISA"
+    : /^(5[1-5]|2[2-7])/.test(cardDigits)
+      ? "mastercard"
+      : /^3[47]/.test(cardDigits)
+        ? "AMEX"
+        : /^(4011|4312|4389|4514|4576|5041|5067|5090|6277|6362|650|6516|6550)/.test(cardDigits)
+          ? "ELO"
+          : "CARTÃO";
   const handleCep = async (value: string) => {
     const formatted = formatCep(value);
     setCep(formatted);
@@ -1655,7 +1679,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                   <p className="text-xs text-slate-500">Processado com segurança pela Asaas.</p>
                 </div>
               </div>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
                 <button
                   onClick={() => setPayment("card")}
                   className={`rounded-2xl border p-4 text-left ${payment === "card" ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100" : "border-slate-200"}`}
@@ -1673,24 +1697,102 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                     Disponível para o primeiro pagamento
                   </p>
                 </button>
+                <button
+                  onClick={() => setPayment("boleto")}
+                  className={`rounded-2xl border p-4 text-left ${payment === "boleto" ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100" : "border-slate-200"}`}
+                >
+                  <span className="rounded bg-slate-800 px-1.5 py-1 text-[10px] font-black text-white">
+                    BOLETO
+                  </span>
+                  <p className="mt-3 text-xs text-slate-500">
+                    Gere o boleto para pagamento bancário
+                  </p>
+                </button>
               </div>
               {payment === "card" ? (
-                <div className="mt-5 grid gap-4 md:grid-cols-6">
-                  {[
-                    ["Nome impresso no cartão", "md:col-span-6"],
-                    ["Número do cartão", "md:col-span-6"],
-                    ["Validade", "md:col-span-3"],
-                    ["CVV", "md:col-span-3"],
-                  ].map(([label, span]) => (
-                    <label key={label} className={`text-xs font-bold ${span}`}>
-                      {label}
-                      <input className={input} />
+                <div className="mt-6 grid gap-6 lg:grid-cols-[.82fr_1.18fr]">
+                  <div className="relative aspect-[1.58/1] overflow-hidden rounded-2xl bg-gradient-to-br from-[#071a3d] via-blue-700 to-sky-500 p-5 text-white shadow-xl shadow-blue-200">
+                    <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10" />
+                    <div className="absolute -bottom-16 left-10 h-36 w-36 rounded-full bg-cyan-300/20" />
+                    <div className="relative flex items-start justify-between">
+                      <span className="text-xs font-black tracking-[.22em]">ND7</span>
+                      <span className="rounded-lg bg-white/15 px-2 py-1 text-[10px] font-black uppercase">
+                        {cardBrand}
+                      </span>
+                    </div>
+                    <div className="relative mt-8 h-8 w-11 rounded-md border border-amber-100/50 bg-gradient-to-br from-amber-100 to-amber-400" />
+                    <p className="relative mt-5 font-mono text-sm tracking-[.14em]">
+                      {cardNumber || "•••• •••• •••• ••••"}
+                    </p>
+                    <div className="relative mt-5 flex items-end justify-between">
+                      <div>
+                        <small className="block text-[8px] uppercase tracking-wider text-blue-100">
+                          Titular
+                        </small>
+                        <b className="block max-w-[160px] truncate text-[11px] uppercase">
+                          {cardName || "SEU NOME"}
+                        </b>
+                      </div>
+                      <div>
+                        <small className="block text-[8px] uppercase tracking-wider text-blue-100">
+                          Validade
+                        </small>
+                        <b className="text-[11px]">{cardExpiry || "MM/AA"}</b>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-6">
+                    <label className="text-xs font-bold md:col-span-6">
+                      Nome impresso no cartão
+                      <input
+                        value={cardName}
+                        onChange={(event) => setCardName(event.target.value.toUpperCase())}
+                        autoComplete="cc-name"
+                        className={input}
+                      />
                     </label>
-                  ))}
+                    <label className="text-xs font-bold md:col-span-6">
+                      Número do cartão
+                      <input
+                        inputMode="numeric"
+                        autoComplete="cc-number"
+                        value={cardNumber}
+                        onChange={(event) => setCardNumber(formatCardNumber(event.target.value))}
+                        className={input}
+                      />
+                    </label>
+                    <label className="text-xs font-bold md:col-span-3">
+                      Validade
+                      <input
+                        inputMode="numeric"
+                        autoComplete="cc-exp"
+                        value={cardExpiry}
+                        onChange={(event) => setCardExpiry(formatExpiry(event.target.value))}
+                        className={input}
+                      />
+                    </label>
+                    <label className="text-xs font-bold md:col-span-3">
+                      CVV
+                      <input
+                        inputMode="numeric"
+                        autoComplete="cc-csc"
+                        value={cardCvv}
+                        onChange={(event) =>
+                          setCardCvv(event.target.value.replace(/\D/g, "").slice(0, 4))
+                        }
+                        className={input}
+                      />
+                    </label>
+                  </div>
                 </div>
-              ) : (
+              ) : payment === "pix" ? (
                 <div className="mt-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">
                   Um QR Code PIX será gerado na próxima etapa.
+                </div>
+              ) : (
+                <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+                  Um boleto bancário será gerado na próxima etapa. O acesso será liberado após a
+                  confirmação do pagamento pela Asaas.
                 </div>
               )}
             </div>
