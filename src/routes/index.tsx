@@ -633,98 +633,105 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             escolhida.
           </p>
         </div>
-        <div className="mx-auto mt-8 inline-flex flex-wrap justify-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
+        <div className="mx-auto mt-10 grid max-w-5xl gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
           {cycles.map((item) => (
             <button
               key={item}
               onClick={() => setCycle(item)}
-              className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${cycle === item ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:bg-blue-50 hover:text-blue-700"}`}
+              className={`relative min-h-[188px] rounded-2xl border p-5 transition duration-300 ${cycle === item ? "border-blue-600 bg-[#071a3d] text-white shadow-xl shadow-blue-200" : "border-slate-200 bg-white text-slate-800 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-100"}`}
             >
-              {item}
-              {item === "Anual" && (
-                <span className="ml-1.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] text-emerald-700">
-                  melhor custo
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-        <div className="mx-auto mt-5 grid max-w-4xl gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
-          {cycles.map((item) => (
-            <button
-              key={item}
-              onClick={() => setCycle(item)}
-              className={`rounded-2xl border p-4 transition ${cycle === item ? "border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-200" : "border-slate-200 bg-white text-slate-800 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"}`}
-            >
-              <span
-                className={`text-xs font-bold ${cycle === item ? "text-blue-100" : "text-slate-500"}`}
-              >
-                {item}
+              <span className="flex items-center justify-between gap-2">
+                <b className={`text-sm ${cycle === item ? "text-white" : "text-slate-900"}`}>
+                  {item}
+                </b>
+                {item === "Anual" && (
+                  <span className="rounded-full bg-emerald-100 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-emerald-700">
+                    melhor custo
+                  </span>
+                )}
               </span>
-              <b className="mt-2 block text-xl">{prices[item]}</b>
+              <b className="mt-7 block text-2xl tracking-tight">{prices[item]}</b>
               <span
-                className={`mt-1 block text-[11px] ${cycle === item ? "text-blue-100" : "text-slate-500"}`}
+                className={`mt-1 block text-xs ${cycle === item ? "text-blue-200" : "text-slate-500"}`}
               >
-                por mês · acesso total
+                por mês
               </span>
               <span
-                className={`mt-1 block text-[10px] font-semibold ${cycle === item ? "text-blue-100" : "text-slate-600"}`}
+                className={`mt-5 block border-t pt-3 text-[11px] font-bold ${cycle === item ? "border-white/15 text-blue-100" : "border-slate-100 text-slate-600"}`}
               >
                 {billingByCycle[item]}
               </span>
-              {item === "Anual" && (
-                <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-700">
-                  melhor custo
+              {cycle === item && (
+                <span className="absolute bottom-4 right-4 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white">
+                  <Check className="h-4 w-4" />
                 </span>
               )}
             </button>
           ))}
         </div>
-        <div className="mx-auto mt-7 max-w-2xl text-left">
-          <div className="rounded-3xl border-2 border-blue-500 bg-white p-7 shadow-xl shadow-blue-100">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-                  Plano ND7
-                </span>
-                <h3 className="mt-4 text-2xl font-bold">Profissional</h3>
+        <div className="mx-auto mt-7 max-w-5xl overflow-hidden rounded-[28px] border border-slate-200 bg-white text-left shadow-2xl shadow-blue-100/70">
+          <div className="grid lg:grid-cols-[1.2fr_.8fr]">
+            <div className="p-7 md:p-9">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                    Plano completo
+                  </span>
+                  <h3 className="mt-4 text-2xl font-bold">ND7 Profissional</h3>
+                  <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
+                    A estrutura inteira para centralizar relacionamentos, vendas e rotina da sua
+                    empresa.
+                  </p>
+                </div>
               </div>
-              <span className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">
-                {cycle}
-              </span>
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                {[
+                  "Contatos e negócios ilimitados",
+                  "Funis personalizados",
+                  "Automação de processos",
+                  "Equipe e permissões",
+                  "Painel de indicadores",
+                  "Suporte especializado",
+                  "Acesso total, sem limitações",
+                ].map((x) => (
+                  <p key={x} className="text-sm text-slate-700">
+                    <Check className="mr-2 inline h-4 w-4 text-blue-600" />
+                    {x}
+                  </p>
+                ))}
+              </div>
+              <p className="mt-8 text-xs leading-5 text-slate-500">
+                Você escolhe a periodicidade. O acesso, os módulos e o potencial da ferramenta são
+                sempre os mesmos.
+              </p>
             </div>
-            <p className="mt-5 text-sm text-slate-500">A partir de</p>
-            <p className="mt-1 text-3xl font-black tracking-tight">
-              {prices[cycle]}
-              <span className="text-sm font-medium text-slate-500"> / mês</span>
-            </p>
-            <p className="mt-2 text-sm font-bold text-blue-700">{billingByCycle[cycle]}</p>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              O mesmo acesso total ao ND7 em qualquer periodicidade. Você escolhe o prazo; nós não
-              bloqueamos recursos.
-            </p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {[
-                "Contatos e negócios ilimitados",
-                "Funis personalizados",
-                "Automação de processos",
-                "Equipe e permissões",
-                "Painel de indicadores",
-                "Suporte especializado",
-                "Acesso total, sem limitações",
-              ].map((x) => (
-                <p key={x} className="text-sm text-slate-700">
-                  <Check className="mr-2 inline h-4 w-4 text-blue-600" />
-                  {x}
-                </p>
-              ))}
+            <div className="bg-[#f3f7ff] p-7 md:p-9">
+              <p className="text-xs font-black uppercase tracking-widest text-blue-600">
+                Sua escolha
+              </p>
+              <div className="mt-4 flex items-center justify-between border-b border-blue-200 pb-5">
+                <b className="text-lg">{cycle}</b>
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-blue-700 shadow-sm">
+                  Acesso total
+                </span>
+              </div>
+              <p className="mt-6 text-xs font-semibold text-slate-500">Valor mensal equivalente</p>
+              <p className="mt-1 text-3xl font-black tracking-tight text-[#071a3d]">
+                {prices[cycle]} <span className="text-sm font-medium text-slate-500">/ mês</span>
+              </p>
+              <p className="mt-3 rounded-xl bg-white px-4 py-3 text-xs font-bold leading-5 text-blue-800 shadow-sm">
+                {billingByCycle[cycle]}
+              </p>
+              <button
+                onClick={start}
+                className="mt-7 w-full rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-1 hover:bg-blue-700 hover:shadow-xl"
+              >
+                Continuar com {cycle.toLowerCase()} <ArrowRight className="ml-1 inline h-4 w-4" />
+              </button>
+              <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">
+                Pagamento seguro · acesso liberado após confirmação
+              </p>
             </div>
-            <button
-              onClick={start}
-              className="mt-7 w-full rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-blue-700 hover:shadow-lg"
-            >
-              Quero este plano
-            </button>
           </div>
         </div>
       </section>
