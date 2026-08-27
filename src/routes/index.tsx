@@ -47,10 +47,8 @@ type View =
   | "team"
   | "settings";
 const businesses = [
-  ["Almeida & Costa", "Mariana Almeida", "Profissional", "Ativa", "R$ 297", "AC"],
-  ["Núcleo Engenharia", "Rafael Nunes", "Essencial", "Pendente", "R$ 147", "NE"],
-  ["Clínica Horizonte", "Ana Clara", "Profissional", "Ativa", "R$ 297", "CH"],
-  ["Studio Mosaico", "Pedro Lima", "Empresarial", "Expirada", "R$ 597", "SM"],
+  ["Demo v1", "Mariana Costa", "Profissional", "Ativa", "R$ 297", "DV1"],
+  ["Demo v2", "Rafael Nunes", "Profissional", "Ativa", "R$ 297", "DV2"],
 ];
 function Logo() {
   return (
@@ -65,6 +63,7 @@ function Nexus() {
   const [view, setView] = useState<View>("landing"),
     [menu, setMenu] = useState(false),
     [impersonating, setImpersonating] = useState(false),
+    [activeCompany, setActiveCompany] = useState("Demo v1"),
     [notice, setNotice] = useState("");
   const say = (t: string) => {
     setNotice(t);
@@ -73,7 +72,7 @@ function Nexus() {
   if (view === "landing")
     return <Landing access={() => setView("login")} start={() => setView("checkout")} />;
   if (view === "login")
-    return <Login back={() => setView("landing")} enter={() => setView("crm")} />;
+    return <Login back={() => setView("landing")} enter={() => setView("admin")} />;
   if (view === "checkout")
     return (
       <Checkout
@@ -138,7 +137,8 @@ function Nexus() {
           </header>
           {view === "admin" ? (
             <Admin
-              open={() => {
+              open={(company) => {
+                setActiveCompany(company);
                 setImpersonating(true);
                 setView("crm");
                 say("Visualizando a empresa como Super Admin.");
@@ -146,13 +146,13 @@ function Nexus() {
               say={say}
             />
           ) : view === "subscription" ? (
-            <MySubscription checkout={() => setView("checkout")} />
+            <MySubscription checkout={() => setView("checkout")} company={activeCompany} />
           ) : view === "pipeline" ? (
-            <SalesPipeline say={say} />
+            <SalesPipeline say={say} company={activeCompany} />
           ) : view === "contacts" || view === "agenda" || view === "team" || view === "settings" ? (
-            <WorkspaceScreen view={view} say={say} />
+            <WorkspaceScreen view={view} say={say} company={activeCompany} />
           ) : (
-            <Dashboard admin={() => setView("admin")} say={say} />
+            <Dashboard admin={() => setView("admin")} say={say} company={activeCompany} />
           )}
         </main>
       </div>
@@ -766,7 +766,7 @@ function Nav({
     </button>
   );
 }
-function SalesPipeline({ say }: { say: (message: string) => void }) {
+function SalesPipeline({ say, company }: { say: (message: string) => void; company: string }) {
   const stages = ["Novo lead", "Qualificação", "Proposta", "Negociação", "Fechado ganho"];
   const [layout, setLayout] = useState<"kanban" | "grid" | "list">("kanban");
   const [dragged, setDragged] = useState<string | null>(null);
@@ -864,7 +864,7 @@ function SalesPipeline({ say }: { say: (message: string) => void }) {
           <p className="text-sm text-slate-500">Vendas e oportunidades</p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Funil de Vendas</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Acompanhe cada oportunidade ao longo da jornada do cliente.
+            {company} · Acompanhe cada oportunidade ao longo da jornada do cliente.
           </p>
         </div>
         <button
@@ -971,9 +971,11 @@ function SalesPipeline({ say }: { say: (message: string) => void }) {
 function WorkspaceScreen({
   view,
   say,
+  company,
 }: {
   view: "contacts" | "agenda" | "team" | "settings";
   say: (message: string) => void;
+  company: string;
 }) {
   const content = {
     contacts: [
@@ -1008,7 +1010,8 @@ function WorkspaceScreen({
         <span className="inline-flex rounded-2xl bg-blue-100 p-4 text-blue-700">
           <Icon className="h-7 w-7" />
         </span>
-        <h1 className="mt-6 text-2xl font-bold">{title}</h1>
+        <p className="mt-6 text-sm font-bold text-blue-700">{company}</p>
+        <h1 className="mt-2 text-2xl font-bold">{title}</h1>
         <p className="mt-2 max-w-xl text-slate-500">{description}</p>
         <button
           onClick={() => say(`${action} aberto.`)}
@@ -1020,7 +1023,7 @@ function WorkspaceScreen({
     </div>
   );
 }
-function MySubscription({ checkout }: { checkout: () => void }) {
+function MySubscription({ checkout, company }: { checkout: () => void; company: string }) {
   const history = [
     [
       "Profissional",
@@ -1047,7 +1050,7 @@ function MySubscription({ checkout }: { checkout: () => void }) {
           <p className="text-sm text-slate-500">Conta e cobrança</p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Minha Assinatura</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Acompanhe seu plano atual e todo o histórico da sua empresa.
+            {company} · Acompanhe seu plano atual e todo o histórico da sua empresa.
           </p>
         </div>
         <button
@@ -1173,16 +1176,26 @@ function Card({
     </div>
   );
 }
-function Dashboard({ admin, say }: { admin: () => void; say: (s: string) => void }) {
+function Dashboard({
+  admin,
+  say,
+  company,
+}: {
+  admin: () => void;
+  say: (s: string) => void;
+  company: string;
+}) {
   return (
     <div className="mx-auto max-w-[1440px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm text-slate-500">Terça-feira, 26 de agosto</p>
           <h1 className="mt-1 text-2xl font-bold">
-            Bom dia, Daniel <span className="text-blue-500">✦</span>
+            {company} <span className="text-blue-500">✦</span>
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Aqui está o resumo da sua operação.</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Aqui está o resumo da operação demonstrativa.
+          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -1255,7 +1268,7 @@ function Dashboard({ admin, say }: { admin: () => void; say: (s: string) => void
     </div>
   );
 }
-function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
+function Admin({ open, say }: { open: (company: string) => void; say: (s: string) => void }) {
   const [filter, setFilter] = useState("Todos");
   const rows = filter === "Todos" ? businesses : businesses.filter((x) => x[3] === filter);
   return (
@@ -1278,7 +1291,7 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
         </div>
       </div>
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card label="Empresas ativas" value="56" trend="8,1%" icon={<Building2 />} />
+        <Card label="Empresas ativas" value="2" trend="2 demonstrações" icon={<Building2 />} />
         <Card
           label="Assinaturas pendentes"
           value="7"
@@ -1352,7 +1365,7 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
                   <td className="font-mono text-xs text-slate-400">nxs-{x[5].toLowerCase()}74f</td>
                   <td>
                     <button
-                      onClick={open}
+                      onClick={() => open(x[0])}
                       className="rounded-lg border px-2.5 py-1.5 text-xs font-bold text-blue-700"
                     >
                       Acessar empresa
