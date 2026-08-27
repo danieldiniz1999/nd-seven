@@ -661,17 +661,17 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
       </section>
       <section
         id="planos"
-        className="relative overflow-hidden bg-[#090b10] px-5 py-24 text-center text-white"
+        className="relative overflow-hidden bg-[#071a3d] px-5 py-24 text-center text-white"
       >
-        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-amber-500/10 blur-[120px]" />
-        <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-blue-700/15 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-blue-500/15 blur-[120px]" />
+        <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" />
         <div className="relative mx-auto max-w-5xl">
           <div className="mx-auto max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-amber-200">
+            <p className="inline-flex items-center gap-2 rounded-full border border-blue-300/25 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-100">
               <Sparkles className="h-3.5 w-3.5" /> Oferta ND7
             </p>
             <h2 className="mt-5 text-3xl font-black tracking-tight md:text-5xl">
-              Escolha o prazo. <span className="text-amber-300">Leve o ND7 inteiro.</span>
+              Escolha o prazo. <span className="text-blue-300">Leve o ND7 inteiro.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-300">
               A única diferença entre os planos é a forma de cobrança. Seu acesso é total, sem
@@ -683,28 +683,28 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               <button
                 key={item}
                 onClick={() => setCycle(item)}
-                className={`rounded-xl px-3 py-3 text-center transition duration-300 ${cycle === item ? "bg-[#f2ad4e] text-[#101114] shadow-[0_10px_30px_rgba(242,173,78,.22)]" : "text-slate-300 hover:bg-white/[.06] hover:text-white"}`}
+                className={`rounded-xl px-3 py-3 text-center transition duration-300 ${cycle === item ? "bg-[#0d6efd] text-white shadow-[0_10px_30px_rgba(13,110,253,.28)]" : "text-slate-300 hover:bg-white/[.06] hover:text-white"}`}
               >
                 <b className="block text-sm">{item}</b>
-                <span className={`mt-1 block text-[10px] font-bold ${cycle === item ? "text-[#52320a]" : "text-amber-300"}`}>
+                <span className={`mt-1 block text-[10px] font-bold ${cycle === item ? "text-blue-100" : "text-blue-300"}`}>
                   {item === "Mensal" ? "flexível" : item === "Trimestral" ? "8% menor" : item === "Semestral" ? "15% menor" : "23% menor"}
                 </span>
               </button>
             ))}
           </div>
-          <div className="mx-auto mt-10 max-w-4xl rounded-[28px] border border-amber-300/20 bg-[#13161b] p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,.03),0_26px_70px_rgba(0,0,0,.5)] md:p-10">
-            <div className="mx-auto mb-7 w-fit rounded-full bg-[#f2ad4e] px-4 py-1.5 text-xs font-black text-[#161006] shadow-lg shadow-amber-500/20">
+          <div className="mx-auto mt-10 max-w-4xl rounded-[28px] border border-blue-300/20 bg-[#111827] p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,.03),0_26px_70px_rgba(0,0,0,.5)] md:p-10">
+            <div className="mx-auto mb-7 w-fit rounded-full bg-[#0d6efd] px-4 py-1.5 text-xs font-black text-white shadow-lg shadow-blue-500/25">
               {cycle === "Anual" ? "✦ Melhor custo" : cycle === "Semestral" ? "✦ Escolha inteligente" : "✦ Acesso total"}
             </div>
             <p className="text-center text-sm font-bold uppercase tracking-[.16em] text-slate-400">Plano {cycle}</p>
             <div className="mt-4 text-center">
               <span className="text-3xl font-black md:text-4xl">R$</span>{" "}
-              <strong className="text-6xl font-black tracking-tighter text-[#f2ad4e] md:text-7xl">{prices[cycle].replace("R$ ", "").replace(",90", "")}</strong>
-              <span className="text-3xl font-black text-[#f2ad4e]">,90</span>
+              <strong className="text-6xl font-black tracking-tighter text-blue-400 md:text-7xl">{prices[cycle].replace("R$ ", "").replace(",90", "")}</strong>
+              <span className="text-3xl font-black text-blue-400">,90</span>
               <span className="ml-2 text-base font-medium text-slate-400">/mês</span>
             </div>
             <p className="mt-3 text-center text-sm text-slate-400">{billingByCycle[cycle]}</p>
-            <p className="mx-auto mt-6 max-w-xl rounded-xl border border-amber-300/10 bg-amber-300/[.06] px-4 py-3 text-center text-sm font-semibold text-amber-100">
+            <p className="mx-auto mt-6 max-w-xl rounded-xl border border-blue-300/15 bg-blue-500/10 px-4 py-3 text-center text-sm font-semibold text-blue-100">
               Acesso integral ao ND7 em qualquer plano. Você escolhe a frequência, nunca recursos limitados.
             </p>
             <div className="mt-8 grid gap-x-10 gap-y-4 text-sm sm:grid-cols-2">
@@ -717,14 +717,14 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
                 "Suporte especializado incluso",
               ].map((item) => (
                 <p key={item} className="font-medium text-slate-100">
-                  <Check className="mr-2 inline h-4 w-4 text-[#f2ad4e]" />
+                  <Check className="mr-2 inline h-4 w-4 text-blue-400" />
                   {item}
                 </p>
               ))}
             </div>
             <button
               onClick={start}
-              className="group mt-10 w-full rounded-2xl bg-[#f2ad4e] px-6 py-4 text-base font-black text-[#161006] shadow-[0_14px_35px_rgba(242,173,78,.22)] transition hover:-translate-y-1 hover:bg-[#ffc269]"
+              className="group mt-10 w-full rounded-2xl bg-[#0d6efd] px-6 py-4 text-base font-black text-white shadow-[0_14px_35px_rgba(13,110,253,.3)] transition hover:-translate-y-1 hover:bg-blue-500"
             >
               Assinar plano {cycle} <ArrowRight className="ml-2 inline h-5 w-5 transition group-hover:translate-x-1" />
             </button>
