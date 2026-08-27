@@ -661,111 +661,74 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
       </section>
       <section
         id="planos"
-        className="relative overflow-hidden bg-[#071a3d] px-5 py-24 text-center text-white"
+        className="relative overflow-hidden bg-[#090b10] px-5 py-24 text-center text-white"
       >
-        <div className="pointer-events-none absolute -left-32 top-8 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" />
-        <div className="relative mx-auto max-w-6xl">
-          <div className="mx-auto max-w-3xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-blue-300/25 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-100">
-              <Sparkles className="h-3.5 w-3.5 text-blue-300" /> Oferta ND7
+        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-amber-500/10 blur-[120px]" />
+        <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-blue-700/15 blur-3xl" />
+        <div className="relative mx-auto max-w-5xl">
+          <div className="mx-auto max-w-2xl">
+            <p className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-amber-200">
+              <Sparkles className="h-3.5 w-3.5" /> Oferta ND7
             </p>
             <h2 className="mt-5 text-3xl font-black tracking-tight md:text-5xl">
-              A plataforma completa.{" "}
-              <span className="text-blue-300">No ritmo que faz sentido para você.</span>
+              Escolha o prazo. <span className="text-amber-300">Leve o ND7 inteiro.</span>
             </h2>
-            <p className="mx-auto mt-5 max-w-2xl leading-7 text-blue-100">
-              Não vendemos módulos, limites ou versões reduzidas. Você escolhe a periodicidade e
-              recebe o ND7 por inteiro desde o primeiro acesso.
+            <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-300">
+              A única diferença entre os planos é a forma de cobrança. Seu acesso é total, sem
+              módulos bloqueados, em qualquer escolha.
             </p>
-            <div className="mx-auto mt-6 inline-flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs font-semibold text-blue-100">
-              <span>
-                <Check className="mr-1.5 inline h-4 w-4 text-emerald-300" />
-                Acesso total em todos os planos
-              </span>
-              <span>
-                <Check className="mr-1.5 inline h-4 w-4 text-emerald-300" />
-                Sem taxa de implantação
-              </span>
-              <span>
-                <Check className="mr-1.5 inline h-4 w-4 text-emerald-300" />
-                Gestão da assinatura pelo painel
-              </span>
-            </div>
           </div>
-          <div className="mx-auto mt-12 grid max-w-6xl gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto mt-10 grid max-w-4xl grid-cols-2 rounded-2xl border border-white/10 bg-white/[.035] p-1.5 text-left sm:grid-cols-4">
             {cycles.map((item) => (
               <button
                 key={item}
                 onClick={() => setCycle(item)}
-                className={`relative min-h-[224px] rounded-2xl border p-5 transition duration-300 ${cycle === item ? "border-blue-300 bg-white text-[#071a3d] shadow-2xl shadow-blue-950/40" : "border-white/15 bg-white/[.07] text-white hover:-translate-y-1 hover:border-blue-200/60 hover:bg-white/[.11]"}`}
+                className={`rounded-xl px-3 py-3 text-center transition duration-300 ${cycle === item ? "bg-[#f2ad4e] text-[#101114] shadow-[0_10px_30px_rgba(242,173,78,.22)]" : "text-slate-300 hover:bg-white/[.06] hover:text-white"}`}
               >
-                <span className="flex items-center justify-between gap-2">
-                  <b className={`text-sm ${cycle === item ? "text-[#071a3d]" : "text-white"}`}>
-                    {item}
-                  </b>
-                  {item === "Anual" && (
-                    <span className="rounded-full bg-emerald-100 px-2 py-1 text-[9px] font-black uppercase tracking-wide text-emerald-700">
-                      melhor custo
-                    </span>
-                  )}
+                <b className="block text-sm">{item}</b>
+                <span className={`mt-1 block text-[10px] font-bold ${cycle === item ? "text-[#52320a]" : "text-amber-300"}`}>
+                  {item === "Mensal" ? "flexível" : item === "Trimestral" ? "8% menor" : item === "Semestral" ? "15% menor" : "23% menor"}
                 </span>
-                <p
-                  className={`mt-8 text-xs font-semibold ${cycle === item ? "text-slate-500" : "text-blue-200"}`}
-                >
-                  A partir de
-                </p>
-                <b className="mt-1 block text-3xl tracking-tight">{prices[item]}</b>
-                <span
-                  className={`mt-1 block text-xs ${cycle === item ? "text-slate-500" : "text-blue-200"}`}
-                >
-                  por mês
-                </span>
-                <span
-                  className={`mt-6 block border-t pt-4 text-[11px] font-bold ${cycle === item ? "border-slate-200 text-blue-700" : "border-white/15 text-blue-100"}`}
-                >
-                  {billingByCycle[item]}
-                </span>
-                {cycle === item && (
-                  <span className="absolute bottom-5 left-5 inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-blue-700">
-                    <Check className="h-3.5 w-3.5" /> Selecionado
-                  </span>
-                )}
               </button>
             ))}
           </div>
-          <div className="mx-auto mt-5 max-w-6xl rounded-2xl border border-white/15 bg-white/[.08] p-5 text-left backdrop-blur md:p-6">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-200">
-                  Plano ND7 Profissional · {cycle}
-                </p>
-                <p className="mt-2 text-lg font-bold">Todos os recursos. Sem versões reduzidas.</p>
-                <p className="mt-1 text-sm text-blue-100">
-                  {billingByCycle[cycle]} · acesso liberado após a confirmação do pagamento.
-                </p>
-              </div>
-              <button
-                onClick={start}
-                className="group shrink-0 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-blue-700 shadow-xl shadow-blue-950/20 transition hover:-translate-y-1 hover:bg-blue-50"
-              >
-                Escolher {cycle.toLowerCase()}{" "}
-                <ArrowRight className="ml-1 inline h-4 w-4 transition group-hover:translate-x-1" />
-              </button>
+          <div className="mx-auto mt-10 max-w-4xl rounded-[28px] border border-amber-300/20 bg-[#13161b] p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,.03),0_26px_70px_rgba(0,0,0,.5)] md:p-10">
+            <div className="mx-auto mb-7 w-fit rounded-full bg-[#f2ad4e] px-4 py-1.5 text-xs font-black text-[#161006] shadow-lg shadow-amber-500/20">
+              {cycle === "Anual" ? "✦ Melhor custo" : cycle === "Semestral" ? "✦ Escolha inteligente" : "✦ Acesso total"}
             </div>
-          </div>
-          <div className="mx-auto mt-8 grid max-w-6xl gap-y-3 border-t border-white/15 pt-7 text-left sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              "Contatos e negócios ilimitados",
-              "Funis, automações e mensagens",
-              "Equipe, agenda e indicadores",
-              "Suporte especializado incluso",
-            ].map((item) => (
-              <p key={item} className="text-sm text-blue-100">
-                <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
-                {item}
-              </p>
-            ))}
+            <p className="text-center text-sm font-bold uppercase tracking-[.16em] text-slate-400">Plano {cycle}</p>
+            <div className="mt-4 text-center">
+              <span className="text-3xl font-black md:text-4xl">R$</span>{" "}
+              <strong className="text-6xl font-black tracking-tighter text-[#f2ad4e] md:text-7xl">{prices[cycle].replace("R$ ", "").replace(",90", "")}</strong>
+              <span className="text-3xl font-black text-[#f2ad4e]">,90</span>
+              <span className="ml-2 text-base font-medium text-slate-400">/mês</span>
+            </div>
+            <p className="mt-3 text-center text-sm text-slate-400">{billingByCycle[cycle]}</p>
+            <p className="mx-auto mt-6 max-w-xl rounded-xl border border-amber-300/10 bg-amber-300/[.06] px-4 py-3 text-center text-sm font-semibold text-amber-100">
+              Acesso integral ao ND7 em qualquer plano. Você escolhe a frequência, nunca recursos limitados.
+            </p>
+            <div className="mt-8 grid gap-x-10 gap-y-4 text-sm sm:grid-cols-2">
+              {[
+                "Contatos e negócios ilimitados",
+                "Funis em kanban, grade e lista",
+                "Automação e mensagens para clientes",
+                "Equipe, permissões e indicadores",
+                "Agenda, tarefas e histórico completo",
+                "Suporte especializado incluso",
+              ].map((item) => (
+                <p key={item} className="font-medium text-slate-100">
+                  <Check className="mr-2 inline h-4 w-4 text-[#f2ad4e]" />
+                  {item}
+                </p>
+              ))}
+            </div>
+            <button
+              onClick={start}
+              className="group mt-10 w-full rounded-2xl bg-[#f2ad4e] px-6 py-4 text-base font-black text-[#161006] shadow-[0_14px_35px_rgba(242,173,78,.22)] transition hover:-translate-y-1 hover:bg-[#ffc269]"
+            >
+              Assinar plano {cycle} <ArrowRight className="ml-2 inline h-5 w-5 transition group-hover:translate-x-1" />
+            </button>
+            <p className="mt-4 text-center text-xs text-slate-500">Pagamento protegido pela Asaas · Cancele quando quiser</p>
           </div>
         </div>
       </section>
