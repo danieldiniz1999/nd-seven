@@ -64,24 +64,24 @@
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.21 0.028 264);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.21 0.028 264);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.21 0.028 264);
+  --primary: oklch(0.62 0.21 258);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.97 0.012 250);
+  --secondary-foreground: oklch(0.21 0.028 264);
+  --muted: oklch(0.97 0.012 250);
+  --muted-foreground: oklch(0.53 0.025 255);
+  --accent: oklch(0.97 0.012 250);
+  --accent-foreground: oklch(0.21 0.028 264);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
   --border: oklch(0.929 0.013 255.508);
   --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --ring: oklch(0.62 0.21 258);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -210,7 +210,7 @@
   animation-delay: 0.45s;
 }
 .gradient-text {
-  background: linear-gradient(105deg, #6d4aff, #c026d3);
+  background: linear-gradient(105deg, #0d6efd, #38bdf8);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -220,13 +220,13 @@
   width: 28rem;
   height: 28rem;
   border-radius: 9999px;
-  background: rgba(167, 139, 250, 0.23);
+  background: rgba(13, 110, 253, 0.18);
   filter: blur(50px);
   animation: glow-pulse 6s ease-in-out infinite;
   pointer-events: none;
 }
 .hero-orb-two {
-  background: rgba(232, 121, 249, 0.16);
+  background: rgba(56, 189, 248, 0.16);
   animation-delay: -3s;
 }
 .float-y {
@@ -243,8 +243,8 @@
 }
 .lift-card:hover {
   transform: translateY(-8px);
-  border-color: rgba(124, 58, 237, 0.35);
-  box-shadow: 0 20px 45px -24px rgba(76, 29, 149, 0.35);
+  border-color: rgba(13, 110, 253, 0.35);
+  box-shadow: 0 20px 45px -24px rgba(7, 26, 61, 0.28);
 }
 .whatsapp-float {
   animation: whatsapp-pulse 2.2s infinite;

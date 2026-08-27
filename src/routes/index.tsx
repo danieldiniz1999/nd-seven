@@ -9,9 +9,12 @@ import {
   CircleDollarSign,
   ClipboardList,
   ContactRound,
+  CreditCard,
   Crown,
   LayoutDashboard,
+  LockKeyhole,
   Menu,
+  MapPin,
   MoreHorizontal,
   MousePointerClick,
   Plus,
@@ -20,6 +23,7 @@ import {
   ShieldCheck,
   Sparkles,
   TrendingUp,
+  UserRound,
   UsersRound,
   Workflow,
   X,
@@ -27,7 +31,7 @@ import {
 import { useState, type ReactNode } from "react";
 
 export const Route = createFileRoute("/")({ component: Nexus });
-type View = "landing" | "crm" | "admin" | "login" | "checkout";
+type View = "landing" | "crm" | "admin" | "login" | "checkout" | "subscription";
 const businesses = [
   ["Almeida & Costa", "Mariana Almeida", "Profissional", "Ativa", "R$ 297", "AC"],
   ["Núcleo Engenharia", "Rafael Nunes", "Essencial", "Pendente", "R$ 147", "NE"],
@@ -35,7 +39,13 @@ const businesses = [
   ["Studio Mosaico", "Pedro Lima", "Empresarial", "Expirada", "R$ 597", "SM"],
 ];
 function Logo() {
-  return <img src="/nd7-512.png" alt="ND7" className="h-10 w-10 rounded-xl object-cover shadow-lg shadow-cyan-300/30" />;
+  return (
+    <img
+      src="/nd7-512.png"
+      alt="ND7"
+      className="h-10 w-10 rounded-xl object-cover shadow-lg shadow-cyan-300/30"
+    />
+  );
 }
 function Nexus() {
   const [view, setView] = useState<View>("landing"),
@@ -59,7 +69,7 @@ function Nexus() {
       />
     );
   return (
-    <div className="min-h-screen bg-[#f8f8fb] text-slate-800">
+    <div className="min-h-screen bg-[#f8fbff] text-slate-800">
       {notice && (
         <div className="fixed right-5 top-5 z-50 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl">
           <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
@@ -80,7 +90,7 @@ function Nexus() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-xs font-bold text-violet-700">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-700">
                 DD
               </span>
               <span className="hidden text-left md:block">
@@ -98,6 +108,8 @@ function Nexus() {
               }}
               say={say}
             />
+          ) : view === "subscription" ? (
+            <MySubscription checkout={() => setView("checkout")} />
           ) : (
             <Dashboard admin={() => setView("admin")} say={say} />
           )}
@@ -114,27 +126,27 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
   const [cycle, setCycle] = useState("Mensal");
   const cycles = ["Mensal", "Trimestral", "Semestral", "Anual"];
   return (
-    <div className="overflow-hidden bg-[#fcfbff] text-slate-900">
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-[#fcfbff]/80 backdrop-blur-xl">
+    <div className="overflow-hidden bg-[#ffffff] text-slate-900">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-[#ffffff]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-6xl items-center justify-between px-5">
           <div className="flex items-center gap-3">
             <Logo />
             <b className="text-lg">ND7</b>
           </div>
           <nav className="hidden items-center gap-7 text-sm font-medium text-slate-600 md:flex">
-            <a href="#recursos" className="hover:text-violet-600">
+            <a href="#recursos" className="hover:text-blue-600">
               Recursos
             </a>
-            <a href="#como-funciona" className="hover:text-violet-600">
+            <a href="#como-funciona" className="hover:text-blue-600">
               Como funciona
             </a>
-            <a href="#planos" className="hover:text-violet-600">
+            <a href="#planos" className="hover:text-blue-600">
               Planos
             </a>
           </nav>
           <button
             onClick={access}
-            className="rounded-xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-bold text-violet-700 transition hover:-translate-y-0.5 hover:border-violet-400 hover:shadow-lg"
+            className="rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-lg"
           >
             Acessar Painel <ArrowRight className="ml-1 inline h-4 w-4" />
           </button>
@@ -144,7 +156,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
         <div className="hero-orb left-[-12rem] top-16" />
         <div className="hero-orb hero-orb-two right-[-9rem] top-32" />
         <div className="relative mx-auto max-w-6xl px-5 text-center">
-          <div className="reveal inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-bold text-violet-700">
+          <div className="reveal inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
             <Sparkles className="h-3.5 w-3.5" />O CRM que acompanha o ritmo do seu negócio
           </div>
           <h1 className="reveal delay-1 mx-auto mt-6 max-w-4xl text-4xl font-black leading-[1.05] tracking-tight md:text-6xl">
@@ -157,14 +169,14 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           <div className="reveal delay-3 mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <a
               href="#planos"
-              className="group rounded-xl bg-violet-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-violet-200 transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-violet-300"
+              className="group rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-blue-200 transition hover:-translate-y-1 hover:bg-blue-700 hover:shadow-blue-300"
             >
               Ver oferta{" "}
               <ArrowRight className="ml-2 inline h-4 w-4 transition group-hover:translate-x-1" />
             </a>
             <a
               href="#planos"
-              className="rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-lg"
+              className="rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
             >
               Conhecer a oferta
             </a>
@@ -174,7 +186,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             Sem taxa de implantação · Cancele quando quiser
           </p>
           <div className="reveal delay-4 relative mx-auto mt-14 max-w-5xl rounded-t-[28px] border border-slate-200 bg-white p-2 shadow-[0_30px_90px_-30px_rgba(76,29,149,.38)]">
-            <div className="rounded-t-2xl bg-[#171526] p-4 text-left">
+            <div className="rounded-t-2xl bg-[#111827] p-4 text-left">
               <div className="flex gap-1.5">
                 <i className="h-2.5 w-2.5 rounded-full bg-rose-400" />
                 <i className="h-2.5 w-2.5 rounded-full bg-amber-400" />
@@ -182,7 +194,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               </div>
               <div className="mt-5 grid gap-3 md:grid-cols-4">
                 <div className="col-span-1 rounded-xl bg-white/5 p-4 text-white">
-                  <small className="text-violet-200">Vendas no mês</small>
+                  <small className="text-blue-200">Vendas no mês</small>
                   <b className="mt-2 block text-xl">R$ 42.860</b>
                   <span className="text-xs text-emerald-300">↑ 18,4%</span>
                 </div>
@@ -192,13 +204,13 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
                     {[30, 55, 43, 75, 61, 92, 80, 100].map((h, i) => (
                       <span
                         key={i}
-                        className="chart-bar flex-1 rounded-t bg-violet-400"
+                        className="chart-bar flex-1 rounded-t bg-blue-400"
                         style={{ height: `${h / 2}px`, animationDelay: `${i * 80}ms` }}
                       />
                     ))}
                   </div>
                 </div>
-                <div className="rounded-xl bg-violet-500 p-4 text-white">
+                <div className="rounded-xl bg-blue-500 p-4 text-white">
                   <TrendingUp className="h-5 w-5" />
                   <b className="mt-3 block">32,8%</b>
                   <small>conversão média</small>
@@ -210,15 +222,14 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
       </section>
       <section id="recursos" className="mx-auto max-w-6xl px-5 py-24">
         <div className="max-w-xl">
-          <p className="text-xs font-bold uppercase tracking-widest text-violet-600">
+          <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
             Feito para evoluir
           </p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
             Uma plataforma. Infinitas possibilidades.
           </h2>
           <p className="mt-4 text-slate-600">
-            Adapte o ND7 à sua realidade, qualquer que seja seu nicho ou o tamanho da sua
-            operação.
+            Adapte o ND7 à sua realidade, qualquer que seja seu nicho ou o tamanho da sua operação.
           </p>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -244,28 +255,28 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               className="lift-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
               style={{ animationDelay: `${i * 100}ms` }}
             >
-              <span className="inline-flex rounded-xl bg-violet-100 p-3 text-violet-700">
+              <span className="inline-flex rounded-xl bg-blue-100 p-3 text-blue-700">
                 {icon as ReactNode}
               </span>
               <h3 className="mt-5 text-lg font-bold">{title as string}</h3>
               <p className="mt-2 text-sm leading-6 text-slate-600">{text as string}</p>
-              <span className="mt-5 inline-block text-sm font-bold text-violet-600">
+              <span className="mt-5 inline-block text-sm font-bold text-blue-600">
                 Saiba mais <ArrowRight className="ml-1 inline h-4 w-4" />
               </span>
             </article>
           ))}
         </div>
       </section>
-      <section id="como-funciona" className="bg-[#21184d] px-5 py-24 text-white">
+      <section id="como-funciona" className="bg-[#071a3d] px-5 py-24 text-white">
         <div className="mx-auto grid max-w-6xl gap-14 md:grid-cols-2 md:items-center">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-300">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-300">
               Simples desde o primeiro dia
             </p>
             <h2 className="mt-3 text-3xl font-bold md:text-4xl">
               Mais tempo para o que só você pode fazer.
             </h2>
-            <p className="mt-5 leading-7 text-violet-100">
+            <p className="mt-5 leading-7 text-blue-100">
               O ND7 tira o peso da operação das suas costas para sua equipe se concentrar em gerar
               relacionamento e receita.
             </p>
@@ -275,15 +286,15 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               ["03", "Acelere seus resultados"],
             ].map((x) => (
               <div className="mt-6 flex items-center gap-4" key={x[0]}>
-                <b className="text-sm text-violet-300">{x[0]}</b>
+                <b className="text-sm text-blue-300">{x[0]}</b>
                 <span className="h-px flex-1 bg-white/15" />
                 <span className="font-semibold">{x[1]}</span>
-                <CheckCircle2 className="h-5 w-5 text-violet-300" />
+                <CheckCircle2 className="h-5 w-5 text-blue-300" />
               </div>
             ))}
           </div>
           <div className="float-y rounded-3xl border border-white/10 bg-white/10 p-6 backdrop-blur">
-            <p className="text-sm text-violet-200">Sua operação, em uma visão</p>
+            <p className="text-sm text-blue-200">Sua operação, em uma visão</p>
             <div className="mt-6 rounded-2xl bg-white p-5 text-slate-800">
               <div className="flex items-center justify-between">
                 <b>Meta mensal</b>
@@ -292,7 +303,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
                 </span>
               </div>
               <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
-                <div className="h-full w-[88%] rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400" />
+                <div className="h-full w-[88%] rounded-full bg-gradient-to-r from-blue-500 to-fuchsia-400" />
               </div>
               <div className="mt-5 grid grid-cols-2 gap-3">
                 <div className="rounded-xl bg-slate-50 p-3">
@@ -311,7 +322,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
       <section className="mx-auto max-w-6xl px-5 py-24">
         <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
               Clareza que move o negócio
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
@@ -323,7 +334,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             </p>
             <a
               href="#planos"
-              className="mt-7 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-xl"
+              className="mt-7 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-blue-700 hover:shadow-xl"
             >
               Ver oferta do ND7 <ArrowRight className="ml-2 inline h-4 w-4" />
             </a>
@@ -331,19 +342,29 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           <div className="grid gap-4 sm:grid-cols-2">
             {[
               ["Visão 360°", "Entenda cada cliente antes, durante e depois da venda."],
-              ["Processos replicáveis", "Crie um padrão de excelência que toda a equipe consegue seguir."],
+              [
+                "Processos replicáveis",
+                "Crie um padrão de excelência que toda a equipe consegue seguir.",
+              ],
               ["Prioridades visíveis", "Transforme pendências em ações claras, no tempo certo."],
-              ["Gestão sem ruído", "Acompanhe a operação sem precisar cobrar atualizações por mensagem."],
+              [
+                "Gestão sem ruído",
+                "Acompanhe a operação sem precisar cobrar atualizações por mensagem.",
+              ],
             ].map(([title, text], index) => (
               <article
                 key={title}
-                className={`lift-card rounded-2xl border border-slate-200 p-6 ${index === 0 ? "bg-violet-600 text-white" : "bg-white"}`}
+                className={`lift-card rounded-2xl border border-slate-200 p-6 ${index === 0 ? "bg-blue-600 text-white" : "bg-white"}`}
               >
-                <span className={`text-3xl font-black ${index === 0 ? "text-violet-200" : "text-violet-200"}`}>
+                <span
+                  className={`text-3xl font-black ${index === 0 ? "text-blue-200" : "text-blue-200"}`}
+                >
                   0{index + 1}
                 </span>
                 <h3 className="mt-6 font-bold">{title}</h3>
-                <p className={`mt-2 text-sm leading-6 ${index === 0 ? "text-violet-100" : "text-slate-600"}`}>
+                <p
+                  className={`mt-2 text-sm leading-6 ${index === 0 ? "text-blue-100" : "text-slate-600"}`}
+                >
                   {text}
                 </p>
               </article>
@@ -354,7 +375,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
       <section className="border-y border-slate-200 bg-white px-5 py-24">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-violet-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
               Flexível por natureza
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
@@ -366,20 +387,27 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             </p>
           </div>
           <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {["Vendas consultivas", "Serviços e agências", "Saúde e bem-estar", "Equipes B2B"].map((item) => (
-              <div key={item} className="group rounded-2xl border border-slate-200 bg-[#fcfbff] p-5 transition hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 font-bold text-violet-700 group-hover:bg-violet-600 group-hover:text-white">
-                  ND7
-                </span>
-                <p className="mt-5 text-sm font-bold">{item}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-500">Estruture relações, oportunidades e acompanhamento em um único fluxo.</p>
-              </div>
-            ))}
+            {["Vendas consultivas", "Serviços e agências", "Saúde e bem-estar", "Equipes B2B"].map(
+              (item) => (
+                <div
+                  key={item}
+                  className="group rounded-2xl border border-slate-200 bg-[#ffffff] p-5 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 font-bold text-blue-700 group-hover:bg-blue-600 group-hover:text-white">
+                    ND7
+                  </span>
+                  <p className="mt-5 text-sm font-bold">{item}</p>
+                  <p className="mt-2 text-xs leading-5 text-slate-500">
+                    Estruture relações, oportunidades e acompanhamento em um único fluxo.
+                  </p>
+                </div>
+              ),
+            )}
           </div>
         </div>
       </section>
       <section id="planos" className="mx-auto max-w-6xl px-5 py-24 text-center">
-        <p className="text-xs font-bold uppercase tracking-widest text-violet-600">
+        <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
           Planos transparentes
         </p>
         <h2 className="mt-3 text-3xl font-bold md:text-4xl">Estrutura para o seu próximo nível.</h2>
@@ -392,54 +420,133 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             <button
               key={item}
               onClick={() => setCycle(item)}
-              className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${cycle === item ? "bg-violet-600 text-white shadow-lg" : "text-slate-500 hover:bg-violet-50 hover:text-violet-700"}`}
+              className={`rounded-xl px-4 py-2.5 text-sm font-bold transition ${cycle === item ? "bg-blue-600 text-white shadow-lg" : "text-slate-500 hover:bg-blue-50 hover:text-blue-700"}`}
             >
               {item}
-              {item === "Anual" && <span className="ml-1.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] text-emerald-700">melhor custo</span>}
+              {item === "Anual" && (
+                <span className="ml-1.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] text-emerald-700">
+                  melhor custo
+                </span>
+              )}
             </button>
           ))}
         </div>
         <div className="mx-auto mt-7 grid max-w-4xl gap-5 text-left md:grid-cols-[1.1fr_.9fr]">
-          <div className="rounded-3xl border-2 border-violet-500 bg-white p-7 shadow-xl shadow-violet-100">
+          <div className="rounded-3xl border-2 border-blue-500 bg-white p-7 shadow-xl shadow-blue-100">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-700">Plano ND7</span>
+                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                  Plano ND7
+                </span>
                 <h3 className="mt-4 text-2xl font-bold">Profissional</h3>
               </div>
-              <span className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">{cycle}</span>
+              <span className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">
+                {cycle}
+              </span>
             </div>
             <p className="mt-5 text-sm text-slate-500">Valor em definição</p>
             <p className="mt-1 text-3xl font-black tracking-tight">Consulte em breve</p>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Todas as ferramentas centrais para organizar clientes, vendas e time desde o primeiro dia.</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Todas as ferramentas centrais para organizar clientes, vendas e time desde o primeiro
+              dia.
+            </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {["Contatos e negócios ilimitados", "Funis personalizados", "Automação de processos", "Equipe e permissões", "Painel de indicadores", "Suporte especializado"].map((x) => (
-                <p key={x} className="text-sm text-slate-700"><Check className="mr-2 inline h-4 w-4 text-violet-600" />{x}</p>
+              {[
+                "Contatos e negócios ilimitados",
+                "Funis personalizados",
+                "Automação de processos",
+                "Equipe e permissões",
+                "Painel de indicadores",
+                "Suporte especializado",
+              ].map((x) => (
+                <p key={x} className="text-sm text-slate-700">
+                  <Check className="mr-2 inline h-4 w-4 text-blue-600" />
+                  {x}
+                </p>
               ))}
             </div>
-            <button onClick={start} className="mt-7 w-full rounded-xl bg-violet-600 py-3.5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-violet-700 hover:shadow-lg">Quero este plano</button>
+            <button
+              onClick={start}
+              className="mt-7 w-full rounded-xl bg-blue-600 py-3.5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-blue-700 hover:shadow-lg"
+            >
+              Quero este plano
+            </button>
           </div>
-          <aside className="rounded-3xl bg-[#171526] p-7 text-white">
-            <Sparkles className="h-6 w-6 text-violet-300" />
+          <aside className="rounded-3xl bg-[#111827] p-7 text-white">
+            <Sparkles className="h-6 w-6 text-blue-300" />
             <h3 className="mt-5 text-xl font-bold">Cresça com previsibilidade.</h3>
-            <p className="mt-3 text-sm leading-6 text-violet-100">Você poderá escolher mensal, trimestral, semestral ou anual. Quando os valores forem definidos, cada período será apresentado de forma clara no checkout.</p>
-            <div className="mt-7 border-t border-white/10 pt-5 text-sm text-violet-100"><Check className="mr-2 inline h-4 w-4 text-emerald-300"/>Sem surpresa na cobrança<br/><Check className="mr-2 mt-3 inline h-4 w-4 text-emerald-300"/>Gestão centralizada da assinatura</div>
+            <p className="mt-3 text-sm leading-6 text-blue-100">
+              Você poderá escolher mensal, trimestral, semestral ou anual. Quando os valores forem
+              definidos, cada período será apresentado de forma clara no checkout.
+            </p>
+            <div className="mt-7 border-t border-white/10 pt-5 text-sm text-blue-100">
+              <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
+              Sem surpresa na cobrança
+              <br />
+              <Check className="mr-2 mt-3 inline h-4 w-4 text-emerald-300" />
+              Gestão centralizada da assinatura
+            </div>
           </aside>
         </div>
       </section>
       <section className="bg-slate-50 px-5 py-24">
         <div className="mx-auto max-w-4xl">
-          <div className="text-center"><p className="text-xs font-bold uppercase tracking-widest text-violet-600">Perguntas frequentes</p><h2 className="mt-3 text-3xl font-bold">Tudo claro antes de começar.</h2></div>
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
+              Perguntas frequentes
+            </p>
+            <h2 className="mt-3 text-3xl font-bold">Tudo claro antes de começar.</h2>
+          </div>
           <div className="mt-10 space-y-3">
             {[
-              ["O ND7 serve para o meu nicho?", "Sim. O ND7 foi pensado como uma base flexível de relacionamento e vendas, adaptável a diferentes processos e segmentos."],
-              ["Posso escolher a periodicidade da assinatura?", "Sim. A contratação estará disponível nas modalidades mensal, trimestral, semestral e anual assim que os valores forem publicados."],
-              ["Como funciona a criação de acesso?", "Após a aprovação do pagamento, o sistema cria o acesso da empresa e envia as instruções de entrada por e-mail."],
-              ["Minha equipe poderá usar o sistema?", "Sim. O plano inclui gestão de equipe e permissões para que cada pessoa tenha o nível de acesso adequado."],
-            ].map(([question, answer]) => <details key={question} className="group rounded-2xl border border-slate-200 bg-white p-5"><summary className="cursor-pointer list-none font-bold">{question}<Plus className="float-right h-5 w-5 text-violet-600 transition group-open:rotate-45"/></summary><p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">{answer}</p></details>)}
+              [
+                "O ND7 serve para o meu nicho?",
+                "Sim. O ND7 foi pensado como uma base flexível de relacionamento e vendas, adaptável a diferentes processos e segmentos.",
+              ],
+              [
+                "Posso escolher a periodicidade da assinatura?",
+                "Sim. A contratação estará disponível nas modalidades mensal, trimestral, semestral e anual assim que os valores forem publicados.",
+              ],
+              [
+                "Como funciona a criação de acesso?",
+                "Após a aprovação do pagamento, o sistema cria o acesso da empresa e envia as instruções de entrada por e-mail.",
+              ],
+              [
+                "Minha equipe poderá usar o sistema?",
+                "Sim. O plano inclui gestão de equipe e permissões para que cada pessoa tenha o nível de acesso adequado.",
+              ],
+            ].map(([question, answer]) => (
+              <details
+                key={question}
+                className="group rounded-2xl border border-slate-200 bg-white p-5"
+              >
+                <summary className="cursor-pointer list-none font-bold">
+                  {question}
+                  <Plus className="float-right h-5 w-5 text-blue-600 transition group-open:rotate-45" />
+                </summary>
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-600">{answer}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>
-      <section className="bg-gradient-to-r from-violet-700 to-indigo-700 px-5 py-20 text-center text-white"><div className="mx-auto max-w-3xl"><Sparkles className="mx-auto h-7 w-7 text-violet-200"/><h2 className="mt-5 text-3xl font-bold md:text-4xl">Seu próximo crescimento começa com uma operação mais clara.</h2><p className="mx-auto mt-4 max-w-xl text-violet-100">Dê à sua equipe uma plataforma à altura da ambição da sua empresa.</p><a href="#planos" className="mt-8 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-violet-700 transition hover:-translate-y-1 hover:shadow-xl">Conhecer a oferta do ND7 <ArrowRight className="ml-2 inline h-4 w-4"/></a></div></section>
+      <section className="bg-gradient-to-r from-blue-700 to-indigo-700 px-5 py-20 text-center text-white">
+        <div className="mx-auto max-w-3xl">
+          <Sparkles className="mx-auto h-7 w-7 text-blue-200" />
+          <h2 className="mt-5 text-3xl font-bold md:text-4xl">
+            Seu próximo crescimento começa com uma operação mais clara.
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-blue-100">
+            Dê à sua equipe uma plataforma à altura da ambição da sua empresa.
+          </p>
+          <a
+            href="#planos"
+            className="mt-8 inline-block rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-blue-700 transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            Conhecer a oferta do ND7 <ArrowRight className="ml-2 inline h-4 w-4" />
+          </a>
+        </div>
+      </section>
       <footer className="border-t border-slate-200 px-5 py-8">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
           <div className="flex items-center gap-2">
@@ -476,13 +583,13 @@ function Sidebar({
 }) {
   return (
     <aside
-      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-[#171526] p-4 text-slate-300 transition-transform md:static ${menu ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+      className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-[#111827] p-4 text-slate-300 transition-transform md:static ${menu ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
     >
       <div className="flex items-center gap-3 px-2">
         <Logo />
         <div>
           <b className="text-white">ND7</b>
-          <small className="block text-[9px] uppercase tracking-[.18em] text-violet-300">
+          <small className="block text-[9px] uppercase tracking-[.18em] text-blue-300">
             CRM inteligente
           </small>
         </div>
@@ -506,15 +613,20 @@ function Sidebar({
         Gerenciar
       </p>
       <Nav icon={<UsersRound />} label="Equipe" />
-      <Nav icon={<CircleDollarSign />} label="Assinatura" action={() => setView("checkout")} />
+      <Nav
+        icon={<CircleDollarSign />}
+        label="Minha Assinatura"
+        active={view === "subscription"}
+        action={() => setView("subscription")}
+      />
       <Nav icon={<Settings />} label="Configurações" />
-      <div className="mt-auto rounded-2xl border border-violet-400/20 bg-violet-500/10 p-3">
-        <Crown className="h-4 w-4 text-violet-300" />
+      <div className="mt-auto rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3">
+        <Crown className="h-4 w-4 text-blue-300" />
         <b className="mt-2 block text-xs text-white">Plano Profissional</b>
         <p className="mt-1 text-[11px] text-slate-400">Tudo para sua operação crescer.</p>
         <button
-          onClick={() => setView("checkout")}
-          className="mt-3 w-full rounded-lg bg-violet-500 py-2 text-xs font-bold text-white"
+          onClick={() => setView("subscription")}
+          className="mt-3 w-full rounded-lg bg-blue-500 py-2 text-xs font-bold text-white"
         >
           Gerenciar plano
         </button>
@@ -536,11 +648,140 @@ function Nav({
   return (
     <button
       onClick={action}
-      className={`mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${active ? "bg-violet-600 text-white" : "hover:bg-white/5 hover:text-white"}`}
+      className={`mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${active ? "bg-blue-600 text-white" : "hover:bg-white/5 hover:text-white"}`}
     >
       <span className="h-4 w-4">{icon}</span>
       {label}
     </button>
+  );
+}
+function MySubscription({ checkout }: { checkout: () => void }) {
+  const history = [
+    [
+      "Profissional",
+      "Mensal",
+      "01 Jul 2026",
+      "31 Jul 2026",
+      "Renovada",
+      "bg-emerald-50 text-emerald-700",
+    ],
+    [
+      "Profissional",
+      "Mensal",
+      "01 Jun 2026",
+      "30 Jun 2026",
+      "Renovada",
+      "bg-emerald-50 text-emerald-700",
+    ],
+    ["Profissional", "Mensal", "01 Mai 2026", "31 Mai 2026", "Paga", "bg-blue-50 text-blue-700"],
+  ];
+  return (
+    <div className="mx-auto max-w-[1200px] p-5 md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm text-slate-500">Conta e cobrança</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight">Minha Assinatura</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Acompanhe seu plano atual e todo o histórico da sua empresa.
+          </p>
+        </div>
+        <button
+          onClick={checkout}
+          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700"
+        >
+          Gerenciar assinatura
+        </button>
+      </div>
+      <section className="mt-7 overflow-hidden rounded-3xl border border-blue-200 bg-white shadow-xl shadow-blue-100">
+        <div className="bg-gradient-to-r from-[#071a3d] to-[#0d6efd] p-6 text-white md:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-bold text-emerald-100">
+                <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
+                ASSINATURA ATIVA
+              </p>
+              <h2 className="mt-5 text-2xl font-bold">ND7 Profissional</h2>
+              <p className="mt-2 text-sm text-blue-100">
+                Sua operação está protegida e com acesso total aos recursos do plano.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
+              <p className="text-xs text-blue-100">Próxima renovação</p>
+              <b className="mt-1 block text-lg">26 de setembro de 2026</b>
+              <p className="mt-1 text-xs text-emerald-200">Cobrança em dia</p>
+            </div>
+          </div>
+        </div>
+        <div className="grid gap-5 p-6 md:grid-cols-3 md:p-8">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Periodicidade
+            </p>
+            <p className="mt-2 text-lg font-bold text-slate-800">Mensal</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Status atual
+            </p>
+            <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-bold text-emerald-700">
+              <CheckCircle2 className="h-4 w-4" />
+              Ativa e regular
+            </p>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Forma de pagamento
+            </p>
+            <p className="mt-2 text-lg font-bold text-slate-800">Cartão de crédito</p>
+          </div>
+        </div>
+        <div className="border-t border-slate-100 bg-slate-50 px-6 py-4 text-sm text-slate-600 md:px-8">
+          <LockKeyhole className="mr-2 inline h-4 w-4 text-blue-600" />
+          Seu acesso permanece liberado enquanto a assinatura estiver ativa e os pagamentos em dia.
+        </div>
+      </section>
+      <section className="mt-7 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold">Histórico de assinaturas</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Registro de todos os ciclos e alterações da sua assinatura.
+            </p>
+          </div>
+          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-500">
+            3 registros
+          </span>
+        </div>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full min-w-[720px] text-left">
+            <thead className="text-[11px] uppercase tracking-wider text-slate-400">
+              <tr>
+                <th className="pb-3">Plano</th>
+                <th>Período</th>
+                <th>Início</th>
+                <th>Fim</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((item) => (
+                <tr key={item[2]} className="border-t border-slate-100 text-sm">
+                  <td className="py-4 font-semibold">{item[0]}</td>
+                  <td>{item[1]}</td>
+                  <td className="text-slate-500">{item[2]}</td>
+                  <td className="text-slate-500">{item[3]}</td>
+                  <td>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item[5]}`}>
+                      {item[4]}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }
 function Card({
@@ -558,7 +799,7 @@ function Card({
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
         <span className="text-sm text-slate-500">{label}</span>
-        <span className="rounded-lg bg-violet-50 p-2 text-violet-600">{icon}</span>
+        <span className="rounded-lg bg-blue-50 p-2 text-blue-600">{icon}</span>
       </div>
       <b className="mt-5 block text-2xl tracking-tight">{value}</b>
       <p className="mt-2 text-xs text-emerald-600">
@@ -574,21 +815,21 @@ function Dashboard({ admin, say }: { admin: () => void; say: (s: string) => void
         <div>
           <p className="text-sm text-slate-500">Terça-feira, 26 de agosto</p>
           <h1 className="mt-1 text-2xl font-bold">
-            Bom dia, Daniel <span className="text-violet-500">✦</span>
+            Bom dia, Daniel <span className="text-blue-500">✦</span>
           </h1>
           <p className="mt-1 text-sm text-slate-500">Aqui está o resumo da sua operação.</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={admin}
-            className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 text-sm font-bold text-violet-700"
+            className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-sm font-bold text-blue-700"
           >
             <ShieldCheck className="mr-1 inline h-4 w-4" />
             Super Admin
           </button>
           <button
             onClick={() => say("Formulário de novo contato aberto.")}
-            className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-bold text-white"
+            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white"
           >
             <Plus className="mr-1 inline h-4 w-4" />
             Novo contato
@@ -637,7 +878,7 @@ function Dashboard({ admin, say }: { admin: () => void; say: (s: string) => void
           ].map((a) => (
             <div key={a[0]} className="mt-5 flex gap-3">
               <b className="text-xs text-slate-400">{a[0]}</b>
-              <span className="mt-1 h-2 w-2 rounded-full bg-violet-500" />
+              <span className="mt-1 h-2 w-2 rounded-full bg-blue-500" />
               <div>
                 <p className="text-sm font-medium">{a[1]}</p>
                 <p className="text-xs text-slate-400">{a[2]}</p>
@@ -654,19 +895,19 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
   const rows = filter === "Todos" ? businesses : businesses.filter((x) => x[3] === filter);
   return (
     <div className="mx-auto max-w-[1440px] p-5 md:p-8">
-      <div className="rounded-2xl bg-gradient-to-r from-[#21184d] to-violet-700 p-6 text-white">
+      <div className="rounded-2xl bg-gradient-to-r from-[#071a3d] to-blue-700 p-6 text-white">
         <div className="flex justify-between gap-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-violet-200">
+            <p className="text-xs font-bold uppercase tracking-wider text-blue-200">
               ♛ Área restrita
             </p>
             <h1 className="mt-3 text-2xl font-bold">Central Super Admin</h1>
-            <p className="mt-1 text-sm text-violet-100">
+            <p className="mt-1 text-sm text-blue-100">
               Visão global da plataforma, assinaturas e empresas.
             </p>
           </div>
           <div className="rounded-xl border border-white/15 bg-white/10 p-3 text-right">
-            <small className="text-violet-200">Receita recorrente mensal</small>
+            <small className="text-blue-200">Receita recorrente mensal</small>
             <b className="block text-xl">R$ 16.842</b>
           </div>
         </div>
@@ -694,7 +935,7 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
             onClick={() =>
               say("O cliente deverá concluir o checkout para criar o acesso automaticamente.")
             }
-            className="rounded-xl bg-violet-600 px-3 py-2 text-sm font-bold text-white"
+            className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white"
           >
             <Plus className="mr-1 inline h-4 w-4" />
             Novo assinante
@@ -704,7 +945,7 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
           {["Todos", "Ativa", "Pendente", "Expirada"].map((f) => (
             <button
               onClick={() => setFilter(f)}
-              className={`rounded-full px-3 py-1.5 text-xs font-bold ${filter === f ? "bg-violet-100 text-violet-700" : "bg-slate-100 text-slate-500"}`}
+              className={`rounded-full px-3 py-1.5 text-xs font-bold ${filter === f ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-500"}`}
             >
               {f}
             </button>
@@ -726,7 +967,7 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
               {rows.map((x) => (
                 <tr key={x[0]} className="border-t border-slate-100 text-sm">
                   <td className="py-4">
-                    <span className="mr-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-xs font-bold text-violet-700">
+                    <span className="mr-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-xs font-bold text-blue-700">
                       {x[5]}
                     </span>
                     <span>
@@ -747,7 +988,7 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
                   <td>
                     <button
                       onClick={open}
-                      className="rounded-lg border px-2.5 py-1.5 text-xs font-bold text-violet-700"
+                      className="rounded-lg border px-2.5 py-1.5 text-xs font-bold text-blue-700"
                     >
                       Acessar empresa
                     </button>
@@ -770,7 +1011,7 @@ function Admin({ open, say }: { open: () => void; say: (s: string) => void }) {
 function Login({ back, enter }: { back: () => void; enter: () => void }) {
   return (
     <div className="grid min-h-screen bg-[#fbfaff] lg:grid-cols-2">
-      <div className="hidden flex-col justify-between bg-[#21184d] p-12 text-white lg:flex">
+      <div className="hidden flex-col justify-between bg-[#071a3d] p-12 text-white lg:flex">
         <div className="flex items-center gap-3">
           <Logo />
           <b>ND7</b>
@@ -778,11 +1019,11 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
         <h1 className="max-w-md text-4xl font-bold leading-tight">
           Tudo que sua empresa precisa para cultivar boas relações.
         </h1>
-        <p className="text-xs text-violet-300">© 2026 ND7</p>
+        <p className="text-xs text-blue-300">© 2026 ND7</p>
       </div>
       <div className="flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
-          <button onClick={back} className="mb-12 text-sm font-medium text-violet-600">
+          <button onClick={back} className="mb-12 text-sm font-medium text-blue-600">
             ← Voltar
           </button>
           <h1 className="text-2xl font-bold">Que bom ter você de volta.</h1>
@@ -799,82 +1040,276 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
           ))}
           <button
             onClick={enter}
-            className="mt-6 w-full rounded-xl bg-violet-600 py-3 text-sm font-bold text-white"
+            className="mt-6 w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white"
           >
             Entrar na minha conta
           </button>
-          <button className="mt-4 w-full text-sm text-violet-600">Esqueci minha senha</button>
+          <button className="mt-4 w-full text-sm text-blue-600">Esqueci minha senha</button>
         </div>
       </div>
     </div>
   );
 }
 function Checkout({ back, done }: { back: () => void; done: () => void }) {
+  const [payment, setPayment] = useState("card");
+  const [cycle, setCycle] = useState("Mensal");
+  const input =
+    "mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100";
   return (
-    <div className="min-h-screen bg-[#f8f8fb] p-5">
-      <div className="mx-auto max-w-5xl">
-        <header className="flex items-center justify-between py-4">
+    <div className="min-h-screen bg-[#f6f5fb] px-5 py-5 md:py-8">
+      <div className="mx-auto max-w-6xl">
+        <header className="flex items-center justify-between border-b border-slate-200 pb-5">
           <div className="flex items-center gap-3">
             <Logo />
-            <b>ND7</b>
+            <div>
+              <b>ND7</b>
+              <span className="ml-2 text-xs text-slate-400">Checkout seguro</span>
+            </div>
           </div>
-          <button onClick={back} className="text-sm text-slate-500">
-            ← Voltar
+          <button
+            onClick={back}
+            className="rounded-xl px-3 py-2 text-sm font-semibold text-slate-500 hover:bg-white hover:text-blue-700"
+          >
+            ← Voltar para a oferta
           </button>
         </header>
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8">
-            <p className="text-xs font-bold uppercase tracking-wider text-violet-600">
-              Comece agora
-            </p>
-            <h1 className="mt-2 text-2xl font-bold">Crie a sua conta ND7</h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Seu acesso é liberado automaticamente após a confirmação do pagamento.
-            </p>
-            <div className="mt-7 grid gap-4 md:grid-cols-2">
-              {["Nome completo", "E-mail corporativo", "CPF ou CNPJ", "Nome da empresa"].map(
-                (x) => (
-                  <label className="text-xs font-bold">
-                    {x}
-                    <input className="mt-2 w-full rounded-xl border border-slate-200 p-3 font-normal" />
-                  </label>
-                ),
-              )}
+        <div className="mt-8 grid gap-7 lg:grid-cols-[minmax(0,1fr)_380px]">
+          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+            <div className="flex items-center gap-3 text-xs font-semibold text-slate-500">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white">
+                1
+              </span>{" "}
+              Cadastro <span className="h-px w-8 bg-slate-200" />
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border">
+                2
+              </span>{" "}
+              Pagamento <span className="h-px w-8 bg-slate-200" />
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border">
+                3
+              </span>{" "}
+              Confirmação
             </div>
-            <h2 className="mt-8 font-semibold">Pagamento seguro</h2>
-            <p className="mt-1 text-xs text-slate-500">Processado com segurança pela Asaas.</p>
-            <div className="mt-4 rounded-xl border p-4 text-sm font-medium">
-              Cartão de crédito{" "}
-              <span className="float-right rounded bg-slate-100 px-2 py-1 text-[10px] text-slate-500">
-                ASAAS
-              </span>
+            <p className="mt-8 text-xs font-bold uppercase tracking-widest text-blue-600">
+              Assinatura ND7
+            </p>
+            <h1 className="mt-2 text-2xl font-bold">Finalize sua assinatura</h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Seu acesso será criado automaticamente após a aprovação do pagamento.
+            </p>
+            <div className="mt-8 border-t pt-7">
+              <div className="flex items-center gap-3">
+                <span className="rounded-xl bg-blue-100 p-2.5 text-blue-700">
+                  <UserRound className="h-5 w-5" />
+                </span>
+                <div>
+                  <h2 className="font-bold">Dados cadastrais</h2>
+                  <p className="text-xs text-slate-500">Responsável pela assinatura.</p>
+                </div>
+              </div>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {[
+                  ["Nome completo", "Como devemos chamar você?"],
+                  ["E-mail de acesso", "voce@empresa.com"],
+                  ["Celular / WhatsApp", "(00) 00000-0000"],
+                  ["CPF ou CNPJ", "000.000.000-00"],
+                  ["Nome da empresa", "Como sua empresa será identificada no ND7?"],
+                ].map(([label, placeholder], i) => (
+                  <label
+                    key={label}
+                    className={`text-xs font-bold ${i === 4 ? "md:col-span-2" : ""}`}
+                  >
+                    {label}
+                    <input
+                      type={label.includes("E-mail") ? "email" : "text"}
+                      placeholder={placeholder}
+                      className={input}
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="mt-8 border-t pt-7">
+              <div className="flex items-center gap-3">
+                <span className="rounded-xl bg-cyan-100 p-2.5 text-cyan-700">
+                  <MapPin className="h-5 w-5" />
+                </span>
+                <div>
+                  <h2 className="font-bold">Endereço de cobrança</h2>
+                  <p className="text-xs text-slate-500">Necessário para processar a assinatura.</p>
+                </div>
+              </div>
+              <div className="mt-5 grid gap-4 md:grid-cols-6">
+                {[
+                  ["CEP", "00000-000", "md:col-span-2"],
+                  ["Rua / Avenida", "Informe seu endereço", "md:col-span-4"],
+                  ["Número", "000", "md:col-span-2"],
+                  ["Complemento", "Sala, bloco, apto...", "md:col-span-2"],
+                  ["Bairro", "Seu bairro", "md:col-span-2"],
+                  ["Cidade", "Sua cidade", "md:col-span-3"],
+                  ["Estado", "Selecione", "md:col-span-3"],
+                ].map(([label, placeholder, span]) => (
+                  <label key={label} className={`text-xs font-bold ${span}`}>
+                    {label}
+                    {label === "Estado" ? (
+                      <select className={input} defaultValue="">
+                        <option value="" disabled>
+                          Selecione o estado
+                        </option>
+                        {[
+                          "AC",
+                          "AL",
+                          "AP",
+                          "AM",
+                          "BA",
+                          "CE",
+                          "DF",
+                          "ES",
+                          "GO",
+                          "MA",
+                          "MG",
+                          "PA",
+                          "PE",
+                          "PR",
+                          "RJ",
+                          "RS",
+                          "SC",
+                          "SP",
+                        ].map((state) => (
+                          <option key={state}>{state}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input placeholder={placeholder} className={input} />
+                    )}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="mt-8 border-t pt-7">
+              <div className="flex items-center gap-3">
+                <span className="rounded-xl bg-emerald-100 p-2.5 text-emerald-700">
+                  <CreditCard className="h-5 w-5" />
+                </span>
+                <div>
+                  <h2 className="font-bold">Pagamento</h2>
+                  <p className="text-xs text-slate-500">Processado com segurança pela Asaas.</p>
+                </div>
+              </div>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                <button
+                  onClick={() => setPayment("card")}
+                  className={`rounded-2xl border p-4 text-left ${payment === "card" ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100" : "border-slate-200"}`}
+                >
+                  <CreditCard className="h-5 w-5 text-blue-600" />
+                  <b className="ml-2 text-sm">Cartão de crédito</b>
+                  <p className="mt-2 text-xs text-slate-500">Cobrança recorrente automática</p>
+                </button>
+                <button
+                  onClick={() => setPayment("pix")}
+                  className={`rounded-2xl border p-4 text-left ${payment === "pix" ? "border-blue-500 bg-blue-50 ring-4 ring-blue-100" : "border-slate-200"}`}
+                >
+                  <b className="text-sm text-emerald-600">PIX</b>
+                  <p className="mt-2 text-xs text-slate-500">
+                    Disponível para o primeiro pagamento
+                  </p>
+                </button>
+              </div>
+              {payment === "card" ? (
+                <div className="mt-5 grid gap-4 md:grid-cols-6">
+                  {[
+                    ["Nome impresso no cartão", "Nome como está no cartão", "md:col-span-6"],
+                    ["Número do cartão", "0000 0000 0000 0000", "md:col-span-6"],
+                    ["Validade", "MM/AA", "md:col-span-3"],
+                    ["CVV", "000", "md:col-span-3"],
+                  ].map(([label, placeholder, span]) => (
+                    <label key={label} className={`text-xs font-bold ${span}`}>
+                      {label}
+                      <input placeholder={placeholder} className={input} />
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-5 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">
+                  Um QR Code PIX será gerado na próxima etapa.
+                </div>
+              )}
             </div>
             <button
               onClick={done}
-              className="mt-6 w-full rounded-xl bg-violet-600 py-3.5 text-sm font-bold text-white"
+              className="mt-8 w-full rounded-xl bg-blue-600 py-4 text-sm font-bold text-white shadow-xl shadow-blue-200 transition hover:-translate-y-1 hover:bg-blue-700"
             >
-              Ir para pagamento seguro
+              Continuar para pagamento seguro <LockKeyhole className="ml-2 inline h-4 w-4" />
             </button>
-          </section>
-          <aside className="h-fit rounded-2xl bg-[#21184d] p-6 text-white">
-            <p className="text-sm text-violet-200">Seu plano</p>
-            <h2 className="mt-2 text-xl font-bold">Profissional</h2>
-            <p className="mt-5 text-3xl font-bold">
-              R$ 297 <span className="text-sm font-normal text-violet-200">/mês</span>
+            <p className="mt-4 text-center text-[11px] text-slate-400">
+              <LockKeyhole className="mr-1 inline h-3.5 w-3.5" />
+              Seus dados de pagamento são protegidos.
             </p>
-            <hr className="my-6 border-white/10" />
-            {[
-              "Contatos e negócios ilimitados",
-              "Funis personalizados",
-              "Automação de processos",
-              "Integração com WhatsApp",
-              "Equipe e permissões",
-            ].map((x) => (
-              <p className="mb-3 flex gap-2 text-sm text-violet-100">
-                <Check className="h-4 w-4 text-violet-300" />
-                {x}
-              </p>
-            ))}
+          </section>
+          <aside className="h-fit lg:sticky lg:top-6">
+            <div className="overflow-hidden rounded-3xl bg-[#111827] text-white shadow-2xl">
+              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6">
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-200">
+                  Resumo do pedido
+                </p>
+                <div className="mt-5 flex items-center gap-3">
+                  <Logo />
+                  <div>
+                    <h2 className="text-lg font-bold">ND7 Profissional</h2>
+                    <p className="text-sm text-blue-100">CRM inteligente para sua operação</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-6">
+                <label className="text-xs font-bold text-blue-200">
+                  Periodicidade
+                  <select
+                    value={cycle}
+                    onChange={(e) => setCycle(e.target.value)}
+                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/10 px-3 py-3 text-sm font-bold text-white outline-none"
+                  >
+                    <option className="text-slate-900">Mensal</option>
+                    <option className="text-slate-900">Trimestral</option>
+                    <option className="text-slate-900">Semestral</option>
+                    <option className="text-slate-900">Anual</option>
+                  </select>
+                </label>
+                <hr className="my-6 border-white/10" />
+                <div className="flex justify-between text-sm">
+                  <span className="text-blue-100">Plano Profissional</span>
+                  <b>{cycle}</b>
+                </div>
+                <div className="mt-5 flex justify-between">
+                  <span className="text-sm text-blue-100">Valor da assinatura</span>
+                  <b className="text-right">
+                    A definir
+                    <small className="block text-[10px] font-normal text-blue-200">
+                      antes do pagamento
+                    </small>
+                  </b>
+                </div>
+                <hr className="my-6 border-white/10" />
+                {[
+                  "Clientes e negócios ilimitados",
+                  "Funis e automações",
+                  "Equipe e permissões",
+                  "Painel de indicadores",
+                ].map((item) => (
+                  <p key={item} className="mb-3 flex gap-2 text-sm text-blue-100">
+                    <Check className="h-4 w-4 text-emerald-300" />
+                    {item}
+                  </p>
+                ))}
+                <div className="mt-6 rounded-2xl bg-white/10 p-4">
+                  <p className="text-xs font-bold">
+                    <LockKeyhole className="mr-2 inline h-4 w-4 text-emerald-300" />
+                    Compra protegida
+                  </p>
+                  <p className="mt-2 text-[11px] leading-5 text-blue-100">
+                    O acesso só é criado após aprovação da Asaas.
+                  </p>
+                </div>
+              </div>
+            </div>
           </aside>
         </div>
       </div>
