@@ -733,13 +733,13 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             {[
               [
                 "Mariana Costa",
-                "Demo v1",
+                "Vértice Consultoria",
                 "‘O ND7 nos deu visão e ritmo. Agora cada oportunidade tem próximo passo.’",
                 "MC",
               ],
               [
                 "Rafael Nunes",
-                "Demo v2",
+                "Nexo Comercial",
                 "‘O funil deixou de ser uma reunião e virou nosso jeito de trabalhar.’",
                 "RN",
               ],
