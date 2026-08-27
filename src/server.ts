@@ -9,6 +9,30 @@ type ServerEntry = {
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
+function seoDocument(request: Request) {
+  const url = new URL(request.url);
+
+  if (url.pathname === "/robots.txt") {
+    return new Response(`User-agent: *\nAllow: /\n\nSitemap: ${url.origin}/sitemap.xml\n`, {
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  if (url.pathname === "/sitemap.xml") {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${url.origin}/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>`;
+    return new Response(xml, { headers: { "content-type": "application/xml; charset=utf-8" } });
+  }
+
+  return undefined;
+}
+
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
     serverEntryPromise = import("@tanstack/react-start/server-entry").then(
@@ -47,6 +71,8 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const seoResponse = seoDocument(request);
+      if (seoResponse) return seoResponse;
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
