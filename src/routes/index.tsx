@@ -1659,19 +1659,30 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                 </div>
               </div>
               <div className="p-6">
-                <label className="text-xs font-bold text-blue-200">
-                  Periodicidade
-                  <select
-                    value={cycle}
-                    onChange={(e) => setCycle(e.target.value)}
-                    className="mt-2 w-full rounded-xl border border-white/10 bg-white/10 px-3 py-3 text-sm font-bold text-white outline-none"
-                  >
-                    <option className="text-slate-900">Mensal</option>
-                    <option className="text-slate-900">Trimestral</option>
-                    <option className="text-slate-900">Semestral</option>
-                    <option className="text-slate-900">Anual</option>
-                  </select>
-                </label>
+                <div>
+                  <p className="text-xs font-bold text-blue-200">Escolha a periodicidade</p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {["Mensal", "Trimestral", "Semestral", "Anual"].map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => setCycle(option)}
+                        className={`rounded-xl border p-3 text-left transition ${cycle === option ? "border-blue-300 bg-blue-500 text-white shadow-lg shadow-blue-950/30" : "border-white/10 bg-white/5 text-blue-100 hover:border-blue-300/50 hover:bg-white/10"}`}
+                      >
+                        <span className="block text-xs font-bold">{option}</span>
+                        <span
+                          className={`mt-1 block text-sm font-black ${cycle === option ? "text-white" : "text-blue-200"}`}
+                        >
+                          {prices[option]}
+                        </span>
+                        <span
+                          className={`mt-0.5 block text-[9px] ${cycle === option ? "text-blue-100" : "text-blue-300"}`}
+                        >
+                          {cycleTotals[option]} por ciclo
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <hr className="my-6 border-white/10" />
                 <div className="flex justify-between text-sm">
                   <span className="text-blue-100">Plano Profissional</span>
