@@ -2927,10 +2927,10 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                       </span>
                     </div>
                     <div className="relative mt-8 h-8 w-11 rounded-md border border-amber-100/50 bg-gradient-to-br from-amber-100 to-amber-400" />
-                    <p className="relative mt-5 font-mono text-sm tracking-[.14em]">
+                    <p className="absolute bottom-[52px] left-5 right-5 font-mono text-sm tracking-[.14em]">
                       {cardNumber || "•••• •••• •••• ••••"}
                     </p>
-                    <div className="relative mt-5 flex items-end justify-between">
+                    <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between gap-3">
                       <div>
                         <small className="block text-[8px] uppercase tracking-wider text-blue-100">
                           Titular
@@ -2944,6 +2944,14 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                           Validade
                         </small>
                         <b className="text-[11px]">{cardExpiry || "MM/AA"}</b>
+                      </div>
+                      <div className="text-right">
+                        <small className="block text-[8px] uppercase tracking-wider text-blue-100">
+                          CVV
+                        </small>
+                        <b className="font-mono text-[11px] tracking-[.16em]">
+                          {cardCvv ? "•".repeat(cardCvv.length) : "•••"}
+                        </b>
                       </div>
                     </div>
                   </div>
