@@ -16,12 +16,14 @@ import {
   List,
   LockKeyhole,
   Menu,
+  MessageSquareText,
   MapPin,
   MoreHorizontal,
   MousePointerClick,
   MoveRight,
   Plus,
   Search,
+  Send,
   Settings,
   ShieldCheck,
   Sparkles,
@@ -30,8 +32,9 @@ import {
   UsersRound,
   Workflow,
   X,
+  Zap,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export const Route = createFileRoute("/")({ component: Nexus });
 type View =
@@ -45,7 +48,9 @@ type View =
   | "pipeline"
   | "agenda"
   | "team"
-  | "settings";
+  | "settings"
+  | "whatsapp"
+  | "messages";
 const businesses = [
   ["Demo v1", "Mariana Costa", "Profissional", "Ativa", "R$ 297", "DV1"],
   ["Demo v2", "Rafael Nunes", "Profissional", "Ativa", "R$ 297", "DV2"],
@@ -149,6 +154,10 @@ function Nexus() {
             <MySubscription checkout={() => setView("checkout")} company={activeCompany} />
           ) : view === "pipeline" ? (
             <SalesPipeline say={say} company={activeCompany} />
+          ) : view === "whatsapp" ? (
+            <WhatsAppConnection company={activeCompany} say={say} />
+          ) : view === "messages" ? (
+            <MessageManager company={activeCompany} say={say} />
           ) : view === "contacts" || view === "agenda" || view === "team" || view === "settings" ? (
             <WorkspaceScreen view={view} say={say} company={activeCompany} />
           ) : (
@@ -596,6 +605,74 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </aside>
         </div>
       </section>
+      <section className="border-t border-slate-200 bg-[#f8fbff] px-5 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
+              Resultados que falam
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+              Quem organiza a operação, cresce com mais controle.
+            </h2>
+            <p className="mt-4 text-slate-600">
+              Cinco histórias de empresas que trocaram dispersão por uma operação comercial clara.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {[
+              [
+                "Mariana Costa",
+                "Demo v1",
+                "‘O ND7 nos deu visão e ritmo. Agora cada oportunidade tem próximo passo.’",
+                "MC",
+              ],
+              [
+                "Rafael Nunes",
+                "Demo v2",
+                "‘O funil deixou de ser uma reunião e virou nosso jeito de trabalhar.’",
+                "RN",
+              ],
+              [
+                "Ana Silva",
+                "Clínica Essenza",
+                "‘Conseguimos atender melhor sem perder a proximidade com os pacientes.’",
+                "AS",
+              ],
+              [
+                "Pedro Lima",
+                "Mosaico Studio",
+                "‘Mais previsibilidade para vender e mais tranquilidade para entregar.’",
+                "PL",
+              ],
+              [
+                "Luiza Rocha",
+                "Lumen Partners",
+                "‘Tudo está no lugar certo. A equipe ganhou autonomia rapidamente.’",
+                "LR",
+              ],
+            ].map(([name, company, quote, initials]) => (
+              <article
+                key={String(name)}
+                className="lift-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-[10px] font-black text-blue-700">
+                    {initials}
+                  </span>
+                  <div>
+                    <p className="text-xs font-bold">{name}</p>
+                    <p className="text-[10px] text-slate-500">{company}</p>
+                  </div>
+                </div>
+                <p className="mt-4 text-xs leading-5 text-slate-600">{quote}</p>
+                <div className="mt-4 text-[10px] font-bold tracking-wider text-amber-500">
+                  ★★★★★
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
       <section className="bg-slate-50 px-5 py-24">
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
@@ -663,6 +740,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           <p>© 2026 ND7. Relacionamentos que crescem.</p>
         </div>
       </footer>
+      <BuyerPopup />
       <a
         href={wa}
         target="_blank"
@@ -674,6 +752,50 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 438.7c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3 18.6-68-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.5-186.6 184.5zm101.9-138c-5.6-2.8-33.1-16.3-38.2-18.1-5.1-1.9-8.8-2.8-12.5 2.8s-14.4 18.1-17.6 21.8c-3.2 3.7-6.5 4.2-12.1 1.4-33.2-16.6-55-29.6-76.9-67.1-5.8-10 5.8-9.3 16.6-31 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3s19.9 53.7 22.6 57.4c2.8 3.7 39.1 59.7 94.8 83.8 13.2 5.7 23.5 9.1 31.5 11.6 13.2 4.2 25.2 3.6 34.7 2.2 10.6-1.6 33.1-13.5 37.8-26.5 4.6-13 4.6-24.1 3.2-26.5-1.3-2.6-5-4-10.6-6.7z" />
         </svg>
       </a>
+    </div>
+  );
+}
+function BuyerPopup() {
+  const buyers = [
+    ["Mariana", "acabou de iniciar a assinatura anual"],
+    ["Rafael", "escolheu o plano semestral"],
+    ["Ana", "acabou de ativar o ND7"],
+    ["Pedro", "garantiu acesso total ao ND7"],
+    ["Luiza", "acabou de iniciar a assinatura trimestral"],
+  ];
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    let hide: ReturnType<typeof setTimeout>;
+    let repeat: ReturnType<typeof setInterval> | undefined;
+    const reveal = () => {
+      setVisible(true);
+      hide = setTimeout(() => setVisible(false), 3000);
+    };
+    const first = setTimeout(() => {
+      reveal();
+      repeat = setInterval(() => {
+        setIndex((current) => (current + 1) % buyers.length);
+        reveal();
+      }, 6000);
+    }, 4000);
+    return () => {
+      clearTimeout(first);
+      clearTimeout(hide);
+      if (repeat) clearInterval(repeat);
+    };
+  }, [buyers.length]);
+  return (
+    <div
+      className={`fixed bottom-6 left-5 z-40 flex max-w-[285px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/95 p-3.5 shadow-2xl shadow-blue-950/15 backdrop-blur transition-all duration-500 ${visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0 pointer-events-none"}`}
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">
+        {buyers[index][0].slice(0, 1)}
+      </span>
+      <p className="text-xs leading-5 text-slate-600">
+        <b className="text-slate-800">{buyers[index][0]}</b> {buyers[index][1]}{" "}
+        <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+      </p>
     </div>
   );
 }
@@ -761,6 +883,27 @@ function Sidebar({
         active={view === "agenda"}
         action={() => {
           setView("agenda");
+          setMenu(false);
+        }}
+      />
+      <p className="mt-6 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+        Comunicação
+      </p>
+      <Nav
+        icon={<MessageSquareText />}
+        label="WhatsApp"
+        active={view === "whatsapp"}
+        action={() => {
+          setView("whatsapp");
+          setMenu(false);
+        }}
+      />
+      <Nav
+        icon={<Send />}
+        label="Mensagens"
+        active={view === "messages"}
+        action={() => {
+          setView("messages");
           setMenu(false);
         }}
       />
@@ -1085,6 +1228,219 @@ function WorkspaceScreen({
         >
           {action}
         </button>
+      </div>
+    </div>
+  );
+}
+function WhatsAppConnection({ company, say }: { company: string; say: (message: string) => void }) {
+  const [connecting, setConnecting] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const connect = () => {
+    setConnecting(true);
+    window.setTimeout(() => {
+      setConnecting(false);
+      setConnected(true);
+      say("Canal WhatsApp conectado no modo demonstração.");
+    }, 900);
+  };
+  return (
+    <div className="mx-auto max-w-[1200px] p-5 md:p-8">
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+          <span className="inline-flex rounded-2xl bg-emerald-100 p-3 text-emerald-700">
+            <MessageSquareText className="h-7 w-7" />
+          </span>
+          <p className="mt-5 text-sm font-bold text-blue-700">{company}</p>
+          <h1 className="mt-2 text-2xl font-bold">Conecte seu WhatsApp</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
+            Conecte um número para centralizar conversas, responder clientes e disparar campanhas
+            diretamente pelo ND7.
+          </p>
+          {connected ? (
+            <div className="mt-7 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <p className="flex items-center gap-2 text-sm font-bold text-emerald-800">
+                <CheckCircle2 className="h-5 w-5" />
+                WhatsApp conectado
+              </p>
+              <p className="mt-2 text-xs leading-5 text-emerald-700">
+                Canal pronto para mensagens individuais, automações e campanhas.
+              </p>
+              <button
+                onClick={() => say("Configurações do canal abertas.")}
+                className="mt-4 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white"
+              >
+                Gerenciar canal
+              </button>
+            </div>
+          ) : (
+            <div className="mt-7">
+              <button
+                onClick={connect}
+                disabled={connecting}
+                className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 disabled:opacity-70"
+              >
+                {connecting ? "Gerando QR Code..." : "Conectar WhatsApp"}
+              </button>
+              <p className="mt-3 text-xs text-slate-500">
+                A conexão segura deve ser feita pelo QR Code do número que será usado pela empresa.
+              </p>
+            </div>
+          )}
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            {[
+              ["1", "Conecte o número"],
+              ["2", "Leia o QR Code"],
+              ["3", "Comece a conversar"],
+            ].map(([number, text]) => (
+              <div key={number} className="rounded-2xl bg-slate-50 p-4">
+                <b className="text-blue-600">{number}</b>
+                <p className="mt-2 text-xs font-semibold text-slate-700">{text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        <aside className="rounded-3xl bg-[#111827] p-6 text-white">
+          <p className="text-xs font-bold uppercase tracking-widest text-blue-200">
+            Integração Evolution
+          </p>
+          <h2 className="mt-3 text-xl font-bold">Conexão preparada para sua API.</h2>
+          <p className="mt-3 text-sm leading-6 text-blue-100">
+            As credenciais da Evolution devem ficar protegidas no backend, nunca nesta tela ou no
+            navegador.
+          </p>
+          <div className="mt-6 space-y-3 border-t border-white/10 pt-5">
+            {[
+              "Conexão por QR Code",
+              "Envio individual e em massa",
+              "Automação por contatos e segmentos",
+              "Histórico centralizado no CRM",
+            ].map((item) => (
+              <p key={item} className="flex gap-2 text-sm text-blue-100">
+                <Check className="h-4 w-4 text-emerald-300" />
+                {item}
+              </p>
+            ))}
+          </div>
+        </aside>
+      </div>
+    </div>
+  );
+}
+function MessageManager({ company, say }: { company: string; say: (message: string) => void }) {
+  const [mode, setMode] = useState("individual");
+  const [selected, setSelected] = useState<string[]>(["Mariana Alves"]);
+  const contacts = [
+    "Mariana Alves",
+    "Carlos Eduardo",
+    "Fernanda Lima",
+    "João Silva",
+    "Patrícia Costa",
+  ];
+  const toggleContact = (contact: string) =>
+    setSelected((all) =>
+      all.includes(contact) ? all.filter((item) => item !== contact) : [...all, contact],
+    );
+  return (
+    <div className="mx-auto max-w-[1200px] p-5 md:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-bold text-blue-700">{company}</p>
+          <h1 className="mt-1 text-2xl font-bold">Gerenciador de Mensagens</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Crie conversas, campanhas e automações para os seus contatos.
+          </p>
+        </div>
+        <button
+          onClick={() => say("Campanha salva como rascunho.")}
+          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white"
+        >
+          <Send className="mr-1 inline h-4 w-4" />
+          Salvar campanha
+        </button>
+      </div>
+      <div className="mt-7 grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-wrap gap-2">
+            {[
+              ["individual", "Mensagem individual"],
+              ["mass", "Envio em massa"],
+              ["automation", "Automação"],
+            ].map(([id, label]) => (
+              <button
+                key={id}
+                onClick={() => setMode(id)}
+                className={`rounded-xl px-3 py-2 text-xs font-bold ${mode === id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-7">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+              Destinatários
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {contacts.map((contact) => (
+                <button
+                  key={contact}
+                  onClick={() => toggleContact(contact)}
+                  className={`flex items-center justify-between rounded-xl border p-3 text-left text-sm ${selected.includes(contact) ? "border-blue-500 bg-blue-50" : "border-slate-200"}`}
+                >
+                  <span>{contact}</span>
+                  {selected.includes(contact) && <Check className="h-4 w-4 text-blue-600" />}
+                </button>
+              ))}
+            </div>
+          </div>
+          <label className="mt-7 block text-xs font-bold uppercase tracking-widest text-slate-400">
+            Mensagem
+            <textarea
+              className="mt-3 min-h-36 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              defaultValue={
+                mode === "automation"
+                  ? "Olá, {{nome}}! Vimos que você demonstrou interesse. Posso ajudar?"
+                  : "Olá, {{nome}}! Temos uma novidade para você."
+              }
+            />
+          </label>
+          <div className="mt-5 flex flex-wrap justify-between gap-3 rounded-2xl bg-slate-50 p-4 text-xs text-slate-500">
+            <span>{selected.length} contato(s) selecionado(s)</span>
+            <button
+              onClick={() =>
+                say(
+                  `${mode === "automation" ? "Automação" : "Mensagem"} agendada para ${selected.length} contato(s).`,
+                )
+              }
+              className="rounded-lg bg-blue-600 px-3 py-2 font-bold text-white"
+            >
+              {mode === "automation" ? "Ativar automação" : "Enviar mensagem"}
+            </button>
+          </div>
+        </section>
+        <aside className="space-y-4">
+          <div className="rounded-3xl bg-[#111827] p-6 text-white">
+            <Zap className="h-6 w-6 text-yellow-300" />
+            <h2 className="mt-4 text-lg font-bold">Envie com contexto.</h2>
+            <p className="mt-2 text-sm leading-6 text-blue-100">
+              Use campos como <b>{"{{nome}}"}</b> para personalizar cada mensagem e mantenha a
+              conversa humana, mesmo em escala.
+            </p>
+          </div>
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="font-bold">Boas práticas</h2>
+            {[
+              "Envie apenas para contatos com consentimento",
+              "Evite disparos repetidos",
+              "Personalize a primeira linha",
+              "Acompanhe respostas no CRM",
+            ].map((item) => (
+              <p key={item} className="mt-4 flex gap-2 text-sm text-slate-600">
+                <Check className="h-4 w-4 shrink-0 text-emerald-600" />
+                {item}
+              </p>
+            ))}
+          </div>
+        </aside>
       </div>
     </div>
   );
