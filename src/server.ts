@@ -50,8 +50,11 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
     return jsonResponse({ error: "method_not_allowed" }, 405);
   }
 
-  const runtime = env as RuntimeEnv;
-  const webhookToken = runtime?.ASAAS_WEBHOOK_TOKEN;
+  const runtime = (env as RuntimeEnv) || {};
+  const webhookToken =
+    runtime.ASAAS_WEBHOOK_TOKEN ||
+    (typeof process !== "undefined" ? process.env?.ASAAS_WEBHOOK_TOKEN : undefined);
+
   if (!webhookToken) {
     console.error("Asaas webhook rejected: ASAAS_WEBHOOK_TOKEN is not configured.");
     return jsonResponse({ error: "webhook_not_configured" }, 503);
@@ -80,7 +83,11 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
   // Keep production delivery disabled until the persistent provisioning worker is
   // configured. A non-2xx response makes Asaas retry instead of falsely marking
   // a payment as provisioned.
-  if (runtime.ASAAS_WEBHOOK_ENABLED !== "true") {
+  const webhookEnabled =
+    runtime.ASAAS_WEBHOOK_ENABLED ||
+    (typeof process !== "undefined" ? process.env?.ASAAS_WEBHOOK_ENABLED : undefined);
+
+  if (webhookEnabled !== "true") {
     console.error("Asaas webhook received before the provisioning worker was enabled.");
     return jsonResponse({ error: "webhook_processing_not_enabled" }, 503);
   }
