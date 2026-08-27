@@ -73,7 +73,7 @@ export function RecentBuyersPopup() {
 
   if (isDismissed) return null;
 
-  const currentBuyer = buyersList[currentIndex];
+  const currentBuyer = buyersList[currentIndex] ?? buyersList[0]!;
   const initials = currentBuyer.name
     .split(" ")
     .map((n) => n[0])
