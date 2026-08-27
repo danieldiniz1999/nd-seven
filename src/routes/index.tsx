@@ -15,6 +15,7 @@ import {
   LayoutGrid,
   List,
   LockKeyhole,
+  LogOut,
   Menu,
   MessageSquareText,
   MapPin,
@@ -211,7 +212,17 @@ const PanelContent = memo(function PanelContent({
   const openCheckout = useCallback(() => setView("checkout"), [setView]);
   const openAdmin = useCallback(() => setView("admin"), [setView]);
 
-  if (view === "admin") return <Admin open={openCompany} say={say} />;
+  if (view === "admin")
+    return (
+      <Admin
+        open={openCompany}
+        say={say}
+        logout={() => {
+          setView("landing");
+          say("Você saiu do Super Admin com sucesso.");
+        }}
+      />
+    );
   if (view === "subscription") return <MySubscription checkout={openCheckout} company={company} />;
   if (view === "finance") return <FinancialCenter company={company} say={say} />;
   if (view === "pipeline") return <SalesPipeline say={say} company={company} />;
@@ -2495,25 +2506,43 @@ function Dashboard({
     </div>
   );
 }
-function Admin({ open, say }: { open: (company: string) => void; say: (s: string) => void }) {
+function Admin({
+  open,
+  say,
+  logout,
+}: {
+  open: (company: string) => void;
+  say: (s: string) => void;
+  logout: () => void;
+}) {
   const [filter, setFilter] = useState("Todos");
   const rows = filter === "Todos" ? businesses : businesses.filter((x) => x[3] === filter);
   return (
     <div className="mx-auto max-w-[1440px] p-5 md:p-8">
-      <div className="rounded-2xl bg-gradient-to-r from-[#071a3d] to-blue-700 p-6 text-white">
-        <div className="flex justify-between gap-4">
+      <div className="rounded-2xl bg-gradient-to-r from-[#071a3d] to-blue-700 p-6 text-white shadow-xl shadow-blue-950/20">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-blue-200">
               ♛ Área restrita
             </p>
-            <h1 className="mt-3 text-2xl font-bold">Central Super Admin</h1>
+            <h1 className="mt-2 text-2xl font-bold">Central Super Admin</h1>
             <p className="mt-1 text-sm text-blue-100">
               Visão global da plataforma, assinaturas e empresas.
             </p>
           </div>
-          <div className="rounded-xl border border-white/15 bg-white/10 p-3 text-right">
-            <small className="text-blue-200">Receita recorrente mensal</small>
-            <b className="block text-xl">R$ 16.842</b>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="rounded-xl border border-white/15 bg-white/10 p-3 text-right">
+              <small className="text-blue-200">Receita recorrente mensal</small>
+              <b className="block text-xl">R$ 16.842</b>
+            </div>
+            <button
+              onClick={logout}
+              title="Sair do painel Super Admin"
+              className="flex items-center gap-2 rounded-xl border border-rose-400/30 bg-rose-500/25 px-4 py-3 text-sm font-bold text-white backdrop-blur-sm transition hover:bg-rose-600 hover:border-rose-500 hover:shadow-lg hover:-translate-y-0.5"
+            >
+              <LogOut className="h-4 w-4" />
+              Sair
+            </button>
           </div>
         </div>
       </div>
