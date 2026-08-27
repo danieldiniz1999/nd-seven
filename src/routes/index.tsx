@@ -1643,6 +1643,29 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
               <LockKeyhole className="mr-1 inline h-3.5 w-3.5" />
               Seus dados de pagamento são protegidos.
             </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                <ShieldCheck className="h-5 w-5 text-blue-600" />
+                <b className="mt-3 block text-xs text-slate-800">Garantia de transparência</b>
+                <p className="mt-1 text-[11px] leading-5 text-slate-500">
+                  Valor, periodicidade e renovação sempre apresentados antes da confirmação.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+                <LockKeyhole className="h-5 w-5 text-emerald-600" />
+                <b className="mt-3 block text-xs text-slate-800">Compra segura</b>
+                <p className="mt-1 text-[11px] leading-5 text-slate-500">
+                  Os dados de pagamento trafegam em ambiente protegido e criptografado.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <CircleDollarSign className="h-5 w-5 text-blue-600" />
+                <b className="mt-3 block text-xs text-slate-800">Pagamento via Asaas</b>
+                <p className="mt-1 text-[11px] leading-5 text-slate-500">
+                  A cobrança é processada pela Asaas, uma plataforma especializada em pagamentos.
+                </p>
+              </div>
+            </div>
           </section>
           <aside className="h-fit lg:sticky lg:top-6">
             <div className="overflow-hidden rounded-3xl bg-[#111827] text-white shadow-2xl">
@@ -1712,12 +1735,17 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                 <div className="mt-6 rounded-2xl bg-white/10 p-4">
                   <p className="text-xs font-bold">
                     <LockKeyhole className="mr-2 inline h-4 w-4 text-emerald-300" />
-                    Compra protegida
+                    Compra segura via Asaas
                   </p>
                   <p className="mt-2 text-[11px] leading-5 text-blue-100">
-                    O acesso só é criado após aprovação da Asaas.
+                    Dados protegidos, cobrança processada pela Asaas e acesso criado somente após a
+                    aprovação.
                   </p>
                 </div>
+                <p className="mt-4 text-center text-[10px] leading-4 text-blue-200">
+                  <ShieldCheck className="mr-1 inline h-3.5 w-3.5" />
+                  Garantia de transparência: você confirma o ciclo e o valor antes de concluir.
+                </p>
               </div>
             </div>
           </aside>
