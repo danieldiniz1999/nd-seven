@@ -213,6 +213,11 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             O ND7 reúne clientes, vendas, equipe e processos em um só lugar — para sua empresa
             vender melhor, sem perder o que importa.
           </p>
+          <p className="reveal delay-2 mx-auto mt-4 max-w-2xl rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800">
+            <CheckCircle2 className="mr-2 inline h-4 w-4 text-blue-600" />
+            Escolha apenas a periodicidade. Em qualquer plano, você recebe{" "}
+            <strong>acesso total ao ND7, sem recursos bloqueados e sem limitações.</strong>
+          </p>
           <div className="reveal delay-3 mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <a
               href="#planos"
@@ -462,6 +467,17 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           Escolha a frequência que faz sentido para sua operação. Quanto maior o período, menor o
           valor mensal equivalente.
         </p>
+        <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-left text-blue-900 shadow-sm">
+          <p className="text-sm font-black">
+            <CheckCircle2 className="mr-2 inline h-5 w-5 text-blue-600" />
+            Acesso total em todos os planos.
+          </p>
+          <p className="mt-1 text-sm leading-6">
+            Não existe plano “limitado” no ND7: você terá todos os módulos, automações, funis,
+            equipe, indicadores e recursos da ferramenta, independentemente da periodicidade
+            escolhida.
+          </p>
+        </div>
         <div className="mx-auto mt-8 inline-flex flex-wrap justify-center gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
           {cycles.map((item) => (
             <button
@@ -472,6 +488,32 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               {item}
               {item === "Anual" && (
                 <span className="ml-1.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] text-emerald-700">
+                  melhor custo
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+        <div className="mx-auto mt-5 grid max-w-4xl gap-3 text-left sm:grid-cols-2 lg:grid-cols-4">
+          {cycles.map((item) => (
+            <button
+              key={item}
+              onClick={() => setCycle(item)}
+              className={`rounded-2xl border p-4 transition ${cycle === item ? "border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-200" : "border-slate-200 bg-white text-slate-800 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"}`}
+            >
+              <span
+                className={`text-xs font-bold ${cycle === item ? "text-blue-100" : "text-slate-500"}`}
+              >
+                {item}
+              </span>
+              <b className="mt-2 block text-xl">{prices[item]}</b>
+              <span
+                className={`mt-1 block text-[11px] ${cycle === item ? "text-blue-100" : "text-slate-500"}`}
+              >
+                por mês · acesso total
+              </span>
+              {item === "Anual" && (
+                <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-700">
                   melhor custo
                 </span>
               )}
@@ -497,8 +539,8 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               <span className="text-sm font-medium text-slate-500"> / mês</span>
             </p>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              Todas as ferramentas centrais para organizar clientes, vendas e time desde o primeiro
-              dia.
+              O mesmo acesso total ao ND7 em qualquer periodicidade. Você escolhe o prazo; nós não
+              bloqueamos recursos.
             </p>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {[
@@ -508,6 +550,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
                 "Equipe e permissões",
                 "Painel de indicadores",
                 "Suporte especializado",
+                "Acesso total, sem limitações",
               ].map((x) => (
                 <p key={x} className="text-sm text-slate-700">
                   <Check className="mr-2 inline h-4 w-4 text-blue-600" />
@@ -526,8 +569,8 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             <Sparkles className="h-6 w-6 text-blue-300" />
             <h3 className="mt-5 text-xl font-bold">Cresça com previsibilidade.</h3>
             <p className="mt-3 text-sm leading-6 text-blue-100">
-              Você pode escolher mensal, trimestral, semestral ou anual. Cada período tem valor
-              mensal equivalente claro no checkout.
+              Mensal, trimestral, semestral ou anual: a única diferença é o valor e a frequência de
+              cobrança. O acesso é sempre total, sem módulos restritos.
             </p>
             <div className="mt-7 border-t border-white/10 pt-5 text-sm text-blue-100">
               <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
@@ -535,6 +578,9 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               <br />
               <Check className="mr-2 mt-3 inline h-4 w-4 text-emerald-300" />
               Gestão centralizada da assinatura
+              <br />
+              <Check className="mr-2 mt-3 inline h-4 w-4 text-emerald-300" />
+              Todos os recursos em qualquer plano
             </div>
           </aside>
         </div>
