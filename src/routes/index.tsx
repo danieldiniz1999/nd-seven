@@ -534,7 +534,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               internas: comece com o essencial e evolua no seu ritmo.
             </p>
           </div>
-          <div className="mt-7 grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
             {[
               "Vendas consultivas",
               "Serviços e agências",
