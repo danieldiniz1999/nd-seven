@@ -2363,14 +2363,14 @@ function Card({
   icon: ReactNode;
 }) {
   return (
-    <div className="product-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="product-card rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/90">
       <div className="flex items-center justify-between">
-        <span className="text-sm text-slate-500">{label}</span>
-        <span className="rounded-lg bg-blue-50 p-2 text-blue-600">{icon}</span>
+        <span className="text-sm font-medium text-slate-500 dark:text-slate-300">{label}</span>
+        <span className="rounded-lg bg-blue-50 p-2 text-blue-600 dark:bg-blue-950/80 dark:text-blue-400 dark:border dark:border-blue-800/40">{icon}</span>
       </div>
-      <b className="mt-5 block text-2xl tracking-tight">{value}</b>
-      <p className="mt-2 text-xs text-emerald-600">
-        ↑ {trend} <span className="text-slate-400">vs. mês anterior</span>
+      <b className="mt-5 block text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{value}</b>
+      <p className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+        ↑ {trend} <span className="font-normal text-slate-400 dark:text-slate-400">vs. mês anterior</span>
       </p>
     </div>
   );
@@ -2557,11 +2557,11 @@ function Admin({
         <Card label="Assinaturas expiradas" value="3" trend="este mês" icon={<CalendarDays />} />
         <Card label="Usuários ativos" value="438" trend="42 novos" icon={<UsersRound />} />
       </div>
-      <section className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-wrap justify-between gap-4 border-b p-5">
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/90">
+        <div className="flex flex-wrap justify-between gap-4 border-b border-slate-200 dark:border-slate-800 p-5">
           <div>
-            <h2 className="font-semibold">Assinantes e empresas</h2>
-            <p className="mt-1 text-xs text-slate-500">
+            <h2 className="font-bold text-slate-900 dark:text-white">Assinantes e empresas</h2>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
               Gerencie acessos, cobrança e dados cadastrais.
             </p>
           </div>
@@ -2569,7 +2569,7 @@ function Admin({
             onClick={() =>
               say("O cliente deverá concluir o checkout para criar o acesso automaticamente.")
             }
-            className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white"
+            className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
           >
             <Plus className="mr-1 inline h-4 w-4" />
             Novo assinante
@@ -2578,8 +2578,13 @@ function Admin({
         <div className="flex gap-2 p-5 pb-0">
           {["Todos", "Ativa", "Pendente", "Expirada"].map((f) => (
             <button
+              key={f}
               onClick={() => setFilter(f)}
-              className={`rounded-full px-3 py-1.5 text-xs font-bold ${filter === f ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-500"}`}
+              className={`rounded-full px-3 py-1.5 text-xs font-bold transition ${
+                filter === f
+                  ? "bg-blue-100 dark:bg-blue-600 text-blue-700 dark:text-white"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+              }`}
             >
               {f}
             </button>
@@ -2587,7 +2592,7 @@ function Admin({
         </div>
         <div className="overflow-x-auto p-5">
           <table className="w-full min-w-[760px] text-left">
-            <thead className="text-[11px] uppercase text-slate-400">
+            <thead className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               <tr>
                 <th className="pb-3">Empresa / Responsável</th>
                 <th>Plano</th>
@@ -2599,36 +2604,42 @@ function Admin({
             </thead>
             <tbody>
               {rows.map((x) => (
-                <tr key={x[0]} className="border-t border-slate-100 text-sm">
+                <tr key={x[0]} className="border-t border-slate-100 dark:border-slate-800/80 text-sm">
                   <td className="py-4">
-                    <span className="mr-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-xs font-bold text-blue-700">
+                    <span className="mr-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950/80 text-xs font-bold text-blue-700 dark:text-blue-300 border border-transparent dark:border-blue-800/40">
                       {x[5]}
                     </span>
                     <span>
-                      <b>{x[0]}</b>
-                      <small className="ml-2 text-slate-400">{x[1]}</small>
+                      <b className="font-bold text-slate-900 dark:text-white">{x[0]}</b>
+                      <small className="ml-2 text-slate-500 dark:text-slate-300">{x[1]}</small>
                     </span>
                   </td>
-                  <td>{x[2]}</td>
+                  <td className="text-slate-700 dark:text-slate-200 font-medium">{x[2]}</td>
                   <td>
                     <span
-                      className={`rounded-full px-2 py-1 text-xs font-bold ${x[3] === "Ativa" ? "bg-emerald-50 text-emerald-700" : x[3] === "Pendente" ? "bg-amber-50 text-amber-700" : "bg-rose-50 text-rose-700"}`}
+                      className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                        x[3] === "Ativa"
+                          ? "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50"
+                          : x[3] === "Pendente"
+                            ? "bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/50"
+                            : "bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200/50 dark:border-rose-800/50"
+                      }`}
                     >
                       {x[3]}
                     </span>
                   </td>
-                  <td>{x[4]}</td>
-                  <td className="font-mono text-xs text-slate-400">nxs-{String(x[5]).toLowerCase()}74f</td>
+                  <td className="font-bold text-slate-900 dark:text-white">{x[4]}</td>
+                  <td className="font-mono text-xs text-slate-500 dark:text-slate-300 font-medium">nxs-{String(x[5]).toLowerCase()}74f</td>
                   <td>
                     <button
                       onClick={() => open(String(x[0]))}
-                      className="rounded-lg border px-2.5 py-1.5 text-xs font-bold text-blue-700"
+                      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 transition"
                     >
                       Acessar empresa
                     </button>
                     <button
                       onClick={() => say(`Opções de ${x[0]} abertas.`)}
-                      className="ml-1 p-2 text-slate-400"
+                      className="ml-1 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </button>

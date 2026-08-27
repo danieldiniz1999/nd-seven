@@ -467,7 +467,7 @@ input:focus-visible {
 
 .dark .text-slate-900,
 .dark .text-slate-800 {
-  color: #f1f5f9 !important;
+  color: #f8fafc !important;
 }
 
 .dark .text-slate-700 {
@@ -476,11 +476,11 @@ input:focus-visible {
 
 .dark .text-slate-600,
 .dark .text-slate-500 {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
 }
 
 .dark .text-slate-400 {
-  color: #64748b !important;
+  color: #94a3b8 !important;
 }
 
 .dark table th {
