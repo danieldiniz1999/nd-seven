@@ -1,47 +1,50 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 
 export type ProvisionAccountParams = {
   legalName: string;
   document: string;
   email: string;
   fullName: string;
-  phone?: string;
-  asaasCustomerId?: string;
-  asaasSubscriptionId?: string;
+  phone?: string | undefined;
+  asaasCustomerId?: string | undefined;
+  asaasSubscriptionId?: string | undefined;
   planCode: string;
   amount: number;
-  currentPeriodEnd?: string;
+  currentPeriodEnd?: string | undefined;
 };
 
 export type ProvisionResult = {
   success: boolean;
-  companyId?: string;
-  workspaceId?: string;
-  userId?: string;
-  isNewUser?: boolean;
-  error?: string;
+  companyId?: string | undefined;
+  workspaceId?: string | undefined;
+  userId?: string | undefined;
+  isNewUser?: boolean | undefined;
+  error?: string | undefined;
 };
 
 function getAdminClient() {
   const supabaseUrl =
     (typeof process !== "undefined"
-      ? process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
+      ? process.env['SUPABASE_URL'] || process.env['VITE_SUPABASE_URL']
       : "") || "https://lyftfxlqngubskjqsbue.supabase.co";
 
   const serviceRoleKey =
-    typeof process !== "undefined" ? process.env.SUPABASE_SERVICE_ROLE_KEY : "";
+    typeof process !== "undefined" ? process.env['SUPABASE_SERVICE_ROLE_KEY'] : "";
 
   if (!serviceRoleKey) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
   }
 
-  return createClient<Database>(supabaseUrl, serviceRoleKey, {
+  // Schema types are not generated yet; use a loose client.
+  return createClient(supabaseUrl, serviceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
     },
-  });
+  }) as unknown as {
+    from: (table: string) => any;
+    auth: { admin: any };
+  };
 }
 
 function generateWorkspaceId(): string {
@@ -233,7 +236,7 @@ export async function provisionAccount(params: ProvisionAccountParams): Promise<
 
 export async function updateSubscriptionStatus(
   asaasSubscriptionId: string,
-  status: Database["public"]["Enums"]["subscription_status"],
+  status: string,
 ) {
   try {
     const supabase = getAdminClient();

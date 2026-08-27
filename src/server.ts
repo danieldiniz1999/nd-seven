@@ -142,7 +142,7 @@ async function checkoutHandler(request: Request, env: unknown): Promise<Response
       province: body.province,
     });
 
-    const planConfig = planPricing[body.cycle] || planPricing.Mensal;
+    const planConfig = planPricing[body.cycle] || planPricing['Mensal']!;
     let billingType: AsaasBillingType = "PIX";
     if (body.paymentMethod === "card") billingType = "CREDIT_CARD";
     if (body.paymentMethod === "boleto") billingType = "BOLETO";
