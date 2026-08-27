@@ -196,6 +196,9 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             <a href="#como-funciona" className="hover:text-blue-600">
               Como funciona
             </a>
+            <a href="#resultado" className="hover:text-blue-600">
+              Por que ND7
+            </a>
             <a href="#planos" className="hover:text-blue-600">
               Planos
             </a>
@@ -216,11 +219,12 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
             <Sparkles className="h-3.5 w-3.5" />O CRM que acompanha o ritmo do seu negócio
           </div>
           <h1 className="reveal delay-1 mx-auto mt-6 max-w-4xl text-4xl font-black leading-[1.05] tracking-tight md:text-6xl">
-            Transforme cada conversa em <span className="gradient-text">crescimento.</span>
+            Pare de perder oportunidades.{" "}
+            <span className="gradient-text">Comece a crescer com controle.</span>
           </h1>
           <p className="reveal delay-2 mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 md:text-lg">
-            O ND7 reúne clientes, vendas, equipe e processos em um só lugar — para sua empresa
-            vender melhor, sem perder o que importa.
+            O ND7 transforma contatos soltos, conversas esquecidas e processos confusos em uma
+            operação comercial que sua equipe consegue acompanhar, repetir e acelerar.
           </p>
           <p className="reveal delay-2 mx-auto mt-4 max-w-2xl rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800">
             <CheckCircle2 className="mr-2 inline h-4 w-4 text-blue-600" />
@@ -232,14 +236,14 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               href="#planos"
               className="group rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-blue-200 transition hover:-translate-y-1 hover:bg-blue-700 hover:shadow-blue-300"
             >
-              Ver oferta{" "}
+              Ver planos e condições{" "}
               <ArrowRight className="ml-2 inline h-4 w-4 transition group-hover:translate-x-1" />
             </a>
             <a
               href="#planos"
               className="rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
             >
-              Conhecer a oferta
+              Quero organizar minha operação
             </a>
           </div>
           <p className="reveal delay-3 mt-4 text-xs text-slate-400">
@@ -279,6 +283,25 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+      <section className="border-y border-blue-100 bg-blue-50/70 px-5 py-5">
+        <div className="mx-auto grid max-w-6xl gap-4 text-center sm:grid-cols-3 sm:text-left">
+          {[
+            ["Tudo no mesmo lugar", "Clientes, vendas, equipe e rotina comercial."],
+            ["Acesso total", "Nenhum módulo bloqueado em qualquer plano."],
+            ["Seu ritmo, sua escolha", "Mensal, trimestral, semestral ou anual."],
+          ].map(([title, text]) => (
+            <div key={title} className="flex items-center justify-center gap-3 sm:justify-start">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm">
+                <CheckCircle2 className="h-5 w-5" />
+              </span>
+              <p className="text-xs leading-5 text-slate-600">
+                <b className="block text-sm text-slate-900">{title}</b>
+                {text}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
       <section id="recursos" className="mx-auto max-w-6xl px-5 py-24">
@@ -380,6 +403,70 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
+      <section id="resultado" className="bg-slate-50 px-5 py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
+              O custo de continuar igual
+            </p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">
+              Sua equipe não precisa trabalhar mais. Precisa trabalhar com direção.
+            </h2>
+            <p className="mt-4 text-slate-600">
+              Quando cada informação está em um lugar diferente, o time gasta energia procurando,
+              perguntando e tentando lembrar. O ND7 muda essa rotina por uma visão compartilhada.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-2">
+            <article className="rounded-3xl border border-rose-100 bg-white p-7 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-widest text-rose-500">
+                Sem processo centralizado
+              </p>
+              <h3 className="mt-3 text-2xl font-bold text-slate-900">
+                A operação vive apagando incêndios.
+              </h3>
+              <div className="mt-6 space-y-4">
+                {[
+                  "Leads ficam sem retorno e oportunidades esfriam.",
+                  "A equipe depende de planilhas, memória e mensagens dispersas.",
+                  "Gestão descobre os gargalos tarde demais.",
+                ].map((item) => (
+                  <p key={item} className="flex gap-3 text-sm leading-6 text-slate-600">
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-rose-400" />
+                    {item}
+                  </p>
+                ))}
+              </div>
+            </article>
+            <article className="rounded-3xl border border-blue-200 bg-[#071a3d] p-7 text-white shadow-xl shadow-blue-200">
+              <p className="text-xs font-bold uppercase tracking-widest text-blue-300">Com ND7</p>
+              <h3 className="mt-3 text-2xl font-bold">
+                Cada oportunidade tem contexto e próximo passo.
+              </h3>
+              <div className="mt-6 space-y-4">
+                {[
+                  "Funil visível para saber onde agir agora.",
+                  "Histórico centralizado para a conversa continuar de onde parou.",
+                  "Indicadores para conduzir decisões diárias com clareza.",
+                ].map((item) => (
+                  <p key={item} className="flex gap-3 text-sm leading-6 text-blue-100">
+                    <Check className="mt-0.5 h-5 w-5 shrink-0 text-emerald-300" />
+                    {item}
+                  </p>
+                ))}
+              </div>
+            </article>
+          </div>
+          <div className="mt-9 text-center">
+            <a
+              href="#planos"
+              className="inline-block rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-blue-700 hover:shadow-xl"
+            >
+              Quero ter essa visão da minha operação <ArrowRight className="ml-2 inline h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </section>
       <section className="mx-auto max-w-6xl px-5 py-24">
         <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
           <div>
@@ -475,6 +562,48 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+      <section className="mx-auto max-w-6xl px-5 py-24">
+        <div className="rounded-[32px] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-10 text-white shadow-2xl shadow-blue-200 md:px-12 md:py-12">
+          <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-blue-200">
+                Uma assinatura. A plataforma completa.
+              </p>
+              <h2 className="mt-4 text-3xl font-black tracking-tight md:text-4xl">
+                Não escolha o que cortar. Escolha apenas por quanto tempo quer avançar.
+              </h2>
+              <p className="mt-5 max-w-xl leading-7 text-blue-100">
+                No ND7, todos os planos entregam a mesma estrutura para a sua empresa vender,
+                organizar e escalar. A periodicidade muda o valor mensal — nunca o seu acesso.
+              </p>
+              <a
+                href="#planos"
+                className="mt-7 inline-block rounded-xl bg-white px-5 py-3 text-sm font-bold text-blue-700 transition hover:-translate-y-1 hover:shadow-xl"
+              >
+                Ver acesso completo e valores <ArrowRight className="ml-2 inline h-4 w-4" />
+              </a>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                "CRM de contatos e negócios",
+                "Funis de venda em kanban, lista e grade",
+                "Automação e mensagens para contatos",
+                "Equipe, permissões e indicadores",
+                "Agenda e gestão de tarefas",
+                "Histórico de assinatura e suporte",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur"
+                >
+                  <CheckCircle2 className="h-5 w-5 text-emerald-300" />
+                  <p className="mt-3 text-sm font-bold leading-5">{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -681,6 +810,18 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
                 "Minha equipe poderá usar o sistema?",
                 "Sim. O plano inclui gestão de equipe e permissões para que cada pessoa tenha o nível de acesso adequado.",
               ],
+              [
+                "Existe teste gratuito?",
+                "Não. O ND7 é contratado por assinatura e o acesso é liberado após a confirmação do pagamento. Você começa com a plataforma completa desde o primeiro dia.",
+              ],
+              [
+                "Algum plano possui recursos bloqueados?",
+                "Não. Todas as periodicidades dão acesso total aos recursos do ND7. A diferença entre elas é somente o valor mensal equivalente e a frequência de cobrança.",
+              ],
+              [
+                "Posso mudar minha periodicidade depois?",
+                "Você acompanha a assinatura pelo painel e pode solicitar a adequação da periodicidade de acordo com a necessidade da sua operação.",
+              ],
             ].map(([question, answer]) => (
               <details
                 key={question}
@@ -794,10 +935,13 @@ function BuyerPopup() {
           <b className="text-slate-800">{buyers[index].name}</b> · {buyers[index].state}
         </p>
         <p>
-          Plano <b className="text-slate-700">{buyers[index].plan}</b> · há {buyers[index].minutes} min
+          Plano <b className="text-slate-700">{buyers[index].plan}</b> · há {buyers[index].minutes}{" "}
+          min
           <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
         </p>
-        <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">Demonstração</span>
+        <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+          Demonstração
+        </span>
       </div>
     </div>
   );
