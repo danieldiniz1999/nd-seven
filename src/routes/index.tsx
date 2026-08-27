@@ -440,23 +440,32 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
           <div className="mt-7 grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
             {[
-              "Vendas consultivas", "Serviços e agências", "Saúde e bem-estar", "Equipes B2B",
-              "Imobiliárias", "Educação e cursos", "E-commerce", "Jurídico", "Financeiro",
-              "Marketing", "Construção civil", "Franquias",
+              "Vendas consultivas",
+              "Serviços e agências",
+              "Saúde e bem-estar",
+              "Equipes B2B",
+              "Imobiliárias",
+              "Educação e cursos",
+              "E-commerce",
+              "Jurídico",
+              "Financeiro",
+              "Marketing",
+              "Construção civil",
+              "Franquias",
             ].map((item) => (
-                <div
-                  key={item}
-                  className="group rounded-xl border border-slate-200 bg-[#ffffff] p-3.5 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
-                >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-[10px] font-bold text-blue-700 group-hover:bg-blue-600 group-hover:text-white">
-                    ND7
-                  </span>
-                  <p className="mt-3 text-xs font-bold leading-5">{item}</p>
-                  <p className="mt-1 text-[11px] leading-4 text-slate-500">
-                    Clientes, oportunidades e processos em um só lugar.
-                  </p>
-                </div>
-            )}
+              <div
+                key={item}
+                className="group rounded-xl border border-slate-200 bg-[#ffffff] p-3.5 transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-[10px] font-bold text-blue-700 group-hover:bg-blue-600 group-hover:text-white">
+                  ND7
+                </span>
+                <p className="mt-3 text-xs font-bold leading-5">{item}</p>
+                <p className="mt-1 text-[11px] leading-4 text-slate-500">
+                  Clientes, oportunidades e processos em um só lugar.
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
