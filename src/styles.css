@@ -670,3 +670,186 @@ input:focus-visible {
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+/* Responsive safeguards: preserve comfortable edges and make dense product views usable. */
+.app-sidebar {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.app-sidebar .nav-item {
+  min-height: 2.8rem;
+}
+
+.app-sidebar .nav-item > span {
+  position: relative;
+  z-index: 1;
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1), color 180ms ease;
+}
+
+.app-sidebar .nav-item::after {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  width: 0.33rem;
+  height: 0.33rem;
+  border-radius: 999px;
+  content: "";
+  background: #93c5fd;
+  box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.5);
+  opacity: 0;
+  transform: translateY(-50%) scale(0.2);
+  transition: opacity 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.app-sidebar .nav-item:not([data-active="true"]):hover {
+  background: linear-gradient(100deg, rgba(59, 130, 246, 0.22), rgba(99, 102, 241, 0.12)) !important;
+  border-color: rgba(147, 197, 253, 0.28);
+  color: #eff6ff;
+  transform: translateX(4px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 12px 22px -18px rgba(59, 130, 246, 0.9);
+}
+
+.app-sidebar .nav-item:not([data-active="true"]):hover > span {
+  transform: scale(1.08);
+  color: #93c5fd;
+}
+
+.app-sidebar .nav-item:not([data-active="true"]):hover::after,
+.app-sidebar .nav-item[data-active="true"]::after {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+  box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.1);
+}
+
+.app-sidebar .nav-item[data-active="true"] {
+  background: linear-gradient(110deg, #2563eb 0%, #3b82f6 60%, #4f8df7 100%) !important;
+  border-color: rgba(191, 219, 254, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 14px 28px -16px rgba(37, 99, 235, 0.9);
+}
+
+.app-sidebar .nav-item[data-active="true"] > span {
+  color: #fff;
+  transform: scale(1.05);
+}
+
+@media (max-width: 1023px) {
+  .app-search {
+    min-width: 14rem;
+  }
+
+  .app-sidebar {
+    width: min(88vw, 20rem) !important;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+    padding-top: max(1rem, env(safe-area-inset-top)) !important;
+  }
+
+  .app-main table {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-topbar {
+    height: 4.15rem !important;
+    padding-right: 1rem !important;
+    padding-left: 1rem !important;
+  }
+
+  .app-main > div {
+    padding: 1rem !important;
+  }
+
+  .app-main .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .app-sidebar .nav-item {
+    min-height: 2.95rem;
+    padding-right: 2.1rem !important;
+  }
+
+  .checkout-page {
+    padding: 1rem !important;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+  }
+
+  .checkout-header {
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .checkout-header > div:last-child {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem !important;
+  }
+
+  .checkout-header > div:last-child button {
+    font-size: 0.75rem;
+    padding: 0.45rem 0.5rem;
+  }
+
+  .checkout-form,
+  .checkout-summary {
+    padding: 1.25rem !important;
+  }
+
+  .checkout-progress {
+    gap: 0.4rem !important;
+    font-size: 0.65rem !important;
+  }
+
+  .checkout-progress > .h-px {
+    width: 1rem !important;
+  }
+
+  .card-preview {
+    min-height: 188px;
+    padding: 1rem !important;
+  }
+
+  .card-preview p {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: clamp(0.67rem, 3.35vw, 0.875rem);
+    letter-spacing: 0.08em;
+    text-overflow: clip;
+  }
+
+  .profile-dialog {
+    border-radius: 1.25rem !important;
+  }
+
+  .whatsapp-float {
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 390px) {
+  .checkout-header .text-xs {
+    display: none;
+  }
+
+  .checkout-progress > .h-px {
+    width: 0.5rem !important;
+  }
+
+  .checkout-progress {
+    font-size: 0.59rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar .nav-item,
+  .app-sidebar .nav-item::before,
+  .app-sidebar .nav-item::after,
+  .app-sidebar .nav-item > span,
+  .profile-trigger,
+  .product-card,
+  .app-main button:not(.nav-item) {
+    transition-duration: 1ms !important;
+  }
+}
+

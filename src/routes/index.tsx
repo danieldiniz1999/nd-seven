@@ -6,6 +6,8 @@ import {
   CalendarDays,
   Check,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   CircleDollarSign,
   ClipboardList,
   ContactRound,
@@ -70,6 +72,7 @@ function Logo() {
 function Nexus() {
   const [view, setView] = useState<View>("landing"),
     [menu, setMenu] = useState(false),
+    [signedInAsSuperAdmin, setSignedInAsSuperAdmin] = useState(false),
     [impersonating, setImpersonating] = useState(false),
     [activeCompany, setActiveCompany] = useState("Demo v1"),
     [notice, setNotice] = useState(""),
@@ -123,7 +126,15 @@ function Nexus() {
       </>
     );
   if (view === "login")
-    return <Login back={() => setView("landing")} enter={() => setView("admin")} />;
+    return (
+      <Login
+        back={() => setView("landing")}
+        enter={() => {
+          setSignedInAsSuperAdmin(true);
+          setView("admin");
+        }}
+      />
+    );
   if (view === "checkout")
     return (
       <>
@@ -139,15 +150,15 @@ function Nexus() {
   return (
     <div className="app-shell min-h-screen bg-[#f8fbff] text-slate-800">
       {notice && (
-        <div className="fixed right-5 top-5 z-50 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl">
+        <div className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-50 max-w-[calc(100vw-2rem)] rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl sm:right-5 sm:max-w-sm">
           <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
           {notice}
         </div>
       )}
       {profileDialogOpen && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/35 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/35 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-sm">
           <button aria-label="Fechar janela de perfil" className="absolute inset-0" onClick={() => setProfileDialogOpen(false)} />
-          <section className="profile-dialog relative w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+          <section className="profile-dialog relative max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
             <button aria-label="Fechar" onClick={() => setProfileDialogOpen(false)} className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X className="h-4 w-4" /></button>
             <p className="text-xs font-bold uppercase tracking-[.16em] text-blue-600">Perfil</p>
             <h2 className="mt-2 text-xl font-bold">Sua foto de perfil</h2>
@@ -224,11 +235,12 @@ function Nexus() {
           <PanelContent
             view={view}
             company={activeCompany}
-            accessRole={impersonating ? "super_admin" : "owner"}
+            accessRole={signedInAsSuperAdmin ? "super_admin" : "owner"}
             say={say}
             setView={setView}
             setActiveCompany={setActiveCompany}
             setImpersonating={setImpersonating}
+            setSignedInAsSuperAdmin={setSignedInAsSuperAdmin}
           />
         </main>
       </div>
@@ -243,6 +255,7 @@ const PanelContent = memo(function PanelContent({
   setView,
   setActiveCompany,
   setImpersonating,
+  setSignedInAsSuperAdmin,
 }: {
   view: View;
   company: string;
@@ -251,6 +264,7 @@ const PanelContent = memo(function PanelContent({
   setView: (view: View) => void;
   setActiveCompany: (company: string) => void;
   setImpersonating: (impersonating: boolean) => void;
+  setSignedInAsSuperAdmin: (signedIn: boolean) => void;
 }) {
   const openCompany = useCallback(
     (nextCompany: string) => {
@@ -270,6 +284,8 @@ const PanelContent = memo(function PanelContent({
         open={openCompany}
         say={say}
         logout={() => {
+          setSignedInAsSuperAdmin(false);
+          setImpersonating(false);
           setView("landing");
           say("Você saiu do Super Admin com sucesso.");
         }}
@@ -1204,6 +1220,7 @@ function Nav({
   return (
     <button
       onClick={action}
+      data-active={active ? "true" : "false"}
       className={`nav-item mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${active ? "bg-blue-600 text-white" : "hover:bg-white/5 hover:text-white"}`}
     >
       <span className="h-4 w-4">{icon}</span>
@@ -1218,7 +1235,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
     "Diagnóstico",
     "Proposta enviada",
     "Negociação",
-    "Fechado ganho",
+    "Fechado",
   ];
   const stageGuidance: Record<string, string> = {
     "Novo lead": "Ainda não abordado",
@@ -1226,7 +1243,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
     Diagnóstico: "Entenda cenário e necessidade",
     "Proposta enviada": "Apresente a solução ideal",
     Negociação: "Alinhe condições e decisão",
-    "Fechado ganho": "Prepare o próximo passo",
+    Fechado: "Prepare o próximo passo",
   };
   const stageTone: Record<string, string> = {
     "Novo lead": "bg-sky-500",
@@ -1234,7 +1251,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
     Diagnóstico: "bg-amber-500",
     "Proposta enviada": "bg-blue-600",
     Negociação: "bg-fuchsia-500",
-    "Fechado ganho": "bg-emerald-500",
+    Fechado: "bg-emerald-500",
   };
   const [layout, setLayout] = useState<"kanban" | "grid" | "list">("kanban");
   const [dragged, setDragged] = useState<string | null>(null);
@@ -1284,13 +1301,45 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
       title: "Pacote de implantação",
       company: "Vértice Soluções",
       value: "R$ 9.800",
-      stage: "Fechado ganho",
+      stage: "Fechado",
       owner: "VS",
     },
   ]);
   const move = (id: string, target: string) => {
     setDeals((all) => all.map((deal) => (deal.id === id ? { ...deal, stage: target } : deal)));
     say(`Negócio movido para ${target}.`);
+  };
+  const moveBy = (deal: (typeof deals)[number], direction: -1 | 1) => {
+    const currentIndex = stages.indexOf(deal.stage);
+    const target = stages[currentIndex + direction];
+    if (target) move(deal.id, target);
+  };
+  const stageControls = (deal: (typeof deals)[number]) => {
+    const currentIndex = stages.indexOf(deal.stage);
+    return (
+      <span className="ml-2 inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 shadow-sm">
+        <button
+          type="button"
+          aria-label={`Mover ${deal.title} para o estágio anterior`}
+          title="Estágio anterior"
+          disabled={currentIndex === 0}
+          onClick={() => moveBy(deal, -1)}
+          className="rounded-md p-1 text-slate-500 transition hover:bg-white hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          aria-label={`Mover ${deal.title} para o próximo estágio`}
+          title="Próximo estágio"
+          disabled={currentIndex === stages.length - 1}
+          onClick={() => moveBy(deal, 1)}
+          className="rounded-md p-1 text-slate-500 transition hover:bg-white hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-30"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      </span>
+    );
   };
   const card = (deal: (typeof deals)[number], compact = false) => (
     <article
@@ -1313,23 +1362,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
         <span className="rounded-full bg-blue-100 px-2 py-1 text-[10px] font-bold text-blue-700">
           {deal.owner}
         </span>
-        {!compact && (
-          <select
-            aria-label={`Mover ${deal.title}`}
-            value={deal.stage}
-            onChange={(event) => move(deal.id, event.target.value)}
-            className="ml-2 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-blue-700"
-          >
-            <option value={deal.stage}>Mover</option>
-            {stages
-              .filter((stage) => stage !== deal.stage)
-              .map((stage) => (
-                <option key={stage} value={stage}>
-                  {stage}
-                </option>
-              ))}
-          </select>
-        )}
+        {!compact && stageControls(deal)}
       </div>
     </article>
   );
@@ -1369,8 +1402,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
           ))}
         </div>
         <p className="text-xs text-slate-500">
-          Arraste os cards ou use <b className="text-blue-700">Mover</b> para avançar uma
-          oportunidade.
+          Arraste os cards ou use as setas para avançar e recuar uma oportunidade.
         </p>
       </div>
       {layout === "kanban" ? (
@@ -1435,15 +1467,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
                   {deal.stage}
                 </span>
                 <span className="text-xs text-slate-500">Responsável: {deal.owner}</span>
-                <select
-                  value={deal.stage}
-                  onChange={(event) => move(deal.id, event.target.value)}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-2 text-xs font-bold text-blue-700"
-                >
-                  {stages.map((stage) => (
-                    <option key={stage}>{stage}</option>
-                  ))}
-                </select>
+                {stageControls(deal)}
               </div>
             ))}
           </div>
@@ -1508,7 +1532,10 @@ function TeamManagement({
     id: string;
     name: string;
     email: string;
-    role: AccessRole;
+    phone?: string;
+    jobTitle?: string;
+    department?: string;
+    role?: AccessRole;
     status: "Ativo" | "Inativo";
   };
   const defaultMembers = (business: string): Member[] => [
@@ -1516,6 +1543,8 @@ function TeamManagement({
       id: "owner",
       name: "Responsável pela empresa",
       email: `${business.toLowerCase().replace(/\s/g, ".")}@empresa.com`,
+      jobTitle: "Responsável pela operação",
+      department: "Direção",
       role: "owner",
       status: "Ativo",
     },
@@ -1523,6 +1552,8 @@ function TeamManagement({
       id: "operator-1",
       name: "Ana Martins",
       email: "ana@empresa.com",
+      jobTitle: "Executiva comercial",
+      department: "Comercial",
       role: "operator",
       status: "Ativo",
     },
@@ -1530,6 +1561,8 @@ function TeamManagement({
       id: "operator-2",
       name: "Carlos Lima",
       email: "carlos@empresa.com",
+      jobTitle: "Analista de relacionamento",
+      department: "Atendimento",
       role: "operator",
       status: "Ativo",
     },
@@ -1548,7 +1581,9 @@ function TeamManagement({
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [newRole, setNewRole] = useState<AccessRole>("operator");
+  const [phone, setPhone] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
+  const [department, setDepartment] = useState("");
   const canCreate = currentRole !== "operator";
   const allowedRoles: AccessRole[] =
     currentRole === "super_admin" ? ["owner", "operator"] : ["operator"];
@@ -1558,7 +1593,9 @@ function TeamManagement({
     setShowForm(false);
     setName("");
     setEmail("");
-    setNewRole(currentRole === "super_admin" ? "owner" : "operator");
+    setPhone("");
+    setJobTitle("");
+    setDepartment("");
   }, [company, currentRole]);
   const persist = (next: Member[]) => {
     setMembers(next);
@@ -1569,27 +1606,36 @@ function TeamManagement({
       say("Informe nome e e-mail para criar o acesso.");
       return;
     }
-    if (!allowedRoles.includes(newRole)) {
-      say("Seu nível de acesso não permite criar este perfil.");
-      return;
-    }
     persist([
       ...members,
       {
         id: `${Date.now()}`,
         name: name.trim(),
         email: email.trim(),
-        role: newRole,
+        phone: phone.trim(),
+        jobTitle: jobTitle.trim(),
+        department,
         status: "Ativo",
       },
     ]);
     setName("");
     setEmail("");
-    setNewRole(currentRole === "super_admin" ? "owner" : "operator");
+    setPhone("");
+    setJobTitle("");
+    setDepartment("");
     setShowForm(false);
-    say(`${roleLabel[newRole]} criado e convite preparado.`);
+    say("Colaborador criado. Defina o nível de acesso na lista.");
   };
-  const canManage = (member: Member) => currentRole === "super_admin" || member.role === "operator";
+  const canManage = (member: Member) =>
+    currentRole !== "operator" && (currentRole === "super_admin" || member.role !== "owner");
+  const changeRole = (member: Member, role: AccessRole) => {
+    if (!canManage(member) || !allowedRoles.includes(role)) {
+      say("Seu nível de acesso não permite atribuir este perfil.");
+      return;
+    }
+    persist(members.map((item) => (item.id === member.id ? { ...item, role } : item)));
+    say(`${member.name} agora tem acesso de ${roleLabel[role]}.`);
+  };
   const changeStatus = (member: Member) => {
     if (!canManage(member)) return;
     const status = member.status === "Ativo" ? "Inativo" : "Ativo";
@@ -1619,13 +1665,8 @@ function TeamManagement({
           </span>
         )}
       </div>
-      <div className="mt-7 grid gap-3 md:grid-cols-3">
+      <div className="mt-7 grid gap-3 md:grid-cols-2">
         {[
-          [
-            "Super Admin",
-            "Acesso absoluto à plataforma e às empresas. Perfil exclusivo.",
-            "super_admin",
-          ],
           ["Dono", "Responsável pela assinatura e pela criação de operadores.", "owner"],
           ["Operador", "Usa os módulos da empresa no dia a dia, sem criar acessos.", "operator"],
         ].map(([title, description, role]) => (
@@ -1648,9 +1689,7 @@ function TeamManagement({
             <div>
               <h2 className="text-lg font-bold text-slate-900">Criar novo acesso</h2>
               <p className="mt-1 text-sm text-slate-600">
-                {currentRole === "super_admin"
-                  ? "Você pode criar Donos e Operadores."
-                  : "Como Dono, você pode criar somente Operadores."}
+                Cadastre os dados do colaborador. O nível de acesso é definido na lista depois da criação.
               </p>
             </div>
             <button
@@ -1660,9 +1699,9 @@ function TeamManagement({
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="mt-5 grid gap-4 md:grid-cols-[1fr_1fr_180px_auto]">
+          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <label className="text-xs font-bold text-slate-700">
-              Nome
+              Nome completo
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
@@ -1670,7 +1709,7 @@ function TeamManagement({
               />
             </label>
             <label className="text-xs font-bold text-slate-700">
-              E-mail
+              E-mail corporativo
               <input
                 type="email"
                 value={email}
@@ -1679,24 +1718,43 @@ function TeamManagement({
               />
             </label>
             <label className="text-xs font-bold text-slate-700">
-              Nível de acesso
+              WhatsApp
+              <input
+                value={phone}
+                inputMode="tel"
+                onChange={(event) => setPhone(event.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+              />
+            </label>
+            <label className="text-xs font-bold text-slate-700">
+              Cargo ou função
+              <input
+                value={jobTitle}
+                onChange={(event) => setJobTitle(event.target.value)}
+                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+              />
+            </label>
+            <label className="text-xs font-bold text-slate-700">
+              Departamento
               <select
-                value={newRole}
-                onChange={(event) => setNewRole(event.target.value as AccessRole)}
+                value={department}
+                onChange={(event) => setDepartment(event.target.value)}
                 className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
               >
-                {allowedRoles.map((role) => (
-                  <option key={role} value={role}>
-                    {roleLabel[role]}
-                  </option>
-                ))}
+                <option value="">Selecionar departamento</option>
+                <option>Comercial</option>
+                <option>Atendimento</option>
+                <option>Financeiro</option>
+                <option>Operações</option>
+                <option>Marketing</option>
+                <option>Direção</option>
               </select>
             </label>
             <button
               onClick={invite}
-              className="self-end rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700"
+              className="self-end rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 xl:col-start-3"
             >
-              Criar
+              Criar colaborador
             </button>
           </div>
         </section>
@@ -1719,13 +1777,31 @@ function TeamManagement({
               </span>
               <div className="min-w-[190px] flex-1">
                 <b className="block text-sm">{member.name}</b>
-                <span className="text-xs text-slate-500">{member.email}</span>
+                <span className="text-xs text-slate-500">
+                  {member.email}
+                  {member.jobTitle ? ` · ${member.jobTitle}` : ""}
+                  {member.department ? ` · ${member.department}` : ""}
+                </span>
               </div>
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-bold ${roleStyle[member.role]}`}
-              >
-                {roleLabel[member.role]}
-              </span>
+              {canManage(member) ? (
+                <label className="min-w-[150px] text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                  Nível de acesso
+                  <select
+                    value={member.role ?? ""}
+                    onChange={(event) => changeRole(member, event.target.value as AccessRole)}
+                    className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-bold normal-case tracking-normal text-slate-700 outline-none focus:border-blue-500"
+                  >
+                    <option value="" disabled>Definir acesso</option>
+                    {allowedRoles.map((role) => (
+                      <option key={role} value={role}>{roleLabel[role]}</option>
+                    ))}
+                  </select>
+                </label>
+              ) : (
+                <span className={`rounded-full px-3 py-1 text-xs font-bold ${roleStyle[member.role!]}`}>
+                  {roleLabel[member.role!]}
+                </span>
+              )}
               <span
                 className={`rounded-full px-3 py-1 text-xs font-bold ${member.status === "Ativo" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}
               >
@@ -2063,14 +2139,25 @@ function CustomerSettings({
 }
 function WhatsAppConnection({ company, say }: { company: string; say: (message: string) => void }) {
   const [connecting, setConnecting] = useState(false);
+  const [qrReady, setQrReady] = useState(false);
   const [connected, setConnected] = useState(false);
   const connect = () => {
     setConnecting(true);
     window.setTimeout(() => {
       setConnecting(false);
-      setConnected(true);
-      say("Canal WhatsApp conectado no modo demonstração.");
-    }, 900);
+      setQrReady(true);
+      say("QR Code disponível. Leia-o no WhatsApp para concluir a conexão.");
+    }, 650);
+  };
+  const confirmRead = () => {
+    setQrReady(false);
+    setConnected(true);
+    say("Canal WhatsApp conectado.");
+  };
+  const disconnect = () => {
+    setConnected(false);
+    setQrReady(false);
+    say("Canal WhatsApp desconectado.");
   };
   return (
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
@@ -2100,6 +2187,35 @@ function WhatsAppConnection({ company, say }: { company: string; say: (message: 
               >
                 Gerenciar canal
               </button>
+              <button
+                onClick={disconnect}
+                className="mt-4 ml-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100"
+              >
+                Desconectar
+              </button>
+            </div>
+          ) : qrReady ? (
+            <div className="mt-7 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+              <div className="flex flex-wrap items-center gap-5">
+                <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-xl border-8 border-white bg-[repeating-conic-gradient(#0f172a_0_25%,#fff_0_50%)] p-3 shadow-sm">
+                  <div className="h-full w-full bg-white/95" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-blue-950">QR Code pronto para leitura</p>
+                  <p className="mt-2 text-xs leading-5 text-blue-800">
+                    No WhatsApp do número que deseja conectar, abra <b>Dispositivos conectados</b> e leia o código. A conta só será marcada como conectada após essa etapa.
+                  </p>
+                  <button
+                    onClick={confirmRead}
+                    className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700"
+                  >
+                    Confirmar leitura do QR Code
+                  </button>
+                  <button onClick={() => setQrReady(false)} className="ml-2 mt-4 rounded-xl px-3 py-2.5 text-xs font-bold text-blue-700 hover:bg-blue-100">
+                    Cancelar
+                  </button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="mt-7">
@@ -2427,8 +2543,98 @@ function Card({
     </div>
   );
 }
+
+function downloadFile(contents: BlobPart, filename: string, type: string) {
+  const url = URL.createObjectURL(new Blob([contents], { type }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+function createFinancialPdf(company: string) {
+  const plain = (value: string) =>
+    value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[()\\]/g, "\\$&");
+  const lines = [
+    "RELATORIO FINANCEIRO - ND7",
+    `Empresa: ${plain(company)}`,
+    `Emitido em: ${new Date().toLocaleDateString("pt-BR")}`,
+    "",
+    "Faturamento no mes: R$ 42.860,00",
+    "Receita confirmada: R$ 36.240,00",
+    "A receber: R$ 18.720,00",
+    "Ticket medio: R$ 3.570,00",
+    "",
+    "Conversoes confirmadas:",
+    "Clinica Horizonte - R$ 8.200,00",
+    "Almeida & Costa - R$ 12.500,00",
+    "Nucleo Engenharia - R$ 6.800,00",
+  ];
+  const content = ["BT", "/F1 17 Tf", "48 790 Td"]
+    .concat(
+      lines.flatMap((line, index) => [
+        index === 0 ? `(${line}) Tj` : "0 -26 Td",
+        index === 0 ? "" : `(${line}) Tj`,
+      ]),
+    )
+    .filter(Boolean)
+    .concat(["ET"])
+    .join("\n");
+  const objects = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    `<< /Length ${content.length} >>\nstream\n${content}\nendstream`,
+  ];
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+  objects.forEach((object, index) => {
+    offsets.push(pdf.length);
+    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+  const xref = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  pdf += offsets.slice(1).map((offset) => `${String(offset).padStart(10, "0")} 00000 n \n`).join("");
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  return pdf;
+}
+
 function FinancialCenter({ company, say }: { company: string; say: (message: string) => void }) {
   const cashflow = [42, 56, 49, 68, 61, 78, 72, 92, 84, 100];
+  const [showExportOptions, setShowExportOptions] = useState(false);
+  const exportReport = (format: "pdf" | "csv") => {
+    const filename = `relatorio-financeiro-${company.toLowerCase().replace(/[^a-z0-9]+/gi, "-")}`;
+    if (format === "csv") {
+      const csv = [
+        ["Relatório financeiro", company],
+        ["Indicador", "Valor"],
+        ["Faturamento no mês", "R$ 42.860,00"],
+        ["Receita confirmada", "R$ 36.240,00"],
+        ["A receber", "R$ 18.720,00"],
+        ["Ticket médio", "R$ 3.570,00"],
+        [],
+        ["Cliente", "Origem", "Fechamento", "Valor", "Status"],
+        ["Clínica Horizonte", "Indicação", "Hoje", "R$ 8.200,00", "Receita confirmada"],
+        ["Almeida & Costa", "Inbound", "Ontem", "R$ 12.500,00", "Receita confirmada"],
+        ["Núcleo Engenharia", "Prospecção", "22 ago", "R$ 6.800,00", "Receita confirmada"],
+      ]
+        .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(";"))
+        .join("\n");
+      downloadFile(`\uFEFF${csv}`, `${filename}.csv`, "text/csv;charset=utf-8");
+      say("Relatório financeiro em CSV baixado.");
+    } else {
+      downloadFile(createFinancialPdf(company), `${filename}.pdf`, "application/pdf");
+      say("Relatório financeiro em PDF baixado.");
+    }
+    setShowExportOptions(false);
+  };
   return (
     <div className="financial-center mx-auto max-w-[1440px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -2437,9 +2643,18 @@ function FinancialCenter({ company, say }: { company: string; say: (message: str
           <h1 className="mt-1 text-2xl font-bold">Resultados de {company}</h1>
           <p className="mt-1 text-sm text-slate-500">Acompanhe receita, conversões e previsibilidade de caixa.</p>
         </div>
-        <button onClick={() => say("Relatório financeiro preparado para exportação.")} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">
-          <TrendingUp className="mr-1 inline h-4 w-4" /> Exportar relatório
-        </button>
+        <div className="relative">
+          <button onClick={() => setShowExportOptions((open) => !open)} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">
+            <TrendingUp className="mr-1 inline h-4 w-4" /> Exportar relatório
+          </button>
+          {showExportOptions && (
+            <div className="absolute right-0 top-[calc(100%+0.5rem)] z-20 w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+              <p className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">Escolha o formato</p>
+              <button onClick={() => exportReport("pdf")} className="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">Baixar em PDF</button>
+              <button onClick={() => exportReport("csv")} className="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">Baixar em CSV</button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card label="Faturamento no mês" value="R$ 42.860" trend="18,4%" icon={<CircleDollarSign />} />
@@ -2718,29 +2933,36 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
         </h1>
         <p className="text-xs text-blue-300">© 2026 ND7</p>
       </div>
-      <div className="flex items-center justify-center p-6">
+      <div className="flex items-center justify-center px-5 py-8 sm:p-6">
         <div className="w-full max-w-sm">
           <button onClick={back} className="mb-12 text-sm font-medium text-blue-600">
             ← Voltar
           </button>
           <h1 className="text-2xl font-bold">Que bom ter você de volta.</h1>
           <p className="mt-2 text-sm text-slate-500">Entre para acessar sua empresa.</p>
-          {["E-mail", "Senha"].map((x, i) => (
-            <label className="mt-5 block text-xs font-bold">
-              {x}
-              <input
-                type={i ? "password" : "email"}
-                className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm"
-                placeholder={i ? "••••••••" : "voce@empresa.com"}
-              />
-            </label>
-          ))}
-          <button
-            onClick={enter}
-            className="mt-6 w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white"
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              enter();
+            }}
           >
-            Entrar na minha conta
-          </button>
+            {["E-mail", "Senha"].map((x, i) => (
+              <label key={x} className="mt-5 block text-xs font-bold">
+                {x}
+                <input
+                  type={i ? "password" : "email"}
+                  autoComplete={i ? "current-password" : "email"}
+                  className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm"
+                />
+              </label>
+            ))}
+            <button
+              type="submit"
+              className="mt-6 w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white"
+            >
+              Entrar na minha conta
+            </button>
+          </form>
           <button className="mt-4 w-full text-sm text-blue-600">Esqueci minha senha</button>
         </div>
       </div>
@@ -2790,7 +3012,7 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
     Anual: "R$ 1.198,80",
   };
   const input =
-    "mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100";
+    "mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100";
   const lockedInput =
     "mt-2 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-3 text-sm text-slate-500 outline-none";
 
@@ -3009,8 +3231,8 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
 
         {/* PIX Modal / Overlay */}
         {pixModalData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-2xl text-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-sm">
+            <div className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-3xl bg-white p-5 text-center shadow-2xl sm:p-6 md:p-8">
               {paymentConfirmed ? (
                 <div className="py-6">
                   <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
@@ -3072,8 +3294,8 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
 
         {/* Boleto Modal */}
         {boletoUrl && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-md rounded-3xl bg-white p-6 md:p-8 shadow-2xl text-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-sm">
+            <div className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-3xl bg-white p-5 text-center shadow-2xl sm:p-6 md:p-8">
               <h3 className="text-xl font-bold text-slate-900">Boleto Bancário Gerado</h3>
               <p className="mt-2 text-sm text-slate-600">
                 O boleto foi gerado pelo Asaas. Seu acesso será liberado assim que o pagamento for compensado.

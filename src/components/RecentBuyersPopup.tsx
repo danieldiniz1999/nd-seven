@@ -82,14 +82,14 @@ export function RecentBuyersPopup() {
 
   return (
     <div
-      className={`fixed bottom-3 left-3 sm:bottom-5 sm:left-5 z-50 transition-all duration-500 ease-out ${
+      className={`fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-4 right-4 z-50 w-auto sm:bottom-5 sm:left-5 sm:right-auto sm:w-[325px] transition-all duration-500 ease-out ${
         isVisible
           ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
           : "opacity-0 translate-y-4 scale-95 pointer-events-none"
       }`}
     >
       {/* Container Estilo Lovable (Dark Glassmorphism com borda sutil e glow) */}
-      <div className="relative group flex items-center gap-3 rounded-2xl border border-white/12 bg-[#090d16]/90 p-2.5 sm:p-3 shadow-2xl shadow-blue-950/50 backdrop-blur-xl max-w-[280px] sm:max-w-[325px] text-left text-white ring-1 ring-black/40">
+      <div className="relative group flex w-full items-center gap-3 rounded-2xl border border-white/12 bg-[#090d16]/90 p-2.5 sm:p-3 shadow-2xl shadow-blue-950/50 backdrop-blur-xl text-left text-white ring-1 ring-black/40">
         
         {/* Glow de fundo sutil */}
         <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 opacity-70 blur-sm pointer-events-none" />
