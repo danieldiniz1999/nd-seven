@@ -93,6 +93,7 @@ export class AsaasClient {
     const headers: Record<string, string> = {
       access_token: this.apiKey,
       "Content-Type": "application/json",
+      "User-Agent": "NDSeven/1.0",
       ...(options.headers as Record<string, string>),
     };
 
