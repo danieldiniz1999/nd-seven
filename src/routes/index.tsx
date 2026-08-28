@@ -191,6 +191,13 @@ function Nexus() {
             setMenu(false);
             say("Você voltou à Central Super Admin.");
           }}
+          logout={() => {
+            setMenu(false);
+            setImpersonating(false);
+            setSignedInAsSuperAdmin(false);
+            setView("landing");
+            say("Você saiu da sua conta.");
+          }}
         />
         <main className="app-main min-h-screen min-w-0 flex-1">
           <header className="app-topbar flex h-[72px] items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
@@ -221,6 +228,19 @@ function Nexus() {
                 </button>
               )}
               <ThemeToggle />
+              <button
+                onClick={() => {
+                  setImpersonating(false);
+                  setSignedInAsSuperAdmin(false);
+                  setView("landing");
+                  say("Você saiu da sua conta.");
+                }}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                aria-label="Sair da conta"
+                title="Sair"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
               <button onClick={() => setProfileDialogOpen(true)} className="profile-trigger flex items-center gap-3 rounded-xl p-1.5 text-left" aria-label="Alterar foto do perfil">
                 <span className="profile-avatar flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-xs font-bold text-blue-700">
                   {profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" className="h-full w-full object-cover" /> : "DD"}
@@ -1063,6 +1083,7 @@ function Sidebar({
   setMenu,
   impersonating,
   returnToAdmin,
+  logout,
 }: {
   view: View;
   setView: (v: View) => void;
@@ -1070,6 +1091,7 @@ function Sidebar({
   setMenu: (b: boolean) => void;
   impersonating: boolean;
   returnToAdmin: () => void;
+  logout: () => void;
 }) {
   return (
     <aside
@@ -1203,6 +1225,16 @@ function Sidebar({
           setMenu(false);
         }}
       />
+      <div className="mt-auto border-t border-white/10 pt-3">
+        <button
+          onClick={logout}
+          data-variant="logout"
+          className="nav-item flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-200"
+        >
+          <LogOut className="h-4 w-4" />
+          Sair da conta
+        </button>
+      </div>
     </aside>
   );
 }
