@@ -148,7 +148,7 @@ function Nexus() {
       </>
     );
   return (
-    <div className="app-shell min-h-screen bg-[#f8fbff] text-slate-800">
+    <div className="app-shell min-h-screen bg-[#f8fbff] dark:bg-[#090d16] text-slate-800 dark:text-slate-100 transition-colors duration-200">
       {notice && (
         <div className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-50 max-w-[calc(100vw-2rem)] rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl sm:right-5 sm:max-w-sm">
           <Check className="mr-2 inline h-4 w-4 text-emerald-300" />
@@ -158,18 +158,18 @@ function Nexus() {
       {profileDialogOpen && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/35 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] backdrop-blur-sm">
           <button aria-label="Fechar janela de perfil" className="absolute inset-0" onClick={() => setProfileDialogOpen(false)} />
-          <section className="profile-dialog relative max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6">
-            <button aria-label="Fechar" onClick={() => setProfileDialogOpen(false)} className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X className="h-4 w-4" /></button>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-blue-600">Perfil</p>
-            <h2 className="mt-2 text-xl font-bold">Sua foto de perfil</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Escolha uma imagem do seu computador ou celular para personalizar seu acesso.</p>
-            <div className="mt-6 flex items-center gap-4 rounded-xl bg-slate-50 p-4">
-              <span className="profile-avatar flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-blue-100 text-sm font-bold text-blue-700">{profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" className="h-full w-full object-cover" /> : "DD"}</span>
-              <div><b className="block text-sm">Daniel Diniz</b><span className="text-xs text-slate-500">Administrador</span></div>
+          <section className="profile-dialog relative max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-2xl sm:p-6">
+            <button aria-label="Fechar" onClick={() => setProfileDialogOpen(false)} className="absolute right-4 top-4 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200"><X className="h-4 w-4" /></button>
+            <p className="text-xs font-bold uppercase tracking-[.16em] text-blue-600 dark:text-blue-400">Perfil</p>
+            <h2 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">Sua foto de perfil</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Escolha uma imagem do seu computador ou celular para personalizar seu acesso.</p>
+            <div className="mt-6 flex items-center gap-4 rounded-xl bg-slate-50 dark:bg-slate-800 p-4">
+              <span className="profile-avatar flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-blue-100 dark:bg-blue-950 text-sm font-bold text-blue-700 dark:text-blue-300">{profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" className="h-full w-full object-cover" /> : "DD"}</span>
+              <div><b className="block text-sm text-slate-900 dark:text-white">Daniel Diniz</b><span className="text-xs text-slate-500 dark:text-slate-400">Administrador</span></div>
             </div>
             <input ref={profileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => updateProfilePhoto(event.target.files?.[0])} />
             <button onClick={() => profileInputRef.current?.click()} className="mt-5 w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700">Escolher foto</button>
-            {profilePhoto && <button onClick={() => { setProfilePhoto(null); window.localStorage.removeItem("nd7-profile-photo"); }} className="mt-3 w-full rounded-xl px-4 py-2 text-sm font-semibold text-slate-500 hover:bg-slate-50 hover:text-rose-600">Remover foto</button>}
+            {profilePhoto && <button onClick={() => { setProfilePhoto(null); window.localStorage.removeItem("nd7-profile-photo"); }} className="mt-3 w-full rounded-xl px-4 py-2 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-rose-600">Remover foto</button>}
           </section>
         </div>
       )}
@@ -199,8 +199,8 @@ function Nexus() {
             say("Você saiu da sua conta.");
           }}
         />
-        <main className="app-main min-h-screen min-w-0 flex-1">
-          <header className="app-topbar flex h-[72px] items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8">
+        <main className="app-main min-h-screen min-w-0 flex-1 bg-[#f8fbff] dark:bg-[#090d16] transition-colors duration-200">
+          <header className="app-topbar flex h-[72px] items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-[#090d16]/90 backdrop-blur-xl px-5 md:px-8">
             <div className="flex items-center gap-4">
               <button
                 aria-label="Abrir menu"
@@ -1349,14 +1349,14 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
   const stageControls = (deal: (typeof deals)[number]) => {
     const currentIndex = stages.indexOf(deal.stage);
     return (
-      <span className="ml-2 inline-flex items-center rounded-lg border border-slate-200 bg-slate-50 p-0.5 shadow-sm">
+      <span className="ml-2 inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-0.5 shadow-sm">
         <button
           type="button"
           aria-label={`Mover ${deal.title} para o estágio anterior`}
           title="Estágio anterior"
           disabled={currentIndex === 0}
           onClick={() => moveBy(deal, -1)}
-          className="rounded-md p-1 text-slate-500 transition hover:bg-white hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-30"
+          className="rounded-md p-1 text-slate-500 dark:text-slate-400 transition hover:bg-white dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-blue-300 disabled:cursor-not-allowed disabled:opacity-30"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
         </button>
@@ -1366,7 +1366,7 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
           title="Próximo estágio"
           disabled={currentIndex === stages.length - 1}
           onClick={() => moveBy(deal, 1)}
-          className="rounded-md p-1 text-slate-500 transition hover:bg-white hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-30"
+          className="rounded-md p-1 text-slate-500 dark:text-slate-400 transition hover:bg-white dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-blue-300 disabled:cursor-not-allowed disabled:opacity-30"
         >
           <ChevronRight className="h-3.5 w-3.5" />
         </button>
@@ -1377,21 +1377,21 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
     <article
       draggable
       onDragStart={() => setDragged(deal.id)}
-      className={`cursor-grab rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md active:cursor-grabbing ${compact ? "flex items-center justify-between gap-4" : ""}`}
+      className={`cursor-grab rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-md active:cursor-grabbing ${compact ? "flex items-center justify-between gap-4" : ""}`}
       key={deal.id}
     >
       <div>
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-blue-500" />
-          <p className="text-sm font-bold">{deal.title}</p>
+          <p className="text-sm font-bold text-slate-900 dark:text-white">{deal.title}</p>
         </div>
-        <p className="mt-1 text-xs text-slate-500">{deal.company}</p>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{deal.company}</p>
       </div>
       <div
         className={compact ? "flex items-center gap-4" : "mt-4 flex items-center justify-between"}
       >
-        <b className="text-sm text-slate-700">{deal.value}</b>
-        <span className="rounded-full bg-blue-100 px-2 py-1 text-[10px] font-bold text-blue-700">
+        <b className="text-sm font-bold text-slate-700 dark:text-slate-200">{deal.value}</b>
+        <span className="rounded-full bg-blue-100 dark:bg-blue-950 px-2 py-1 text-[10px] font-bold text-blue-700 dark:text-blue-300 border border-transparent dark:border-blue-800/40">
           {deal.owner}
         </span>
         {!compact && stageControls(deal)}
@@ -1402,22 +1402,22 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
     <div className="mx-auto max-w-[1440px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">Vendas e oportunidades</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Funil de Vendas</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Vendas e oportunidades</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Funil de Vendas</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {company} · Acompanhe cada oportunidade ao longo da jornada do cliente.
           </p>
         </div>
         <button
           onClick={() => say("Novo negócio criado.")}
-          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200"
+          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 dark:shadow-none transition hover:bg-blue-700"
         >
           <Plus className="mr-1 inline h-4 w-4" />
           Novo negócio
         </button>
       </div>
-      <div className="mt-7 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-        <div className="flex gap-1 rounded-xl bg-slate-100 p-1">
+      <div className="mt-7 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-3 shadow-sm">
+        <div className="flex gap-1 rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
           {[
             ["kanban", <LayoutDashboard className="h-4 w-4" />, "Kanban"],
             ["grid", <LayoutGrid className="h-4 w-4" />, "Grade"],
@@ -1426,14 +1426,14 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
             <button
               key={String(id)}
               onClick={() => setLayout(id as typeof layout)}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${layout === id ? "bg-white text-blue-700 shadow-sm" : "text-slate-500"}`}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold transition ${layout === id ? "bg-white dark:bg-slate-700 text-blue-700 dark:text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"}`}
             >
               {icon as ReactNode}
               {label}
             </button>
           ))}
         </div>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Arraste os cards ou use as setas para avançar e recuar uma oportunidade.
         </p>
       </div>
@@ -1448,19 +1448,19 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
                   if (dragged) move(dragged, stage);
                   setDragged(null);
                 }}
-                className="min-h-[390px] rounded-2xl border border-slate-200/70 bg-slate-100/80 p-3"
+                className="min-h-[390px] rounded-2xl border border-slate-200/70 dark:border-slate-800/80 bg-slate-100/80 dark:bg-slate-950/60 p-3"
               >
                 <div className="mb-4 flex items-start justify-between gap-2 px-1">
                   <div>
                     <div className="flex items-center gap-2">
                       <span className={`h-2 w-2 rounded-full ${stageTone[stage]}`} />
-                      <b className="text-xs text-slate-800">{stage}</b>
+                      <b className="text-xs font-bold text-slate-800 dark:text-slate-200">{stage}</b>
                     </div>
-                    <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                    <p className="mt-1 text-[10px] leading-4 text-slate-500 dark:text-slate-400">
                       {stageGuidance[stage]}
                     </p>
                   </div>
-                  <span className="rounded-lg bg-white px-2 py-1 text-[10px] font-bold text-slate-500 shadow-sm">
+                  <span className="rounded-lg bg-white dark:bg-slate-800 px-2 py-1 text-[10px] font-bold text-slate-500 dark:text-slate-300 shadow-sm border border-transparent dark:border-slate-700">
                     {deals.filter((d) => d.stage === stage).length}
                   </span>
                 </div>
@@ -1476,29 +1476,29 @@ function SalesPipeline({ say, company }: { say: (message: string) => void; compa
           {deals.map((deal) => (
             <div key={deal.id} className="relative">
               {card(deal)}
-              <span className="absolute right-4 top-4 rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
+              <span className="absolute right-4 top-4 rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-1 text-[10px] font-bold text-slate-500 dark:text-slate-300">
                 {deal.stage}
               </span>
             </div>
           ))}
         </div>
       ) : (
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-4 shadow-sm">
           <div className="min-w-[800px] space-y-2">
             {deals.map((deal) => (
               <div
                 key={deal.id}
-                className="grid grid-cols-[1.5fr_1fr_1fr_1fr_auto] items-center gap-4 rounded-xl border border-slate-100 p-3 hover:bg-blue-50"
+                className="grid grid-cols-[1.5fr_1fr_1fr_1fr_auto] items-center gap-4 rounded-xl border border-slate-100 dark:border-slate-800 p-3 hover:bg-blue-50 dark:hover:bg-slate-800/60"
               >
                 <div>
-                  <b className="text-sm">{deal.title}</b>
-                  <p className="text-xs text-slate-500">{deal.company}</p>
+                  <b className="text-sm font-bold text-slate-900 dark:text-white">{deal.title}</b>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{deal.company}</p>
                 </div>
-                <span className="text-sm">{deal.value}</span>
-                <span className="rounded-full bg-blue-50 px-2 py-1 text-center text-xs font-bold text-blue-700">
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">{deal.value}</span>
+                <span className="rounded-full bg-blue-50 dark:bg-blue-950/70 px-2 py-1 text-center text-xs font-bold text-blue-700 dark:text-blue-300 border border-transparent dark:border-blue-800/40">
                   {deal.stage}
                 </span>
-                <span className="text-xs text-slate-500">Responsável: {deal.owner}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">Responsável: {deal.owner}</span>
                 {stageControls(deal)}
               </div>
             ))}
@@ -1534,16 +1534,16 @@ function WorkspaceScreen({
   const [title, description, action, Icon] = content[view];
   return (
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
-      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <span className="inline-flex rounded-2xl bg-blue-100 p-4 text-blue-700">
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-8 shadow-sm">
+        <span className="inline-flex rounded-2xl bg-blue-100 dark:bg-blue-950/80 dark:border dark:border-blue-800/40 p-4 text-blue-700 dark:text-blue-300">
           <Icon className="h-7 w-7" />
         </span>
-        <p className="mt-6 text-sm font-bold text-blue-700">{company}</p>
-        <h1 className="mt-2 text-2xl font-bold">{title}</h1>
-        <p className="mt-2 max-w-xl text-slate-500">{description}</p>
+        <p className="mt-6 text-sm font-bold text-blue-700 dark:text-blue-400">{company}</p>
+        <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
+        <p className="mt-2 max-w-xl text-slate-500 dark:text-slate-300">{description}</p>
         <button
           onClick={() => say(`${action} aberto.`)}
-          className="mt-7 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white"
+          className="mt-7 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700 shadow-lg shadow-blue-500/20"
         >
           {action}
         </button>
@@ -1678,21 +1678,21 @@ function TeamManagement({
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">{company} · Gestão de acessos</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Equipe e permissões</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{company} · Gestão de acessos</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Equipe e permissões</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Convide as pessoas certas com o nível de acesso adequado.
           </p>
         </div>
         {canCreate ? (
           <button
             onClick={() => setShowForm((open) => !open)}
-            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700"
+            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 dark:shadow-none transition hover:-translate-y-0.5 hover:bg-blue-700"
           >
             <Plus className="mr-1 inline h-4 w-4" /> Criar acesso
           </button>
         ) : (
-          <span className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-500">
+          <span className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-xs font-bold text-slate-500 dark:text-slate-400">
             Operadores não podem criar acessos
           </span>
         )}
@@ -1704,74 +1704,74 @@ function TeamManagement({
         ].map(([title, description, role]) => (
           <article
             key={title}
-            className={`rounded-2xl border p-4 ${role === "super_admin" ? "border-violet-200 bg-violet-50" : "border-slate-200 bg-white"}`}
+            className={`rounded-2xl border p-4 ${role === "super_admin" ? "border-violet-200 dark:border-violet-800/60 bg-violet-50 dark:bg-violet-950/40" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90"}`}
           >
             <span
               className={`inline-flex rounded-lg px-2 py-1 text-[10px] font-black uppercase tracking-wide ${roleStyle[role as AccessRole]}`}
             >
               {title}
             </span>
-            <p className="mt-3 text-xs leading-5 text-slate-600">{description}</p>
+            <p className="mt-3 text-xs leading-5 text-slate-600 dark:text-slate-300">{description}</p>
           </article>
         ))}
       </div>
       {showForm && canCreate && (
-        <section className="mt-6 rounded-3xl border border-blue-200 bg-blue-50 p-5 md:p-6">
+        <section className="mt-6 rounded-3xl border border-blue-200 dark:border-blue-800/60 bg-blue-50 dark:bg-slate-900/95 p-5 md:p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Criar novo acesso</h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Criar novo acesso</h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                 Cadastre os dados do colaborador. O nível de acesso é definido na lista depois da criação.
               </p>
             </div>
             <button
               onClick={() => setShowForm(false)}
-              className="rounded-lg p-2 text-slate-500 hover:bg-white"
+              className="rounded-lg p-2 text-slate-500 hover:bg-white dark:hover:bg-slate-800"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
           <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <label className="text-xs font-bold text-slate-700">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
               Nome completo
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                className="mt-1.5 w-full rounded-xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500"
               />
             </label>
-            <label className="text-xs font-bold text-slate-700">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
               E-mail corporativo
               <input
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                className="mt-1.5 w-full rounded-xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500"
               />
             </label>
-            <label className="text-xs font-bold text-slate-700">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
               WhatsApp
               <input
                 value={phone}
                 inputMode="tel"
                 onChange={(event) => setPhone(event.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                className="mt-1.5 w-full rounded-xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500"
               />
             </label>
-            <label className="text-xs font-bold text-slate-700">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
               Cargo ou função
               <input
                 value={jobTitle}
                 onChange={(event) => setJobTitle(event.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                className="mt-1.5 w-full rounded-xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500"
               />
             </label>
-            <label className="text-xs font-bold text-slate-700">
+            <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
               Departamento
               <select
                 value={department}
                 onChange={(event) => setDepartment(event.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-blue-100 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+                className="mt-1.5 w-full rounded-xl border border-blue-100 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500"
               >
                 <option value="">Selecionar departamento</option>
                 <option>Comercial</option>
@@ -1784,44 +1784,44 @@ function TeamManagement({
             </label>
             <button
               onClick={invite}
-              className="self-end rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 xl:col-start-3"
+              className="self-end rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 shadow-lg shadow-blue-500/20 xl:col-start-3"
             >
               Criar colaborador
             </button>
           </div>
         </section>
       )}
-      <section className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <section className="mt-6 overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 shadow-sm">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-5 py-4">
           <div>
-            <h2 className="font-bold">Pessoas com acesso</h2>
-            <p className="mt-1 text-xs text-slate-500">
+            <h2 className="font-bold text-slate-900 dark:text-white">Pessoas com acesso</h2>
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
               {members.filter((member) => member.status === "Ativo").length} acessos ativos
             </p>
           </div>
-          <UsersRound className="h-5 w-5 text-blue-600" />
+          <UsersRound className="h-5 w-5 text-blue-600 dark:text-blue-400" />
         </div>
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 dark:divide-slate-800">
           {members.map((member) => (
             <div key={member.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-black text-slate-600 dark:text-slate-300">
                 {member.name.slice(0, 2).toUpperCase()}
               </span>
               <div className="min-w-[190px] flex-1">
-                <b className="block text-sm">{member.name}</b>
-                <span className="text-xs text-slate-500">
+                <b className="block text-sm text-slate-900 dark:text-white">{member.name}</b>
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   {member.email}
                   {member.jobTitle ? ` · ${member.jobTitle}` : ""}
                   {member.department ? ` · ${member.department}` : ""}
                 </span>
               </div>
               {canManage(member) ? (
-                <label className="min-w-[150px] text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                <label className="min-w-[150px] text-[10px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-400">
                   Nível de acesso
                   <select
                     value={member.role ?? ""}
                     onChange={(event) => changeRole(member, event.target.value as AccessRole)}
-                    className="mt-1 block w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-bold normal-case tracking-normal text-slate-700 outline-none focus:border-blue-500"
+                    className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 text-xs font-bold normal-case tracking-normal text-slate-700 dark:text-slate-200 outline-none focus:border-blue-500"
                   >
                     <option value="" disabled>Definir acesso</option>
                     {allowedRoles.map((role) => (
@@ -1835,19 +1835,19 @@ function TeamManagement({
                 </span>
               )}
               <span
-                className={`rounded-full px-3 py-1 text-xs font-bold ${member.status === "Ativo" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"}`}
+                className={`rounded-full px-3 py-1 text-xs font-bold ${member.status === "Ativo" ? "bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-transparent dark:border-emerald-800/40" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"}`}
               >
                 {member.status}
               </span>
               {canManage(member) ? (
                 <button
                   onClick={() => changeStatus(member)}
-                  className="ml-auto rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-600 transition hover:border-blue-300 hover:text-blue-700"
+                  className="ml-auto rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 transition hover:border-blue-300 dark:hover:border-blue-500/50 hover:text-blue-700 dark:hover:text-blue-300"
                 >
                   {member.status === "Ativo" ? "Inativar" : "Ativar"}
                 </button>
               ) : (
-                <span className="ml-auto text-xs text-slate-400">Gerenciado pelo Super Admin</span>
+                <span className="ml-auto text-xs text-slate-400 dark:text-slate-500">Gerenciado pelo Super Admin</span>
               )}
             </div>
           ))}
@@ -1890,7 +1890,7 @@ function CustomerSettings({
   const [tab, setTab] = useState<"empresa" | "processo" | "notificacoes" | "seguranca">("empresa");
   const [form, setForm] = useState<SettingsData>(() => defaults(company));
   const fieldClass =
-    "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+    "mt-1.5 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 text-sm text-slate-900 dark:text-white outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40";
   useEffect(() => {
     const saved = window.localStorage.getItem(`nd7:settings:${company}`);
     setForm(
@@ -1920,10 +1920,10 @@ function CustomerSettings({
     value: boolean;
     setting: keyof SettingsData;
   }) => (
-    <label className="flex cursor-pointer items-center justify-between gap-5 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-blue-200">
+    <label className="flex cursor-pointer items-center justify-between gap-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-4 transition hover:border-blue-200 dark:hover:border-blue-800">
       <span>
-        <b className="block text-sm text-slate-800">{label}</b>
-        <small className="mt-1 block max-w-lg text-xs leading-5 text-slate-500">
+        <b className="block text-sm text-slate-800 dark:text-slate-100">{label}</b>
+        <small className="mt-1 block max-w-lg text-xs leading-5 text-slate-500 dark:text-slate-400">
           {description}
         </small>
       </span>
@@ -1933,7 +1933,7 @@ function CustomerSettings({
         onChange={() => toggle(setting)}
         className="peer sr-only"
       />
-      <span className="relative h-6 w-11 shrink-0 rounded-full bg-slate-200 transition peer-checked:bg-blue-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow-sm after:transition peer-checked:after:translate-x-5" />
+      <span className="relative h-6 w-11 shrink-0 rounded-full bg-slate-200 dark:bg-slate-700 transition peer-checked:bg-blue-600 after:absolute after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow-sm after:transition peer-checked:after:translate-x-5" />
     </label>
   );
   const tabs = [
@@ -1946,42 +1946,42 @@ function CustomerSettings({
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">Administração da empresa</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Configurações</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Administração da empresa</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Configurações</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Ajuste como o ND7 trabalha para a sua operação.
           </p>
         </div>
         <button
           onClick={save}
-          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700"
+          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 dark:shadow-none transition hover:-translate-y-0.5 hover:bg-blue-700"
         >
           <Check className="mr-1 inline h-4 w-4" /> Salvar alterações
         </button>
       </div>
       <div className="mt-7 grid gap-6 lg:grid-cols-[230px_1fr]">
-        <nav className="flex gap-2 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm lg:flex-col lg:overflow-visible">
+        <nav className="flex gap-2 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-2 shadow-sm lg:flex-col lg:overflow-visible">
           {tabs.map(([id, label, Icon]) => (
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`flex shrink-0 items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold transition ${tab === id ? "bg-blue-600 text-white shadow-lg shadow-blue-100" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"}`}
+              className={`flex shrink-0 items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold transition ${tab === id ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-800 hover:text-blue-700 dark:hover:text-blue-400"}`}
             >
               <Icon className="h-4 w-4" /> {label}
             </button>
           ))}
-          <div className="hidden border-t border-slate-100 px-3 pt-5 text-xs leading-5 text-slate-500 lg:block">
+          <div className="hidden border-t border-slate-100 dark:border-slate-800 px-3 pt-5 text-xs leading-5 text-slate-500 dark:text-slate-400 lg:block">
             As alterações ficam salvas neste dispositivo nesta versão demonstrativa.
           </div>
         </nav>
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+        <section className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-6 shadow-sm md:p-8">
           {tab === "empresa" && (
             <>
-              <span className="inline-flex rounded-2xl bg-blue-100 p-3 text-blue-700">
+              <span className="inline-flex rounded-2xl bg-blue-100 dark:bg-blue-950/80 p-3 text-blue-700 dark:text-blue-300">
                 <Building2 className="h-6 w-6" />
               </span>
-              <h2 className="mt-5 text-xl font-bold">Dados da empresa</h2>
-              <p className="mt-2 text-sm text-slate-500">
+              <h2 className="mt-5 text-xl font-bold text-slate-900 dark:text-white">Dados da empresa</h2>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 Essas informações identificam sua empresa dentro do ND7.
               </p>
               <div className="mt-7 grid gap-5 md:grid-cols-2">
@@ -1995,7 +1995,7 @@ function CustomerSettings({
                   ["Cidade", "city"],
                   ["Estado", "state"],
                 ].map(([label, key]) => (
-                  <label key={key} className="text-sm font-bold text-slate-700">
+                  <label key={key} className="text-sm font-bold text-slate-700 dark:text-slate-200">
                     {label}
                     <input
                       value={form[key as keyof SettingsData] as string}
@@ -2011,15 +2011,15 @@ function CustomerSettings({
           )}
           {tab === "processo" && (
             <>
-              <span className="inline-flex rounded-2xl bg-violet-100 p-3 text-violet-700">
+              <span className="inline-flex rounded-2xl bg-violet-100 dark:bg-violet-950/80 p-3 text-violet-700 dark:text-violet-300">
                 <Workflow className="h-6 w-6" />
               </span>
-              <h2 className="mt-5 text-xl font-bold">Processo comercial</h2>
-              <p className="mt-2 text-sm text-slate-500">
+              <h2 className="mt-5 text-xl font-bold text-slate-900 dark:text-white">Processo comercial</h2>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 Defina preferências que orientam a rotina da sua equipe.
               </p>
               <div className="mt-7 grid gap-5 md:grid-cols-2">
-                <label className="text-sm font-bold text-slate-700">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">
                   Etapa padrão para novos negócios
                   <select
                     value={form.defaultStage}
@@ -2033,7 +2033,7 @@ function CustomerSettings({
                     ))}
                   </select>
                 </label>
-                <label className="text-sm font-bold text-slate-700">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">
                   Moeda padrão
                   <select
                     value={form.currency}
@@ -2047,7 +2047,7 @@ function CustomerSettings({
                     <option>EUR (€)</option>
                   </select>
                 </label>
-                <label className="text-sm font-bold text-slate-700">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">
                   Fuso horário
                   <select
                     value={form.timezone}
@@ -2061,7 +2061,7 @@ function CustomerSettings({
                     <option>America/Manaus</option>
                   </select>
                 </label>
-                <label className="text-sm font-bold text-slate-700">
+                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">
                   Início da semana
                   <select
                     value={form.weekStart}
@@ -2093,11 +2093,11 @@ function CustomerSettings({
           )}
           {tab === "notificacoes" && (
             <>
-              <span className="inline-flex rounded-2xl bg-amber-100 p-3 text-amber-700">
+              <span className="inline-flex rounded-2xl bg-amber-100 dark:bg-amber-950/80 p-3 text-amber-700 dark:text-amber-300">
                 <MessageSquareText className="h-6 w-6" />
               </span>
-              <h2 className="mt-5 text-xl font-bold">Notificações e alertas</h2>
-              <p className="mt-2 text-sm text-slate-500">
+              <h2 className="mt-5 text-xl font-bold text-slate-900 dark:text-white">Notificações e alertas</h2>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 Escolha quais eventos merecem a atenção da sua equipe.
               </p>
               <div className="mt-7 space-y-3">
@@ -2130,11 +2130,11 @@ function CustomerSettings({
           )}
           {tab === "seguranca" && (
             <>
-              <span className="inline-flex rounded-2xl bg-emerald-100 p-3 text-emerald-700">
+              <span className="inline-flex rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 p-3 text-emerald-700 dark:text-emerald-300">
                 <LockKeyhole className="h-6 w-6" />
               </span>
-              <h2 className="mt-5 text-xl font-bold">Segurança da conta</h2>
-              <p className="mt-2 text-sm text-slate-500">
+              <h2 className="mt-5 text-xl font-bold text-slate-900 dark:text-white">Segurança da conta</h2>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                 Mantenha o acesso à empresa sob controle.
               </p>
               <div className="mt-7 space-y-3">
@@ -2145,20 +2145,20 @@ function CustomerSettings({
                   setting="twoFactor"
                 />
               </div>
-              <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+              <div className="mt-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 p-5">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <b className="text-sm">Sessão atual</b>
-                    <p className="mt-1 text-xs text-slate-500">Este dispositivo · acesso atual</p>
+                    <b className="text-sm text-slate-900 dark:text-white">Sessão atual</b>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Este dispositivo · acesso atual</p>
                   </div>
-                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                  <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/70 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-transparent dark:border-emerald-800/40">
                     Ativa
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => say("As demais sessões foram encerradas nesta demonstração.")}
-                className="mt-5 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:text-blue-700"
+                className="mt-5 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 transition hover:border-blue-300 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-300"
               >
                 Encerrar outras sessões
               </button>
@@ -2194,56 +2194,56 @@ function WhatsAppConnection({ company, say }: { company: string; say: (message: 
   return (
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
       <div className="grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-          <span className="inline-flex rounded-2xl bg-emerald-100 p-3 text-emerald-700">
+        <section className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-6 shadow-sm md:p-8">
+          <span className="inline-flex rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 p-3 text-emerald-700 dark:text-emerald-300">
             <MessageSquareText className="h-7 w-7" />
           </span>
-          <p className="mt-5 text-sm font-bold text-blue-700">{company}</p>
-          <h1 className="mt-2 text-2xl font-bold">Conecte seu WhatsApp</h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
+          <p className="mt-5 text-sm font-bold text-blue-700 dark:text-blue-400">{company}</p>
+          <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">Conecte seu WhatsApp</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-300">
             Conecte um número para centralizar conversas, responder clientes e disparar campanhas
             diretamente pelo ND7.
           </p>
           {connected ? (
-            <div className="mt-7 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-              <p className="flex items-center gap-2 text-sm font-bold text-emerald-800">
+            <div className="mt-7 rounded-2xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50 dark:bg-emerald-950/40 p-5">
+              <p className="flex items-center gap-2 text-sm font-bold text-emerald-800 dark:text-emerald-300">
                 <CheckCircle2 className="h-5 w-5" />
                 WhatsApp conectado
               </p>
-              <p className="mt-2 text-xs leading-5 text-emerald-700">
+              <p className="mt-2 text-xs leading-5 text-emerald-700 dark:text-emerald-400">
                 Canal pronto para mensagens individuais, automações e campanhas.
               </p>
               <button
                 onClick={() => say("Configurações do canal abertas.")}
-                className="mt-4 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white"
+                className="mt-4 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-700"
               >
                 Gerenciar canal
               </button>
               <button
                 onClick={disconnect}
-                className="mt-4 ml-2 rounded-xl border border-emerald-300 bg-white px-4 py-2.5 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100"
+                className="mt-4 ml-2 rounded-xl border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition hover:bg-emerald-100 dark:hover:bg-slate-700"
               >
                 Desconectar
               </button>
             </div>
           ) : qrReady ? (
-            <div className="mt-7 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+            <div className="mt-7 rounded-2xl border border-blue-200 dark:border-blue-800/60 bg-blue-50 dark:bg-slate-800/80 p-5">
               <div className="flex flex-wrap items-center gap-5">
-                <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-xl border-8 border-white bg-[repeating-conic-gradient(#0f172a_0_25%,#fff_0_50%)] p-3 shadow-sm">
+                <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-xl border-8 border-white dark:border-slate-700 bg-[repeating-conic-gradient(#0f172a_0_25%,#fff_0_50%)] p-3 shadow-sm">
                   <div className="h-full w-full bg-white/95" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-blue-950">QR Code pronto para leitura</p>
-                  <p className="mt-2 text-xs leading-5 text-blue-800">
+                  <p className="text-sm font-bold text-blue-950 dark:text-white">QR Code pronto para leitura</p>
+                  <p className="mt-2 text-xs leading-5 text-blue-800 dark:text-slate-300">
                     No WhatsApp do número que deseja conectar, abra <b>Dispositivos conectados</b> e leia o código. A conta só será marcada como conectada após essa etapa.
                   </p>
                   <button
                     onClick={confirmRead}
-                    className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700"
+                    className="mt-4 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700 shadow-lg shadow-blue-500/20"
                   >
                     Confirmar leitura do QR Code
                   </button>
-                  <button onClick={() => setQrReady(false)} className="ml-2 mt-4 rounded-xl px-3 py-2.5 text-xs font-bold text-blue-700 hover:bg-blue-100">
+                  <button onClick={() => setQrReady(false)} className="ml-2 mt-4 rounded-xl px-3 py-2.5 text-xs font-bold text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-slate-700">
                     Cancelar
                   </button>
                 </div>
@@ -2254,11 +2254,11 @@ function WhatsAppConnection({ company, say }: { company: string; say: (message: 
               <button
                 onClick={connect}
                 disabled={connecting}
-                className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 disabled:opacity-70"
+                className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 dark:shadow-none transition hover:bg-blue-700 disabled:opacity-70"
               >
                 {connecting ? "Gerando QR Code..." : "Conectar WhatsApp"}
               </button>
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
                 A conexão segura deve ser feita pelo QR Code do número que será usado pela empresa.
               </p>
             </div>
@@ -2269,30 +2269,30 @@ function WhatsAppConnection({ company, say }: { company: string; say: (message: 
               ["2", "Leia o QR Code"],
               ["3", "Comece a conversar"],
             ].map(([number, text]) => (
-              <div key={number} className="rounded-2xl bg-slate-50 p-4">
-                <b className="text-blue-600">{number}</b>
-                <p className="mt-2 text-xs font-semibold text-slate-700">{text}</p>
+              <div key={number} className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-4 border border-transparent dark:border-slate-800">
+                <b className="text-blue-600 dark:text-blue-400">{number}</b>
+                <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-200">{text}</p>
               </div>
             ))}
           </div>
         </section>
-        <aside className="rounded-3xl bg-[#111827] p-6 text-white">
-          <p className="text-xs font-bold uppercase tracking-widest text-blue-200">
+        <aside className="rounded-3xl bg-[#111827] dark:bg-slate-900/90 border border-transparent dark:border-slate-800 p-6 text-white">
+          <p className="text-xs font-bold uppercase tracking-widest text-blue-200 dark:text-blue-400">
             Integração Evolution
           </p>
-          <h2 className="mt-3 text-xl font-bold">Conexão preparada para sua API.</h2>
-          <p className="mt-3 text-sm leading-6 text-blue-100">
+          <h2 className="mt-3 text-xl font-bold text-white">Conexão preparada para sua API.</h2>
+          <p className="mt-3 text-sm leading-6 text-blue-100 dark:text-slate-300">
             As credenciais da Evolution devem ficar protegidas no backend, nunca nesta tela ou no
             navegador.
           </p>
-          <div className="mt-6 space-y-3 border-t border-white/10 pt-5">
+          <div className="mt-6 space-y-3 border-t border-white/10 dark:border-slate-800 pt-5">
             {[
               "Conexão por QR Code",
               "Envio individual e em massa",
               "Automação por contatos e segmentos",
               "Histórico centralizado no CRM",
             ].map((item) => (
-              <p key={item} className="flex gap-2 text-sm text-blue-100">
+              <p key={item} className="flex gap-2 text-sm text-blue-100 dark:text-slate-300">
                 <Check className="h-4 w-4 text-emerald-300" />
                 {item}
               </p>
@@ -2321,22 +2321,22 @@ function MessageManager({ company, say }: { company: string; say: (message: stri
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm font-bold text-blue-700">{company}</p>
-          <h1 className="mt-1 text-2xl font-bold">Gerenciador de Mensagens</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="text-sm font-bold text-blue-700 dark:text-blue-400">{company}</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Gerenciador de Mensagens</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Crie conversas, campanhas e automações para os seus contatos.
           </p>
         </div>
         <button
           onClick={() => say("Campanha salva como rascunho.")}
-          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white"
+          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 shadow-lg shadow-blue-500/20"
         >
           <Send className="mr-1 inline h-4 w-4" />
           Salvar campanha
         </button>
       </div>
       <div className="mt-7 grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-6 shadow-sm">
           <div className="flex flex-wrap gap-2">
             {[
               ["individual", "Mensagem individual"],
@@ -2346,14 +2346,14 @@ function MessageManager({ company, say }: { company: string; say: (message: stri
               <button
                 key={id}
                 onClick={() => setMode(id as string)}
-                className={`rounded-xl px-3 py-2 text-xs font-bold ${mode === id ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`}
+                className={`rounded-xl px-3 py-2 text-xs font-bold transition ${mode === id ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"}`}
               >
                 {label}
               </button>
             ))}
           </div>
           <div className="mt-7">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-400">
               Destinatários
             </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -2361,18 +2361,18 @@ function MessageManager({ company, say }: { company: string; say: (message: stri
                 <button
                   key={contact}
                   onClick={() => toggleContact(contact)}
-                  className={`flex items-center justify-between rounded-xl border p-3 text-left text-sm ${selected.includes(contact) ? "border-blue-500 bg-blue-50" : "border-slate-200"}`}
+                  className={`flex items-center justify-between rounded-xl border p-3 text-left text-sm transition ${selected.includes(contact) ? "border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300" : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700"}`}
                 >
                   <span>{contact}</span>
-                  {selected.includes(contact) && <Check className="h-4 w-4 text-blue-600" />}
+                  {selected.includes(contact) && <Check className="h-4 w-4 text-blue-600 dark:text-blue-400" />}
                 </button>
               ))}
             </div>
           </div>
-          <label className="mt-7 block text-xs font-bold uppercase tracking-widest text-slate-400">
+          <label className="mt-7 block text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-400">
             Mensagem
             <textarea
-              className="mt-3 min-h-36 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+              className="mt-3 min-h-36 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-4 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40"
               defaultValue={
                 mode === "automation"
                   ? "Olá, {{nome}}! Vimos que você demonstrou interesse. Posso ajudar?"
@@ -2380,7 +2380,7 @@ function MessageManager({ company, say }: { company: string; say: (message: stri
               }
             />
           </label>
-          <div className="mt-5 flex flex-wrap justify-between gap-3 rounded-2xl bg-slate-50 p-4 text-xs text-slate-500">
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 p-4 text-xs text-slate-500 dark:text-slate-400 border border-transparent dark:border-slate-800">
             <span>{selected.length} contato(s) selecionado(s)</span>
             <button
               onClick={() =>
@@ -2388,31 +2388,31 @@ function MessageManager({ company, say }: { company: string; say: (message: stri
                   `${mode === "automation" ? "Automação" : "Mensagem"} agendada para ${selected.length} contato(s).`,
                 )
               }
-              className="rounded-lg bg-blue-600 px-3 py-2 font-bold text-white"
+              className="rounded-lg bg-blue-600 px-3 py-2 font-bold text-white transition hover:bg-blue-700 shadow-lg shadow-blue-500/20"
             >
               {mode === "automation" ? "Ativar automação" : "Enviar mensagem"}
             </button>
           </div>
         </section>
         <aside className="space-y-4">
-          <div className="rounded-3xl bg-[#111827] p-6 text-white">
+          <div className="rounded-3xl bg-[#111827] dark:bg-slate-900/90 border border-transparent dark:border-slate-800 p-6 text-white">
             <Zap className="h-6 w-6 text-yellow-300" />
-            <h2 className="mt-4 text-lg font-bold">Envie com contexto.</h2>
-            <p className="mt-2 text-sm leading-6 text-blue-100">
+            <h2 className="mt-4 text-lg font-bold text-white">Envie com contexto.</h2>
+            <p className="mt-2 text-sm leading-6 text-blue-100 dark:text-slate-300">
               Use campos como <b>{"{{nome}}"}</b> para personalizar cada mensagem e mantenha a
               conversa humana, mesmo em escala.
             </p>
           </div>
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="font-bold">Boas práticas</h2>
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-6 shadow-sm">
+            <h2 className="font-bold text-slate-900 dark:text-white">Boas práticas</h2>
             {[
               "Envie apenas para contatos com consentimento",
               "Evite disparos repetidos",
               "Personalize a primeira linha",
               "Acompanhe respostas no CRM",
             ].map((item) => (
-              <p key={item} className="mt-4 flex gap-2 text-sm text-slate-600">
-                <Check className="h-4 w-4 shrink-0 text-emerald-600" />
+              <p key={item} className="mt-4 flex gap-2 text-sm text-slate-600 dark:text-slate-300">
+                <Check className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                 {item}
               </p>
             ))}
@@ -2446,20 +2446,20 @@ function MySubscription({ checkout, company }: { checkout: () => void; company: 
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">Conta e cobrança</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">Minha Assinatura</h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Conta e cobrança</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Minha Assinatura</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {company} · Acompanhe seu plano atual e todo o histórico da sua empresa.
           </p>
         </div>
         <button
           onClick={checkout}
-          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700"
+          className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 dark:shadow-none transition hover:-translate-y-0.5 hover:bg-blue-700"
         >
           Gerenciar assinatura
         </button>
       </div>
-      <section className="mt-7 overflow-hidden rounded-3xl border border-blue-200 bg-white shadow-xl shadow-blue-100">
+      <section className="mt-7 overflow-hidden rounded-3xl border border-blue-200 dark:border-blue-900/50 bg-white dark:bg-slate-900/90 shadow-xl shadow-blue-100 dark:shadow-none">
         <div className="bg-gradient-to-r from-[#071a3d] to-[#0d6efd] p-6 text-white md:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
@@ -2467,61 +2467,61 @@ function MySubscription({ checkout, company }: { checkout: () => void; company: 
                 <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
                 ASSINATURA ATIVA
               </p>
-              <h2 className="mt-5 text-2xl font-bold">ND7 Profissional</h2>
+              <h2 className="mt-5 text-2xl font-bold text-white">ND7 Profissional</h2>
               <p className="mt-2 text-sm text-blue-100">
                 Sua operação está protegida e com acesso total aos recursos do plano.
               </p>
             </div>
             <div className="rounded-2xl border border-white/15 bg-white/10 p-4">
               <p className="text-xs text-blue-100">Próxima renovação</p>
-              <b className="mt-1 block text-lg">26 de setembro de 2026</b>
+              <b className="mt-1 block text-lg text-white">26 de setembro de 2026</b>
               <p className="mt-1 text-xs text-emerald-200">Cobrança em dia</p>
             </div>
           </div>
         </div>
         <div className="grid gap-5 p-6 md:grid-cols-3 md:p-8">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               Periodicidade
             </p>
-            <p className="mt-2 text-lg font-bold text-slate-800">Mensal</p>
+            <p className="mt-2 text-lg font-bold text-slate-800 dark:text-slate-100">Mensal</p>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               Status atual
             </p>
-            <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-sm font-bold text-emerald-700">
+            <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-50 dark:bg-emerald-950/70 px-3 py-1.5 text-sm font-bold text-emerald-700 dark:text-emerald-300 border border-transparent dark:border-emerald-800/40">
               <CheckCircle2 className="h-4 w-4" />
               Ativa
             </p>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
               Forma de pagamento
             </p>
-            <p className="mt-2 text-lg font-bold text-slate-800">Cartão de crédito</p>
+            <p className="mt-2 text-lg font-bold text-slate-800 dark:text-slate-100">Cartão de crédito</p>
           </div>
         </div>
-        <div className="border-t border-slate-100 bg-slate-50 px-6 py-4 text-sm text-slate-600 md:px-8">
-          <LockKeyhole className="mr-2 inline h-4 w-4 text-blue-600" />
+        <div className="border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 px-6 py-4 text-sm text-slate-600 dark:text-slate-300 md:px-8">
+          <LockKeyhole className="mr-2 inline h-4 w-4 text-blue-600 dark:text-blue-400" />
           Seu acesso permanece liberado enquanto a assinatura estiver ativa e os pagamentos em dia.
         </div>
       </section>
-      <section className="mt-7 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+      <section className="mt-7 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-6 shadow-sm md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold">Histórico de assinaturas</h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Histórico de assinaturas</h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Registro de todos os ciclos e alterações da sua assinatura.
             </p>
           </div>
-          <span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-500">
+          <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-500 dark:text-slate-300">
             3 registros
           </span>
         </div>
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[720px] text-left">
-            <thead className="text-[11px] uppercase tracking-wider text-slate-400">
+            <thead className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-400">
               <tr>
                 <th className="pb-3">Plano</th>
                 <th>Período</th>
@@ -2532,13 +2532,13 @@ function MySubscription({ checkout, company }: { checkout: () => void; company: 
             </thead>
             <tbody>
               {history.map((item) => (
-                <tr key={item[2]} className="border-t border-slate-100 text-sm">
-                  <td className="py-4 font-semibold">{item[0]}</td>
-                  <td>{item[1]}</td>
-                  <td className="text-slate-500">{item[2]}</td>
-                  <td className="text-slate-500">{item[3]}</td>
+                <tr key={item[2]} className="border-t border-slate-100 dark:border-slate-800/80 text-sm">
+                  <td className="py-4 font-semibold text-slate-900 dark:text-white">{item[0]}</td>
+                  <td className="text-slate-700 dark:text-slate-300">{item[1]}</td>
+                  <td className="text-slate-500 dark:text-slate-400">{item[2]}</td>
+                  <td className="text-slate-500 dark:text-slate-400">{item[3]}</td>
                   <td>
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item[5]}`}>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${item[5]} dark:bg-slate-800 dark:text-slate-200`}>
                       {item[4]}
                     </span>
                   </td>
@@ -2671,19 +2671,19 @@ function FinancialCenter({ company, say }: { company: string; say: (message: str
     <div className="financial-center mx-auto max-w-[1440px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">Financeiro · visão gerencial</p>
-          <h1 className="mt-1 text-2xl font-bold">Resultados de {company}</h1>
-          <p className="mt-1 text-sm text-slate-500">Acompanhe receita, conversões e previsibilidade de caixa.</p>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Financeiro · visão gerencial</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Resultados de {company}</h1>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Acompanhe receita, conversões e previsibilidade de caixa.</p>
         </div>
         <div className="relative">
-          <button onClick={() => setShowExportOptions((open) => !open)} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">
+          <button onClick={() => setShowExportOptions((open) => !open)} className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 shadow-lg shadow-blue-500/20">
             <TrendingUp className="mr-1 inline h-4 w-4" /> Exportar relatório
           </button>
           {showExportOptions && (
-            <div className="absolute right-0 top-[calc(100%+0.5rem)] z-20 w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-              <p className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">Escolha o formato</p>
-              <button onClick={() => exportReport("pdf")} className="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">Baixar em PDF</button>
-              <button onClick={() => exportReport("csv")} className="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700">Baixar em CSV</button>
+            <div className="absolute right-0 top-[calc(100%+0.5rem)] z-20 w-52 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-2 shadow-xl">
+              <p className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-400">Escolha o formato</p>
+              <button onClick={() => exportReport("pdf")} className="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-white">Baixar em PDF</button>
+              <button onClick={() => exportReport("csv")} className="flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-700 dark:hover:text-white">Baixar em CSV</button>
             </div>
           )}
         </div>
@@ -2695,19 +2695,19 @@ function FinancialCenter({ company, say }: { company: string; say: (message: str
         <Card label="Ticket médio" value="R$ 3.570" trend="9,6%" icon={<TrendingUp />} />
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.35fr_.85fr]">
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-start justify-between gap-3"><div><h2 className="font-semibold">Evolução do faturamento</h2><p className="mt-1 text-xs text-slate-500">Entradas confirmadas e projeção para os próximos dias</p></div><b className="text-sm text-emerald-600">+18,4%</b></div>
-          <div className="mt-7 flex h-48 items-end gap-2">{cashflow.map((height, index) => <div key={index} className="group flex flex-1 flex-col justify-end"><span className="mx-auto mb-2 hidden rounded bg-slate-900 px-1.5 py-1 text-[9px] text-white group-hover:block">R$ {(height * 430).toLocaleString("pt-BR")}</span><i className="block rounded-t-md bg-gradient-to-t from-blue-700 to-blue-400" style={{ height: `${height}%` }} /></div>)}</div>
-          <div className="mt-3 flex justify-between text-[10px] font-medium text-slate-400"><span>01 ago</span><span>08 ago</span><span>15 ago</span><span>22 ago</span><span>Hoje</span></div>
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-3"><div><h2 className="font-bold text-slate-900 dark:text-white">Evolução do faturamento</h2><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Entradas confirmadas e projeção para os próximos dias</p></div><b className="text-sm text-emerald-600 dark:text-emerald-400">+18,4%</b></div>
+          <div className="mt-7 flex h-48 items-end gap-2">{cashflow.map((height, index) => <div key={index} className="group flex flex-1 flex-col justify-end"><span className="mx-auto mb-2 hidden rounded bg-slate-900 dark:bg-slate-800 px-1.5 py-1 text-[9px] text-white group-hover:block border border-transparent dark:border-slate-700">R$ {(height * 430).toLocaleString("pt-BR")}</span><i className="block rounded-t-md bg-gradient-to-t from-blue-700 to-blue-400" style={{ height: `${height}%` }} /></div>)}</div>
+          <div className="mt-3 flex justify-between text-[10px] font-medium text-slate-400 dark:text-slate-400"><span>01 ago</span><span>08 ago</span><span>15 ago</span><span>22 ago</span><span>Hoje</span></div>
         </section>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="font-semibold">Saúde financeira</h2><p className="mt-1 text-xs text-slate-500">Leitura rápida da operação</p>
-          {[['Margem estimada', '38,6%', 'bg-emerald-500'], ['Meta do mês', '86%', 'bg-blue-600'], ['Inadimplência', '3,2%', 'bg-amber-500']].map(([label, value, tone]) => <div key={label} className="mt-6"><div className="flex justify-between text-sm"><span>{label}</span><b>{value}</b></div><div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100"><i className={`block h-full rounded-full ${tone}`} style={{ width: value }} /></div></div>)}
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-sm">
+          <h2 className="font-bold text-slate-900 dark:text-white">Saúde financeira</h2><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Leitura rápida da operação</p>
+          {[['Margem estimada', '38,6%', 'bg-emerald-500'], ['Meta do mês', '86%', 'bg-blue-600'], ['Inadimplência', '3,2%', 'bg-amber-500']].map(([label, value, tone]) => <div key={label} className="mt-6"><div className="flex justify-between text-sm"><span className="text-slate-600 dark:text-slate-300">{label}</span><b className="text-slate-900 dark:text-white">{value}</b></div><div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><i className={`block h-full rounded-full ${tone}`} style={{ width: value }} /></div></div>)}
         </section>
       </div>
-      <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-wrap justify-between gap-3"><div><h2 className="font-semibold">Conversões que geraram receita</h2><p className="mt-1 text-xs text-slate-500">Negócios ganhos no período e impacto no caixa.</p></div><span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">12 conversões no mês</span></div>
-        <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead className="text-xs text-slate-400"><tr><th className="pb-3">Cliente</th><th>Origem</th><th>Fechamento</th><th>Valor</th><th>Status</th></tr></thead><tbody>{[['Clínica Horizonte','Indicação','Hoje','R$ 8.200'],['Almeida & Costa','Inbound','Ontem','R$ 12.500'],['Núcleo Engenharia','Prospecção','22 ago','R$ 6.800']].map((row) => <tr key={row[0]} className="border-t border-slate-100"><td className="py-4 font-semibold">{row[0]}</td><td>{row[1]}</td><td className="text-slate-500">{row[2]}</td><td className="font-bold">{row[3]}</td><td><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">Receita confirmada</span></td></tr>)}</tbody></table></div>
+      <section className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-bold text-slate-900 dark:text-white">Conversões que geraram receita</h2><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Negócios ganhos no período e impacto no caixa.</p></div><span className="rounded-full bg-emerald-50 dark:bg-emerald-950/70 px-3 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-transparent dark:border-emerald-800/40">12 conversões no mês</span></div>
+        <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[620px] text-left text-sm"><thead className="text-xs text-slate-400 dark:text-slate-400"><tr><th className="pb-3">Cliente</th><th>Origem</th><th>Fechamento</th><th>Valor</th><th>Status</th></tr></thead><tbody>{[['Clínica Horizonte','Indicação','Hoje','R$ 8.200'],['Almeida & Costa','Inbound','Ontem','R$ 12.500'],['Núcleo Engenharia','Prospecção','22 ago','R$ 6.800']].map((row) => <tr key={row[0]} className="border-t border-slate-100 dark:border-slate-800/80"><td className="py-4 font-bold text-slate-900 dark:text-white">{row[0]}</td><td className="text-slate-700 dark:text-slate-300">{row[1]}</td><td className="text-slate-500 dark:text-slate-400">{row[2]}</td><td className="font-bold text-slate-900 dark:text-white">{row[3]}</td><td><span className="rounded-full bg-emerald-50 dark:bg-emerald-950/70 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 border border-transparent dark:border-emerald-800/40">Receita confirmada</span></td></tr>)}</tbody></table></div>
       </section>
     </div>
   );
@@ -2725,23 +2725,23 @@ function Dashboard({
     <div className="owner-dashboard mx-auto max-w-[1440px] p-5 md:p-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">Terça-feira, 26 de agosto</p>
-          <h1 className="mt-1 text-2xl font-bold">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Terça-feira, 26 de agosto</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             {company} <span className="text-blue-500">✦</span>
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Decisões melhores começam com uma visão clara da operação.</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Decisões melhores começam com uma visão clara da operação.</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={admin}
-            className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-2.5 text-sm font-bold text-blue-700"
+            className="rounded-xl border border-blue-200 dark:border-blue-800/60 bg-blue-50 dark:bg-blue-950/60 px-3 py-2.5 text-sm font-bold text-blue-700 dark:text-blue-300 transition hover:bg-blue-100 dark:hover:bg-blue-900"
           >
             <ShieldCheck className="mr-1 inline h-4 w-4" />
             Super Admin
           </button>
           <button
             onClick={() => say("Formulário de novo contato aberto.")}
-            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white"
+            className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 shadow-lg shadow-blue-500/20"
           >
             <Plus className="mr-1 inline h-4 w-4" />
             Novo contato
@@ -2755,27 +2755,27 @@ function Dashboard({
         <Card label="Taxa de conversão" value="32,8%" trend="4,2%" icon={<Sparkles />} />
       </div>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        {[['Meta mensal', 'R$ 50.000', '86% atingida', 'bg-blue-600'], ['Previsão do funil', 'R$ 78.400', '32 negócios em aberto', 'bg-violet-500'], ['Receita a receber', 'R$ 18.720', 'Próximos 30 dias', 'bg-emerald-500']].map(([label, value, detail, tone]) => <section key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex justify-between"><p className="text-sm font-semibold">{label}</p><span className={`h-2.5 w-2.5 rounded-full ${tone}`} /></div><b className="mt-4 block text-2xl">{value}</b><p className="mt-2 text-xs text-slate-500">{detail}</p><div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100"><i className={`block h-full rounded-full ${tone}`} style={{ width: label === 'Meta mensal' ? '86%' : label === 'Previsão do funil' ? '68%' : '57%' }} /></div></section>)}
+        {[['Meta mensal', 'R$ 50.000', '86% atingida', 'bg-blue-600'], ['Previsão do funil', 'R$ 78.400', '32 negócios em aberto', 'bg-violet-500'], ['Receita a receber', 'R$ 18.720', 'Próximos 30 dias', 'bg-emerald-500']].map(([label, value, detail, tone]) => <section key={label} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-sm"><div className="flex justify-between"><p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{label}</p><span className={`h-2.5 w-2.5 rounded-full ${tone}`} /></div><b className="mt-4 block text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{value}</b><p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{detail}</p><div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><i className={`block h-full rounded-full ${tone}`} style={{ width: label === 'Meta mensal' ? '86%' : label === 'Previsão do funil' ? '68%' : '57%' }} /></div></section>)}
       </div>
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.45fr_.8fr]">
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="font-semibold">Funil de vendas</h2>
-          <p className="mt-1 text-xs text-slate-500">Acompanhe seus negócios por etapa</p>
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-sm">
+          <h2 className="font-bold text-slate-900 dark:text-white">Funil de vendas</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Acompanhe seus negócios por etapa</p>
           <div className="mt-5 grid min-w-[600px] grid-cols-3 gap-3 overflow-x-auto">
             {["Qualificação", "Proposta enviada", "Negociação"].map((title, i) => (
-              <div key={title} className="rounded-xl bg-slate-50 p-3">
-                <div className="flex justify-between text-xs font-bold">
+              <div key={title} className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                <div className="flex justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
                   {title}
-                  <span className="text-slate-400">{6 - i}</span>
+                  <span className="text-slate-400 dark:text-slate-400">{6 - i}</span>
                 </div>
-                <div className="mt-3 rounded-lg border border-slate-100 bg-white p-3 shadow-sm">
-                  <b className="text-xs">
+                <div className="mt-3 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-sm">
+                  <b className="text-xs font-bold text-slate-900 dark:text-white">
                     {["Contrato corporativo", "Projeto de expansão", "Consultoria mensal"][i]}
                   </b>
-                  <p className="mt-1 text-[11px] text-slate-400">
+                  <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                     {["Clínica Horizonte", "Almeida & Costa", "Núcleo Engenharia"][i]}
                   </p>
-                  <p className="mt-3 text-xs font-bold">
+                  <p className="mt-3 text-xs font-bold text-slate-900 dark:text-white">
                     {["R$ 24.000", "R$ 18.500", "R$ 8.200"][i]}
                   </p>
                 </div>
@@ -2783,20 +2783,20 @@ function Dashboard({
             ))}
           </div>
         </section>
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="font-semibold">Atividades</h2>
-          <p className="mt-1 text-xs text-slate-500">Próximos compromissos</p>
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-5 shadow-sm">
+          <h2 className="font-bold text-slate-900 dark:text-white">Atividades</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Próximos compromissos</p>
           {[
             ["10:00", "Reunião de apresentação", "Almeida & Costa"],
             ["14:30", "Follow-up de proposta", "Núcleo Engenharia"],
             ["16:00", "Onboarding de cliente", "Clínica Horizonte"],
           ].map((a) => (
             <div key={a[0]} className="mt-5 flex gap-3">
-              <b className="text-xs text-slate-400">{a[0]}</b>
+              <b className="text-xs text-slate-400 dark:text-slate-400">{a[0]}</b>
               <span className="mt-1 h-2 w-2 rounded-full bg-blue-500" />
               <div>
-                <p className="text-sm font-medium">{a[1]}</p>
-                <p className="text-xs text-slate-400">{a[2]}</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">{a[1]}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{a[2]}</p>
               </div>
             </div>
           ))}
