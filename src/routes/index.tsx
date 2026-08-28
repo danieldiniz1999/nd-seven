@@ -2978,12 +2978,12 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
               enter();
             }}
           >
-            {["E-mail", "Senha"].map((x, i) => (
+            {["Usuário ou e-mail", "Senha"].map((x, i) => (
               <label key={x} className="mt-5 block text-xs font-bold">
                 {x}
                 <input
-                  type={i ? "password" : "email"}
-                  autoComplete={i ? "current-password" : "email"}
+                  type={i ? "password" : "text"}
+                  autoComplete={i ? "current-password" : "username"}
                   className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm"
                 />
               </label>
