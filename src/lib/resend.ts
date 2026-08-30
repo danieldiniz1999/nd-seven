@@ -46,7 +46,7 @@ export class ResendClient {
       (typeof process !== "undefined"
         ? process.env['RESEND_FROM_EMAIL']
         : "") ||
-      "ND-Seven <contato@nissidigital.com.br>";
+      "ND-Seven CRM <contato@nissidigital.com.br>";
   }
 
   async sendEmail(options: SendEmailOptions): Promise<{ id: string; [key: string]: unknown }> {
