@@ -2953,6 +2953,44 @@ function Admin({
   );
 }
 function Login({ back, enter }: { back: () => void; enter: () => void }) {
+  const [mode, setMode] = useState<"login" | "forgot">("login");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState("");
+  const [forgotError, setForgotError] = useState("");
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) {
+      setForgotError("Por favor, digite seu e-mail.");
+      return;
+    }
+    setForgotLoading(true);
+    setForgotError("");
+    setForgotMessage("");
+
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Erro ao solicitar recuperação de senha.");
+      }
+
+      setForgotMessage(
+        data.message || "Instruções enviadas para seu e-mail! Verifique sua caixa de entrada.",
+      );
+    } catch (err: unknown) {
+      setForgotError(err instanceof Error ? err.message : "Erro ao enviar e-mail.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   return (
     <div className="grid min-h-screen bg-[#fbfaff] lg:grid-cols-2">
       <div className="hidden flex-col justify-between bg-[#071a3d] p-12 text-white lg:flex">
@@ -2967,35 +3005,101 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
       </div>
       <div className="flex items-center justify-center px-5 py-8 sm:p-6">
         <div className="w-full max-w-sm">
-          <button onClick={back} className="mb-12 text-sm font-medium text-blue-600">
-            ← Voltar
-          </button>
-          <h1 className="text-2xl font-bold">Que bom ter você de volta.</h1>
-          <p className="mt-2 text-sm text-slate-500">Entre para acessar sua empresa.</p>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              enter();
-            }}
-          >
-            {["Usuário ou e-mail", "Senha"].map((x, i) => (
-              <label key={x} className="mt-5 block text-xs font-bold">
-                {x}
-                <input
-                  type={i ? "password" : "text"}
-                  autoComplete={i ? "current-password" : "username"}
-                  className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm"
-                />
-              </label>
-            ))}
-            <button
-              type="submit"
-              className="mt-6 w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white"
-            >
-              Entrar na minha conta
-            </button>
-          </form>
-          <button className="mt-4 w-full text-sm text-blue-600">Esqueci minha senha</button>
+          {mode === "login" ? (
+            <>
+              <button onClick={back} className="mb-12 text-sm font-medium text-blue-600">
+                ← Voltar
+              </button>
+              <h1 className="text-2xl font-bold">Que bom ter você de volta.</h1>
+              <p className="mt-2 text-sm text-slate-500">Entre para acessar sua empresa.</p>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  enter();
+                }}
+              >
+                {["Usuário ou e-mail", "Senha"].map((x, i) => (
+                  <label key={x} className="mt-5 block text-xs font-bold">
+                    {x}
+                    <input
+                      type={i ? "password" : "text"}
+                      autoComplete={i ? "current-password" : "username"}
+                      className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm"
+                    />
+                  </label>
+                ))}
+                <button
+                  type="submit"
+                  className="mt-6 w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700"
+                >
+                  Entrar na minha conta
+                </button>
+              </form>
+              <button
+                type="button"
+                onClick={() => {
+                  setForgotError("");
+                  setForgotMessage("");
+                  setMode("forgot");
+                }}
+                className="mt-4 w-full text-center text-sm font-medium text-blue-600 hover:underline"
+              >
+                Esqueci minha senha
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode("login");
+                  setForgotError("");
+                  setForgotMessage("");
+                }}
+                className="mb-8 text-sm font-medium text-blue-600 hover:underline"
+              >
+                ← Voltar para o login
+              </button>
+              <h1 className="text-2xl font-bold">Recuperar sua senha</h1>
+              <p className="mt-2 text-sm text-slate-500">
+                Informe o e-mail cadastrado e enviaremos um link seguro para redefinição.
+              </p>
+
+              {forgotMessage && (
+                <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-medium text-emerald-800">
+                  <span className="block font-bold text-emerald-900">E-mail enviado!</span>
+                  {forgotMessage}
+                </div>
+              )}
+
+              {forgotError && (
+                <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs font-medium text-rose-800">
+                  {forgotError}
+                </div>
+              )}
+
+              <form onSubmit={handleForgotPassword} className="mt-5">
+                <label className="block text-xs font-bold">
+                  Seu e-mail cadastrado
+                  <input
+                    type="email"
+                    required
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="exemplo@empresa.com.br"
+                    className="mt-2 w-full rounded-xl border border-slate-200 p-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                </label>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="mt-6 w-full rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-lg shadow-blue-200 transition hover:bg-blue-700 disabled:opacity-60"
+                >
+                  {forgotLoading ? "Enviando e-mail..." : "Enviar link de recuperação"}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </div>

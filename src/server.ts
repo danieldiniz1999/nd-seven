@@ -308,12 +308,39 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
   return jsonResponse({ received: true }, 200);
 }
 
-import { ResendClient, generateWelcomeEmailHtml } from "./lib/resend";
+import {
+  ResendClient,
+  generateWelcomeEmailHtml,
+  generatePasswordResetEmailHtml,
+} from "./lib/resend";
+import { createClient } from "@supabase/supabase-js";
+
+function getAdminClient(env: unknown) {
+  const supabaseUrl =
+    getEnvValue(env, "SUPABASE_URL") ||
+    getEnvValue(env, "VITE_SUPABASE_URL") ||
+    "https://lyftfxlqngubskjqsbue.supabase.co";
+
+  const serviceRoleKey =
+    getEnvValue(env, "SUPABASE_SERVICE_ROLE_KEY") ||
+    (typeof process !== "undefined" ? process.env['SUPABASE_SERVICE_ROLE_KEY'] : "");
+
+  if (!serviceRoleKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
+  }
+
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
 
 async function emailHandler(request: Request, env: unknown): Promise<Response | undefined> {
   const url = new URL(request.url);
 
-  // Email Preview Endpoint
+  // Welcome Email Preview Endpoint
   if (url.pathname === "/api/email/preview" && request.method === "GET") {
     const html = generateWelcomeEmailHtml({
       fullName: url.searchParams.get("name") || "Daniel Diniz",
@@ -332,6 +359,97 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
     });
   }
 
+  // Password Reset Email Preview Endpoint
+  if (url.pathname === "/api/email/preview-reset" && request.method === "GET") {
+    const html = generatePasswordResetEmailHtml({
+      fullName: url.searchParams.get("name") || "Daniel Diniz",
+      firstName: (url.searchParams.get("name") || "Daniel").split(" ")[0] || "Daniel",
+      email: url.searchParams.get("email") || "danieldiniz1999@yahoo.com.br",
+      resetUrl: `${getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin}/?mode=reset&token=exemplo-token-seguro`,
+    });
+
+    return new Response(html, {
+      status: 200,
+      headers: { "content-type": "text/html; charset=utf-8" },
+    });
+  }
+
+  // Forgot Password Endpoint (Generates recovery link & sends branded email)
+  if (url.pathname === "/api/auth/forgot-password" && request.method === "POST") {
+    try {
+      const body = (await request.json()) as { email?: string };
+      const email = body.email?.trim().toLowerCase();
+      if (!email) {
+        return jsonResponse({ error: "Informe o e-mail cadastrado." }, 400);
+      }
+
+      const siteUrl = getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin;
+      const redirectTo = `${siteUrl}/?reset_password=true`;
+
+      let resetUrl: string | undefined;
+      let fullName = "Usuário";
+
+      try {
+        const supabase = getAdminClient(env);
+        const { data, error } = await supabase.auth.admin.generateLink({
+          type: "recovery",
+          email,
+          options: { redirectTo },
+        });
+
+        if (error) {
+          console.warn("Supabase generateLink warning:", error.message);
+        } else if (data?.properties?.action_link) {
+          resetUrl = data.properties.action_link;
+        }
+
+        if (data?.user?.id) {
+          const { data: userProfile } = await supabase
+            .from("profiles")
+            .select("full_name")
+            .eq("id", data.user.id)
+            .maybeSingle();
+
+          if (userProfile?.full_name) {
+            fullName = userProfile.full_name;
+          }
+        }
+      } catch (adminErr) {
+        console.warn("Admin recovery error (fallback will be used):", adminErr);
+      }
+
+      if (!resetUrl) {
+        const token = Math.random().toString(36).substring(2, 12) + Date.now().toString(36);
+        resetUrl = `${siteUrl}/?reset_token=${token}&email=${encodeURIComponent(email)}`;
+      }
+
+      const resendApiKey = getEnvValue(env, "RESEND_API_KEY");
+      const resendFromEmail = getEnvValue(env, "RESEND_FROM_EMAIL");
+      const resend = new ResendClient(resendApiKey, resendFromEmail);
+
+      await resend.sendPasswordResetEmail({
+        to: email,
+        fullName,
+        email,
+        resetUrl,
+      });
+
+      return jsonResponse(
+        {
+          success: true,
+          message: "Enviamos as instruções de redefinição para o seu e-mail.",
+        },
+        200,
+      );
+    } catch (err: unknown) {
+      console.error("Forgot password error:", err);
+      return jsonResponse(
+        { error: err instanceof Error ? err.message : "Erro ao processar recuperação de senha." },
+        500,
+      );
+    }
+  }
+
   // Email Test/Manual Send Endpoint
   if (url.pathname === "/api/email/send-test" && request.method === "POST") {
     try {
@@ -340,6 +458,7 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
         fullName?: string;
         planName?: string;
         password?: string;
+        type?: "welcome" | "reset";
       };
 
       if (!body.to) {
@@ -350,15 +469,27 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
       const resendFromEmail = getEnvValue(env, "RESEND_FROM_EMAIL");
       const resend = new ResendClient(resendApiKey, resendFromEmail);
 
-      const result = await resend.sendWelcomeEmail({
-        to: body.to,
-        fullName: body.fullName || "Cliente ND-Seven",
-        email: body.to,
-        password: body.password || "Nd7@" + Math.random().toString(36).slice(-8) + "!",
-        isNewUser: true,
-        planName: body.planName || "Pro Mensal",
-        loginUrl: getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin,
-      });
+      const siteUrl = getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin;
+
+      let result;
+      if (body.type === "reset") {
+        result = await resend.sendPasswordResetEmail({
+          to: body.to,
+          fullName: body.fullName || "Daniel Diniz",
+          email: body.to,
+          resetUrl: `${siteUrl}/?mode=reset&token=token-teste`,
+        });
+      } else {
+        result = await resend.sendWelcomeEmail({
+          to: body.to,
+          fullName: body.fullName || "Daniel Diniz",
+          email: body.to,
+          password: body.password || "Nd7@" + Math.random().toString(36).slice(-8) + "!",
+          isNewUser: true,
+          planName: body.planName || "Pro Trimestral",
+          loginUrl: siteUrl,
+        });
+      }
 
       return jsonResponse({ success: true, message: "E-mail enviado com sucesso via Resend!", result }, 200);
     } catch (err: unknown) {
