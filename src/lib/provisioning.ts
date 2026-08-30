@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { ResendClient } from "./resend";
 
 export type ProvisionAccountParams = {
   legalName: string;
@@ -11,6 +12,10 @@ export type ProvisionAccountParams = {
   planCode: string;
   amount: number;
   currentPeriodEnd?: string | undefined;
+  resendApiKey?: string | undefined;
+  resendFromEmail?: string | undefined;
+  loginUrl?: string | undefined;
+  skipEmail?: boolean | undefined;
 };
 
 export type ProvisionResult = {
@@ -19,6 +24,9 @@ export type ProvisionResult = {
   workspaceId?: string | undefined;
   userId?: string | undefined;
   isNewUser?: boolean | undefined;
+  tempPassword?: string | undefined;
+  emailSent?: boolean | undefined;
+  emailError?: string | undefined;
   error?: string | undefined;
 };
 
@@ -129,12 +137,14 @@ export async function provisionAccount(params: ProvisionAccountParams): Promise<
     const { data: userList } = await supabase.auth.admin.listUsers();
     const existingUser = userList?.users.find((u: { id: string; email?: string }) => u.email?.toLowerCase() === cleanEmail);
 
+    let tempPassword: string | undefined;
+
     if (existingUser) {
       userId = existingUser.id;
     } else {
       isNewUser = true;
       // Generate temporary initial password
-      const tempPassword = `Nd7@${Math.random().toString(36).slice(-8)}!`;
+      tempPassword = `Nd7@${Math.random().toString(36).slice(-8)}!`;
       const { data: newUser, error: userErr } = await supabase.auth.admin.createUser({
         email: cleanEmail,
         password: tempPassword,
@@ -217,12 +227,59 @@ export async function provisionAccount(params: ProvisionAccountParams): Promise<
       });
     }
 
+    // 5. Send Welcome Email via Resend
+    let emailSent = false;
+    let emailError: string | undefined;
+
+    if (!params.skipEmail) {
+      try {
+        const resendKey =
+          params.resendApiKey ||
+          (typeof process !== "undefined" ? process.env['RESEND_API_KEY'] : undefined);
+        const resendFrom =
+          params.resendFromEmail ||
+          (typeof process !== "undefined" ? process.env['RESEND_FROM_EMAIL'] : undefined);
+
+        if (resendKey) {
+          const resend = new ResendClient(resendKey, resendFrom);
+          const planMap: Record<string, string> = {
+            "pro-monthly": "Mensal",
+            "pro-quarterly": "Trimestral",
+            "pro-semiannually": "Semestral",
+            "pro-annually": "Anual",
+          };
+          const planName = planMap[params.planCode] || params.planCode || "Pro";
+
+          await resend.sendWelcomeEmail({
+            to: cleanEmail,
+            fullName: params.fullName,
+            email: cleanEmail,
+            password: tempPassword,
+            isNewUser,
+            planName,
+            workspaceId,
+            loginUrl: params.loginUrl,
+          });
+          emailSent = true;
+          console.info(`Welcome email sent to ${cleanEmail} via Resend.`);
+        } else {
+          console.warn("RESEND_API_KEY is not configured; skipping automatic welcome email.");
+        }
+      } catch (mailErr: unknown) {
+        emailError = mailErr instanceof Error ? mailErr.message : String(mailErr);
+        console.error("Failed to send welcome email via Resend:", emailError);
+      }
+    }
+
     return {
       success: true,
       companyId,
       workspaceId,
       userId,
       isNewUser,
+      tempPassword,
+      emailSent,
+      emailError,
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);

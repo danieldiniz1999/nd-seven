@@ -18,6 +18,10 @@ type RuntimeEnv = {
   ASAAS_WEBHOOK_ENABLED?: string;
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
+  SITE_URL?: string;
+  VITE_SITE_URL?: string;
 };
 
 type AsaasWebhookPayload = {
@@ -271,6 +275,10 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
               ? "pro-quarterly"
               : "pro-monthly";
 
+        const resendApiKey = getEnvValue(env, "RESEND_API_KEY");
+        const resendFromEmail = getEnvValue(env, "RESEND_FROM_EMAIL");
+        const siteUrl = getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || new URL(request.url).origin;
+
         const provisionRes = await provisionAccount({
           legalName: customer.name,
           document: customer.cpfCnpj,
@@ -281,6 +289,9 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
           asaasSubscriptionId: payment.subscription,
           planCode,
           amount: payment.value || 129.9,
+          resendApiKey,
+          resendFromEmail,
+          loginUrl: siteUrl,
         });
 
         console.info("Account provisioned successfully:", provisionRes);
@@ -295,6 +306,67 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
   }
 
   return jsonResponse({ received: true }, 200);
+}
+
+import { ResendClient, generateWelcomeEmailHtml } from "./lib/resend";
+
+async function emailHandler(request: Request, env: unknown): Promise<Response | undefined> {
+  const url = new URL(request.url);
+
+  // Email Preview Endpoint
+  if (url.pathname === "/api/email/preview" && request.method === "GET") {
+    const html = generateWelcomeEmailHtml({
+      fullName: url.searchParams.get("name") || "Daniel Diniz",
+      firstName: (url.searchParams.get("name") || "Daniel").split(" ")[0] || "Daniel",
+      email: url.searchParams.get("email") || "cliente@exemplo.com.br",
+      password: "Nd7@" + Math.random().toString(36).slice(-8) + "!",
+      isNewUser: true,
+      planName: url.searchParams.get("plan") || "Trimestral",
+      workspaceId: "nxs-exemplo",
+      loginUrl: getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin,
+    });
+
+    return new Response(html, {
+      status: 200,
+      headers: { "content-type": "text/html; charset=utf-8" },
+    });
+  }
+
+  // Email Test/Manual Send Endpoint
+  if (url.pathname === "/api/email/send-test" && request.method === "POST") {
+    try {
+      const body = (await request.json()) as {
+        to: string;
+        fullName?: string;
+        planName?: string;
+        password?: string;
+      };
+
+      if (!body.to) {
+        return jsonResponse({ error: "Campo 'to' (e-mail de destino) é obrigatório." }, 400);
+      }
+
+      const resendApiKey = getEnvValue(env, "RESEND_API_KEY");
+      const resendFromEmail = getEnvValue(env, "RESEND_FROM_EMAIL");
+      const resend = new ResendClient(resendApiKey, resendFromEmail);
+
+      const result = await resend.sendWelcomeEmail({
+        to: body.to,
+        fullName: body.fullName || "Cliente ND-Seven",
+        email: body.to,
+        password: body.password || "Nd7@" + Math.random().toString(36).slice(-8) + "!",
+        isNewUser: true,
+        planName: body.planName || "Pro Mensal",
+        loginUrl: getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin,
+      });
+
+      return jsonResponse({ success: true, message: "E-mail enviado com sucesso via Resend!", result }, 200);
+    } catch (err: unknown) {
+      return jsonResponse({ error: err instanceof Error ? err.message : "Erro ao enviar e-mail." }, 500);
+    }
+  }
+
+  return undefined;
 }
 
 function seoDocument(request: Request) {
@@ -357,6 +429,9 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const emailRes = await emailHandler(request, env);
+      if (emailRes) return emailRes;
+
       const checkoutRes = await checkoutHandler(request, env);
       if (checkoutRes) return checkoutRes;
 
