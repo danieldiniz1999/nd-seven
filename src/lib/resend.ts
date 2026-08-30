@@ -437,15 +437,15 @@ export function generatePasswordResetEmailHtml(props: {
                 <tr>
                   <td bgcolor="#0f2b66" style="background-color: #0f2b66; border: 1px solid #3b82f6; border-radius: 8px; padding: 8px 18px; text-align: center;">
                     <span style="font-family: Arial, sans-serif; font-size: 20px; font-weight: 900; color: #60a5fa; letter-spacing: 1px;">ND-7</span>
-                    <span style="font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; color: #ffffff; margin-left: 6px; letter-spacing: 1px;">SEGURANÇA</span>
+                    <span style="font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; color: #ffffff; margin-left: 6px; letter-spacing: 1px;">SEGURANÇA &amp; ACESSO</span>
                   </td>
                 </tr>
               </table>
 
               <h1 style="margin: 20px 0 0 0; font-family: Arial, sans-serif; font-size: 23px; font-weight: 800; color: #ffffff; line-height: 1.3;">
-                Recuperação de Senha 🔒
+                Redefinição de Senha 🔒
               </h1>
-              <p style="margin: 10px 0 0 0; font-family: Arial, sans-serif; font-size: 14px; color: #dbeafe; font-weight: 500;">
+              <p style="margin: 10px 0 0 0; font-family: Arial, sans-serif; font-size: 14px; color: #dbeafe; font-weight: 500; line-height: 1.4;">
                 Instruções para definir uma nova senha para sua conta.
               </p>
             </td>
