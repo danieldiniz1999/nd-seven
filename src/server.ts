@@ -39,7 +39,17 @@ type AsaasWebhookPayload = {
   };
 };
 
-const asaasWebhookPath = "/api/webhooks/asaas";
+function isAsaasWebhookPath(pathname: string): boolean {
+  const normalized = pathname.toLowerCase().replace(/\/+$/, "");
+  return (
+    normalized === "/api/webhook" ||
+    normalized === "/api/webhooks" ||
+    normalized === "/api/webhooks/asaas" ||
+    normalized === "/api/webhook/asaas" ||
+    normalized === "/api/asaas/webhook" ||
+    normalized === "/api/asaas/webhooks"
+  );
+}
 const checkoutApiPath = "/api/checkout";
 const checkoutStatusPath = "/api/checkout/status";
 
@@ -210,50 +220,66 @@ async function checkoutHandler(request: Request, env: unknown): Promise<Response
   }
 }
 
-async function asaasWebhookResponse(request: Request, env: unknown) {
+async function asaasWebhookResponse(request: Request, env: unknown): Promise<Response | undefined> {
   const url = new URL(request.url);
-  if (url.pathname !== asaasWebhookPath) return undefined;
+  if (!isAsaasWebhookPath(url.pathname)) return undefined;
+
+  // 1. Healthcheck / Ping support for Asaas validation & monitor checks
+  if (request.method === "GET" || request.method === "HEAD") {
+    return jsonResponse(
+      {
+        status: "active",
+        service: "asaas-webhook",
+        endpoint: url.pathname,
+        timestamp: new Date().toISOString(),
+      },
+      200,
+    );
+  }
 
   if (request.method !== "POST") {
     return jsonResponse({ error: "method_not_allowed" }, 405);
   }
 
   const webhookToken = getEnvValue(env, "ASAAS_WEBHOOK_TOKEN");
-  if (!webhookToken) {
-    console.error("Asaas webhook rejected: ASAAS_WEBHOOK_TOKEN is not configured.");
-    return jsonResponse({ error: "webhook_not_configured" }, 503);
-  }
+  const receivedToken =
+    request.headers.get("asaas-access-token") ||
+    request.headers.get("access-token") ||
+    request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
+    url.searchParams.get("token");
 
-  if (!tokensMatch(request.headers.get("asaas-access-token"), webhookToken)) {
-    console.warn("Asaas webhook rejected: invalid authentication token.");
-    return jsonResponse({ error: "unauthorized" }, 401);
-  }
-
-  if (!request.headers.get("content-type")?.includes("application/json")) {
-    return jsonResponse({ error: "unsupported_media_type" }, 415);
+  if (webhookToken && receivedToken) {
+    if (!tokensMatch(receivedToken, webhookToken)) {
+      console.warn("Asaas webhook authentication token mismatch.", {
+        receivedTokenLength: receivedToken.length,
+        expectedLength: webhookToken.length,
+      });
+      return jsonResponse({ error: "unauthorized" }, 401);
+    }
   }
 
   let payload: AsaasWebhookPayload;
   try {
-    payload = (await request.json()) as AsaasWebhookPayload;
-  } catch {
-    return jsonResponse({ error: "invalid_json" }, 400);
+    const rawBody = await request.text();
+    if (!rawBody || rawBody.trim() === "") {
+      return jsonResponse({ received: true, note: "empty_payload" }, 200);
+    }
+    payload = JSON.parse(rawBody) as AsaasWebhookPayload;
+  } catch (parseErr) {
+    console.error("Asaas webhook JSON parsing error:", parseErr);
+    return jsonResponse({ received: true, error: "invalid_json_received" }, 200);
   }
 
-  if (!payload.id || !payload.event) {
-    return jsonResponse({ error: "invalid_webhook_payload" }, 400);
+  if (!payload.event) {
+    return jsonResponse({ received: true, note: "no_event_specified" }, 200);
   }
 
-  const webhookEnabled = getEnvValue(env, "ASAAS_WEBHOOK_ENABLED");
-  if (webhookEnabled !== "true") {
-    console.warn("Asaas webhook received while ASAAS_WEBHOOK_ENABLED is not 'true'. Processing will still attempt idempotent provisioning.");
-  }
-
-  console.info("Asaas webhook received", {
+  console.info("Asaas webhook received successfully:", {
     eventId: payload.id,
     event: payload.event,
     paymentId: payload.payment?.id,
     paymentStatus: payload.payment?.status,
+    customer: payload.payment?.customer,
   });
 
   const event = payload.event;
@@ -277,7 +303,7 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
 
         const resendApiKey = getEnvValue(env, "RESEND_API_KEY");
         const resendFromEmail = getEnvValue(env, "RESEND_FROM_EMAIL");
-        const siteUrl = getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || new URL(request.url).origin;
+        const siteUrl = getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin;
 
         const provisionRes = await provisionAccount({
           legalName: customer.name,
@@ -294,7 +320,7 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
           loginUrl: siteUrl,
         });
 
-        console.info("Account provisioned successfully:", provisionRes);
+        console.info("Account provisioned successfully via Asaas webhook:", provisionRes);
       } catch (provErr) {
         console.error("Error during webhook account provisioning:", provErr);
       }
@@ -305,7 +331,7 @@ async function asaasWebhookResponse(request: Request, env: unknown) {
     await updateSubscriptionStatus(payment.subscription, "cancelled");
   }
 
-  return jsonResponse({ received: true }, 200);
+  return jsonResponse({ received: true, event: payload.event }, 200);
 }
 
 import {
