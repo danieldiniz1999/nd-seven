@@ -102,13 +102,18 @@ export class AsaasClient {
       headers,
     });
 
-    const data = await response.json();
+    let data: any;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error(`Falha na comunicação com o gateway de pagamentos (HTTP ${response.status}).`);
+    }
 
     if (!response.ok) {
       const errorMsg =
-        data.errors && data.errors.length > 0
+        data?.errors && Array.isArray(data.errors) && data.errors.length > 0
           ? data.errors.map((e: { description: string }) => e.description).join(", ")
-          : `Asaas API error: ${response.status} ${response.statusText}`;
+          : `Erro de processamento Asaas (${response.status})`;
       throw new Error(errorMsg);
     }
 

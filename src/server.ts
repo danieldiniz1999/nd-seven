@@ -53,10 +53,58 @@ function isAsaasWebhookPath(pathname: string): boolean {
 const checkoutApiPath = "/api/checkout";
 const checkoutStatusPath = "/api/checkout/status";
 
-function jsonResponse(payload: object, status: number) {
+function getClientIp(request: Request): string {
+  const cfIp = request.headers.get("cf-connecting-ip");
+  if (cfIp) return cfIp.trim();
+
+  const xRealIp = request.headers.get("x-real-ip");
+  if (xRealIp) return xRealIp.trim();
+
+  const xForwarded = request.headers.get("x-forwarded-for");
+  if (xForwarded) {
+    const first = xForwarded.split(",")[0]?.trim();
+    if (first) return first;
+  }
+
+  return "127.0.0.1";
+}
+
+type RateLimitRecord = { count: number; expiresAt: number };
+const rateLimitStore = new Map<string, RateLimitRecord>();
+
+function enforceRateLimit(key: string, maxRequests: number, windowMs: number): { allowed: boolean; retryAfter?: number } {
+  const now = Date.now();
+  if (rateLimitStore.size > 1500) {
+    for (const [k, v] of rateLimitStore.entries()) {
+      if (v.expiresAt <= now) rateLimitStore.delete(k);
+    }
+  }
+
+  const record = rateLimitStore.get(key);
+  if (!record || record.expiresAt <= now) {
+    rateLimitStore.set(key, { count: 1, expiresAt: now + windowMs });
+    return { allowed: true };
+  }
+
+  if (record.count >= maxRequests) {
+    const retryAfter = Math.ceil((record.expiresAt - now) / 1000);
+    return { allowed: false, retryAfter };
+  }
+
+  record.count += 1;
+  return { allowed: true };
+}
+
+function jsonResponse(payload: object, status: number, extraHeaders?: Record<string, string>) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { "content-type": "application/json; charset=utf-8" },
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      ...(extraHeaders || {}),
+    },
   });
 }
 
@@ -85,9 +133,15 @@ const planPricing: Record<string, { value: number; cycle: AsaasCycle; planCode: 
 
 async function checkoutHandler(request: Request, env: unknown): Promise<Response | undefined> {
   const url = new URL(request.url);
+  const clientIp = getClientIp(request);
 
-  // Status check endpoint
+  // Status check endpoint with rate limit (45 req / 60s per IP)
   if (url.pathname === checkoutStatusPath && request.method === "GET") {
+    const statusRate = enforceRateLimit(`status:${clientIp}`, 45, 60_000);
+    if (!statusRate.allowed) {
+      return jsonResponse({ error: "too_many_requests" }, 429, { "retry-after": String(statusRate.retryAfter || 60) });
+    }
+
     const paymentId = url.searchParams.get("paymentId");
     if (!paymentId) {
       return jsonResponse({ error: "missing_payment_id" }, 400);
@@ -106,6 +160,16 @@ async function checkoutHandler(request: Request, env: unknown): Promise<Response
 
   if (request.method !== "POST") {
     return jsonResponse({ error: "method_not_allowed" }, 405);
+  }
+
+  // Rate limiting on checkout submissions (max 6 per minute per IP to mitigate carding / fraud)
+  const checkoutRate = enforceRateLimit(`checkout:${clientIp}`, 6, 60_000);
+  if (!checkoutRate.allowed) {
+    return jsonResponse(
+      { error: "Muitas tentativas consecutivas de checkout. Por segurança, aguarde um momento antes de tentar novamente." },
+      429,
+      { "retry-after": String(checkoutRate.retryAfter || 60) }
+    );
   }
 
   try {
@@ -133,6 +197,40 @@ async function checkoutHandler(request: Request, env: unknown): Promise<Response
 
     if (!body.fullName || !body.email || !body.document) {
       return jsonResponse({ error: "Dados obrigatórios ausentes." }, 400);
+    }
+
+    const cleanEmail = body.email.trim().toLowerCase();
+    const cleanDoc = body.document.replace(/\D/g, "");
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return jsonResponse({ error: "Formato de e-mail inválido." }, 400);
+    }
+
+    if (cleanDoc.length !== 11 && cleanDoc.length !== 14) {
+      return jsonResponse({ error: "CPF ou CNPJ inválido." }, 400);
+    }
+
+    if (body.paymentMethod === "card") {
+      if (!body.creditCard) {
+        return jsonResponse({ error: "Dados do cartão de crédito não informados." }, 400);
+      }
+      const rawNum = (body.creditCard.number || "").replace(/\D/g, "");
+      const rawCvv = (body.creditCard.ccv || "").replace(/\D/g, "");
+      if (rawNum.length < 13 || rawNum.length > 19) {
+        return jsonResponse({ error: "Número de cartão de crédito inválido." }, 400);
+      }
+      if (rawCvv.length < 3 || rawCvv.length > 4) {
+        return jsonResponse({ error: "Código de segurança (CVV) inválido." }, 400);
+      }
+      const expMonth = parseInt(body.creditCard.expiryMonth, 10);
+      const expYear = parseInt(body.creditCard.expiryYear, 10);
+      const currentYear = new Date().getFullYear();
+      if (isNaN(expMonth) || expMonth < 1 || expMonth > 12) {
+        return jsonResponse({ error: "Mês de expiração do cartão inválido." }, 400);
+      }
+      if (isNaN(expYear) || expYear < currentYear || expYear > currentYear + 30) {
+        return jsonResponse({ error: "Ano de expiração do cartão inválido." }, 400);
+      }
     }
 
     const apiKey = getEnvValue(env, "ASAAS_API_KEY") || getEnvValue(env, "ASAAS_ACCESS_TOKEN");
@@ -248,12 +346,9 @@ async function asaasWebhookResponse(request: Request, env: unknown): Promise<Res
     request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ||
     url.searchParams.get("token");
 
-  if (webhookToken && receivedToken) {
-    if (!tokensMatch(receivedToken, webhookToken)) {
-      console.warn("Asaas webhook authentication token mismatch.", {
-        receivedTokenLength: receivedToken.length,
-        expectedLength: webhookToken.length,
-      });
+  if (webhookToken) {
+    if (!receivedToken || !tokensMatch(receivedToken, webhookToken)) {
+      console.warn("Asaas webhook authentication rejected: missing or mismatched token.");
       return jsonResponse({ error: "unauthorized" }, 401);
     }
   }
@@ -363,11 +458,25 @@ function getAdminClient(env: unknown) {
   });
 }
 
+function isAuthorizedAdmin(request: Request, env: unknown): boolean {
+  const adminSecret = getEnvValue(env, "ADMIN_SECRET_KEY") || getEnvValue(env, "ASAAS_WEBHOOK_TOKEN");
+  const providedKey = request.headers.get("x-admin-key") || new URL(request.url).searchParams.get("adminKey");
+  if (adminSecret && providedKey) {
+    return tokensMatch(providedKey, adminSecret);
+  }
+  return false;
+}
+
 async function emailHandler(request: Request, env: unknown): Promise<Response | undefined> {
   const url = new URL(request.url);
+  const isDev = typeof process !== "undefined" && process.env.NODE_ENV !== "production" && process.env['VITE_DEV'] === "true";
 
-  // Welcome Email Preview Endpoint
+  // Welcome Email Preview Endpoint (Protected in production)
   if (url.pathname === "/api/email/preview" && request.method === "GET") {
+    if (!isDev && !isAuthorizedAdmin(request, env)) {
+      return jsonResponse({ error: "not_found" }, 404);
+    }
+
     const html = generateWelcomeEmailHtml({
       fullName: url.searchParams.get("name") || "Daniel Diniz",
       firstName: (url.searchParams.get("name") || "Daniel").split(" ")[0] || "Daniel",
@@ -381,12 +490,20 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
 
     return new Response(html, {
       status: 200,
-      headers: { "content-type": "text/html; charset=utf-8" },
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+      },
     });
   }
 
-  // Password Reset Email Preview Endpoint
+  // Password Reset Email Preview Endpoint (Protected in production)
   if (url.pathname === "/api/email/preview-reset" && request.method === "GET") {
+    if (!isDev && !isAuthorizedAdmin(request, env)) {
+      return jsonResponse({ error: "not_found" }, 404);
+    }
+
     const html = generatePasswordResetEmailHtml({
       fullName: url.searchParams.get("name") || "Daniel Diniz",
       firstName: (url.searchParams.get("name") || "Daniel").split(" ")[0] || "Daniel",
@@ -396,24 +513,38 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
 
     return new Response(html, {
       status: 200,
-      headers: { "content-type": "text/html; charset=utf-8" },
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+      },
     });
   }
 
-  // Forgot Password Endpoint (Generates recovery link & sends branded email)
+  // Forgot Password Endpoint (Rate-limited, hardened against user enumeration and email bombing)
   if (url.pathname === "/api/auth/forgot-password" && request.method === "POST") {
+    const clientIp = getClientIp(request);
+    const forgotLimit = enforceRateLimit(`forgot:${clientIp}`, 3, 120_000);
+    if (!forgotLimit.allowed) {
+      return jsonResponse(
+        { error: "Muitas solicitações recentes. Por segurança, aguarde alguns minutos antes de tentar novamente." },
+        429,
+        { "retry-after": String(forgotLimit.retryAfter || 120) }
+      );
+    }
+
     try {
       const body = (await request.json()) as { email?: string };
       const email = body.email?.trim().toLowerCase();
-      if (!email) {
-        return jsonResponse({ error: "Informe o e-mail cadastrado." }, 400);
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return jsonResponse({ error: "Informe um e-mail válido cadastrado." }, 400);
       }
 
       const siteUrl = getEnvValue(env, "SITE_URL") || getEnvValue(env, "VITE_SITE_URL") || url.origin;
       const redirectTo = `${siteUrl}/?reset_password=true`;
 
       let resetUrl: string | undefined;
-      let fullName = "Usuário";
+      let fullName = "Cliente";
 
       try {
         const supabase = getAdminClient(env);
@@ -424,7 +555,7 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
         });
 
         if (error) {
-          console.warn("Supabase generateLink warning:", error.message);
+          console.warn("Supabase generateLink info:", error.message);
         } else if (data?.properties?.action_link) {
           resetUrl = data.properties.action_link;
         }
@@ -441,43 +572,47 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
           }
         }
       } catch (adminErr) {
-        console.warn("Admin recovery error (fallback will be used):", adminErr);
+        console.warn("Admin recovery info:", adminErr);
       }
 
-      if (!resetUrl) {
-        const token = Math.random().toString(36).substring(2, 12) + Date.now().toString(36);
-        resetUrl = `${siteUrl}/?reset_token=${token}&email=${encodeURIComponent(email)}`;
+      // Only send an email if a legitimate recovery link was created for an existing user
+      if (resetUrl) {
+        const resendApiKey = getEnvValue(env, "RESEND_API_KEY");
+        const resendFromEmail = getEnvValue(env, "RESEND_FROM_EMAIL");
+        const resend = new ResendClient(resendApiKey, resendFromEmail);
+
+        await resend.sendPasswordResetEmail({
+          to: email,
+          fullName,
+          email,
+          resetUrl,
+        });
       }
 
-      const resendApiKey = getEnvValue(env, "RESEND_API_KEY");
-      const resendFromEmail = getEnvValue(env, "RESEND_FROM_EMAIL");
-      const resend = new ResendClient(resendApiKey, resendFromEmail);
-
-      await resend.sendPasswordResetEmail({
-        to: email,
-        fullName,
-        email,
-        resetUrl,
-      });
-
+      // Return a constant generic response to prevent account enumeration attacks
       return jsonResponse(
         {
           success: true,
-          message: "Enviamos as instruções de redefinição para o seu e-mail.",
+          message: "Se o e-mail estiver cadastrado em nossa base, enviamos as instruções de redefinição para sua caixa de entrada.",
         },
         200,
       );
     } catch (err: unknown) {
       console.error("Forgot password error:", err);
       return jsonResponse(
-        { error: err instanceof Error ? err.message : "Erro ao processar recuperação de senha." },
+        { error: "Erro ao processar solicitação de recuperação de senha." },
         500,
       );
     }
   }
 
-  // Email Test/Manual Send Endpoint
+  // Email Test/Manual Send Endpoint (Strictly protected against open relay exploitation)
   if (url.pathname === "/api/email/send-test" && request.method === "POST") {
+    if (!isAuthorizedAdmin(request, env)) {
+      console.warn("Blocked unauthorized access attempt to /api/email/send-test.");
+      return jsonResponse({ error: "forbidden" }, 403);
+    }
+
     try {
       const body = (await request.json()) as {
         to: string;
