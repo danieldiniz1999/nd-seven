@@ -88,7 +88,7 @@ export function RecentBuyersPopup() {
           : "opacity-0 translate-y-4 scale-95 pointer-events-none"
       }`}
     >
-      {/* Container Estilo Lovable (Dark Glassmorphism com borda sutil e glow) */}
+      {/* Container Dark Glassmorphism com borda sutil e glow */}
       <div className="relative group flex w-full items-center gap-3 rounded-2xl border border-white/12 bg-[#090d16]/90 p-2.5 sm:p-3 shadow-2xl shadow-blue-950/50 backdrop-blur-xl text-left text-white ring-1 ring-black/40">
         
         {/* Glow de fundo sutil */}

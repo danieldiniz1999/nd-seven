@@ -1,14 +1,39 @@
-// Set Nitro preset for Vercel deployment
-if (!process.env.NITRO_PRESET) {
-  process.env.NITRO_PRESET = "vercel";
-}
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { nitro } from "nitro/vite";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    server: { entry: "server" },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+    dedupe: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "@tanstack/react-query",
+      "@tanstack/query-core",
+    ],
   },
+  plugins: [
+    tsconfigPaths({ projects: ["./tsconfig.json"] }),
+    tailwindcss(),
+    tanstackStart({
+      server: { entry: "server" },
+    }),
+    react(),
+    nitro({
+      preset: process.env.NITRO_PRESET || "vercel",
+    }),
+  ],
 });
 

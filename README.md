@@ -1,24 +1,39 @@
-# ND Seven
+# ND-Seven CRM
 
-oi
+CRM inteligente para vendas, gestão de clientes, processos e relacionamento empresarial.
 
-This project was built with [Lovable](https://lovable.dev).
+## Tecnologias
 
-## Build with Lovable
+- **Framework**: TanStack Start / React 19 / Vite
+- **Server Engine**: Nitro (Preset Vercel)
+- **Estilização**: Tailwind CSS v4 / Lucide Icons
+- **Banco & Autenticação**: Supabase
+- **Pagamentos**: Asaas API & Webhooks
+- **Disparo de E-mails Transacionais**: Resend API
+- **Hospedagem & Deploy**: Vercel
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/f80036db-ffd7-4834-8887-1e01d5702a22).
+## Como Executar Localmente
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+1. Clone o repositório:
+```bash
+git clone https://github.com/danieldiniz1999/nd-seven.git
+cd nd-seven
+```
 
-## Development
+2. Instale as dependências:
+```bash
+npm install
+```
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+3. Configure as variáveis de ambiente necessárias (`.env`).
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+4. Inicie o servidor de desenvolvimento:
+```bash
 npm run dev
 ```
+
+5. Build de produção:
+```bash
+npm run build
+```
+
