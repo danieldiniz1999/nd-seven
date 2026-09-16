@@ -12,22 +12,22 @@ export type WelcomeEmailParams = {
   to: string;
   fullName: string;
   email: string;
-  password?: string;
+  password?: string | undefined;
   isNewUser: boolean;
-  planName?: string;
-  workspaceId?: string;
-  loginUrl?: string;
-  apiKey?: string;
-  fromEmail?: string;
+  planName?: string | undefined;
+  workspaceId?: string | undefined;
+  loginUrl?: string | undefined;
+  apiKey?: string | undefined;
+  fromEmail?: string | undefined;
 };
 
 export type PasswordResetEmailParams = {
   to: string;
-  fullName?: string;
+  fullName?: string | undefined;
   email: string;
   resetUrl: string;
-  apiKey?: string;
-  fromEmail?: string;
+  apiKey?: string | undefined;
+  fromEmail?: string | undefined;
 };
 
 export class ResendClient {

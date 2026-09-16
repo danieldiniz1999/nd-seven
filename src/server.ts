@@ -12,16 +12,19 @@ type ServerEntry = {
 let serverEntryPromise: Promise<ServerEntry> | undefined;
 
 type RuntimeEnv = {
-  ASAAS_API_KEY?: string;
-  ASAAS_ACCESS_TOKEN?: string;
-  ASAAS_WEBHOOK_TOKEN?: string;
-  ASAAS_WEBHOOK_ENABLED?: string;
-  SUPABASE_URL?: string;
-  SUPABASE_SERVICE_ROLE_KEY?: string;
-  RESEND_API_KEY?: string;
-  RESEND_FROM_EMAIL?: string;
-  SITE_URL?: string;
-  VITE_SITE_URL?: string;
+  ASAAS_API_KEY?: string | undefined;
+  ASAAS_ACCESS_TOKEN?: string | undefined;
+  ASAAS_WEBHOOK_TOKEN?: string | undefined;
+  ASAAS_WEBHOOK_ENABLED?: string | undefined;
+  SUPABASE_URL?: string | undefined;
+  VITE_SUPABASE_URL?: string | undefined;
+  SUPABASE_ANON_KEY?: string | undefined;
+  SUPABASE_SERVICE_ROLE_KEY?: string | undefined;
+  RESEND_API_KEY?: string | undefined;
+  RESEND_FROM_EMAIL?: string | undefined;
+  SITE_URL?: string | undefined;
+  VITE_SITE_URL?: string | undefined;
+  ADMIN_SECRET_KEY?: string | undefined;
 };
 
 type AsaasWebhookPayload = {
@@ -469,7 +472,7 @@ function isAuthorizedAdmin(request: Request, env: unknown): boolean {
 
 async function emailHandler(request: Request, env: unknown): Promise<Response | undefined> {
   const url = new URL(request.url);
-  const isDev = typeof process !== "undefined" && process.env.NODE_ENV !== "production" && process.env['VITE_DEV'] === "true";
+  const isDev = typeof process !== "undefined" && process.env['NODE_ENV'] !== "production" && process.env['VITE_DEV'] === "true";
 
   // Welcome Email Preview Endpoint (Protected in production)
   if (url.pathname === "/api/email/preview" && request.method === "GET") {
