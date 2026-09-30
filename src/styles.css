@@ -19,6 +19,17 @@
   transform: translate3d(0, 0, 0);
 }
 
+/* Modern Layout & Performance Optimizations */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+.gpu-accel {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .drawer-backdrop,
   .drawer-panel {

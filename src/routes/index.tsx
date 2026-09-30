@@ -63,8 +63,12 @@ const businesses = [
 function Logo() {
   return (
     <img
-      src="/nd7-512.png"
+      src="/nd7-logo.png"
       alt="ND7"
+      width={40}
+      height={40}
+      decoding="async"
+      fetchPriority="high"
       className="h-10 w-10 rounded-xl object-cover shadow-lg shadow-cyan-300/30"
     />
   );
@@ -164,7 +168,7 @@ function Nexus() {
             <h2 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">Sua foto de perfil</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">Escolha uma imagem do seu computador ou celular para personalizar seu acesso.</p>
             <div className="mt-6 flex items-center gap-4 rounded-xl bg-slate-50 dark:bg-slate-800 p-4">
-              <span className="profile-avatar flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-blue-100 dark:bg-blue-950 text-sm font-bold text-blue-700 dark:text-blue-300">{profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" className="h-full w-full object-cover" /> : "DD"}</span>
+              <span className="profile-avatar flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-blue-100 dark:bg-blue-950 text-sm font-bold text-blue-700 dark:text-blue-300">{profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" loading="lazy" decoding="async" className="h-full w-full object-cover" /> : "DD"}</span>
               <div><b className="block text-sm text-slate-900 dark:text-white">Daniel Diniz</b><span className="text-xs text-slate-500 dark:text-slate-400">Administrador</span></div>
             </div>
             <input ref={profileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => updateProfilePhoto(event.target.files?.[0])} />
@@ -243,7 +247,7 @@ function Nexus() {
               </button>
               <button onClick={() => setProfileDialogOpen(true)} className="profile-trigger flex items-center gap-3 rounded-xl p-1.5 text-left" aria-label="Alterar foto do perfil">
                 <span className="profile-avatar flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-xs font-bold text-blue-700">
-                  {profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" className="h-full w-full object-cover" /> : "DD"}
+                  {profilePhoto ? <img src={profilePhoto} alt="Foto de perfil" loading="lazy" decoding="async" className="h-full w-full object-cover" /> : "DD"}
                 </span>
                 <span className="hidden text-left md:block">
                   <b className="block text-xs">Daniel Diniz</b>
@@ -471,7 +475,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           ))}
         </div>
       </section>
-      <section id="recursos" className="mx-auto max-w-6xl px-5 py-24">
+      <section id="recursos" className="cv-auto mx-auto max-w-6xl px-5 py-24">
         <div className="max-w-xl">
           <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
             Feito para evoluir
@@ -518,7 +522,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           ))}
         </div>
       </section>
-      <section id="como-funciona" className="bg-[#071a3d] px-5 py-24 text-white">
+      <section id="como-funciona" className="cv-auto bg-[#071a3d] px-5 py-24 text-white">
         <div className="mx-auto grid max-w-6xl gap-14 md:grid-cols-2 md:items-center">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-blue-300">
@@ -570,7 +574,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section id="resultado" className="bg-slate-50 px-5 py-24">
+      <section id="resultado" className="cv-auto bg-slate-50 px-5 py-24">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
@@ -634,7 +638,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-6xl px-5 py-24">
+      <section className="cv-auto mx-auto max-w-6xl px-5 py-24">
         <div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-end">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
@@ -687,7 +691,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="border-y border-slate-200 bg-white px-5 py-18">
+      <section className="cv-auto border-y border-slate-200 bg-white px-5 py-18">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
@@ -732,7 +736,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-6xl px-5 py-24">
+      <section className="cv-auto mx-auto max-w-6xl px-5 py-24">
         <div className="rounded-[32px] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-700 px-6 py-10 text-white shadow-2xl shadow-blue-200 md:px-12 md:py-12">
           <div className="grid gap-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
             <div>
@@ -776,7 +780,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
       </section>
       <section
         id="planos"
-        className="relative overflow-hidden bg-[#071a3d] px-5 py-24 text-center text-white"
+        className="cv-auto relative overflow-hidden bg-[#071a3d] px-5 py-24 text-center text-white"
       >
         <div className="pointer-events-none absolute left-1/2 top-1/3 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-blue-500/15 blur-[120px]" />
         <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" />
@@ -847,7 +851,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="border-t border-slate-200 bg-[#f8fbff] px-5 py-20">
+      <section className="cv-auto border-t border-slate-200 bg-[#f8fbff] px-5 py-20">
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
@@ -915,7 +919,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="bg-slate-50 px-5 py-24">
+      <section className="cv-auto bg-slate-50 px-5 py-24">
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
             <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
@@ -968,7 +972,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
           </div>
         </div>
       </section>
-      <section className="bg-gradient-to-r from-blue-700 to-indigo-700 px-5 py-20 text-center text-white">
+      <section className="cv-auto bg-gradient-to-r from-blue-700 to-indigo-700 px-5 py-20 text-center text-white">
         <div className="mx-auto max-w-3xl">
           <Sparkles className="mx-auto h-7 w-7 text-blue-200" />
           <h2 className="mt-5 text-3xl font-bold md:text-4xl">
@@ -1008,74 +1012,7 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
     </div>
   );
 }
-function BuyerPopup() {
-  const buyers = [
-    { name: "Mariana Costa", state: "Ceará", plan: "Anual", minutes: 1 },
-    { name: "Rafael Lima", state: "São Paulo", plan: "Semestral", minutes: 2 },
-    { name: "Ana Beatriz", state: "Minas Gerais", plan: "Trimestral", minutes: 3 },
-    { name: "Pedro Henrique", state: "Pernambuco", plan: "Mensal", minutes: 4 },
-    { name: "Luiza Martins", state: "Paraná", plan: "Anual", minutes: 5 },
-    { name: "Gustavo Alves", state: "Bahia", plan: "Semestral", minutes: 6 },
-    { name: "Camila Rocha", state: "Rio de Janeiro", plan: "Trimestral", minutes: 7 },
-    { name: "Felipe Santos", state: "Goiás", plan: "Mensal", minutes: 2 },
-    { name: "Juliana Nunes", state: "Santa Catarina", plan: "Anual", minutes: 3 },
-    { name: "Bruno Ferreira", state: "Distrito Federal", plan: "Semestral", minutes: 4 },
-    { name: "Carolina Melo", state: "Rio Grande do Sul", plan: "Trimestral", minutes: 5 },
-    { name: "Diego Barbosa", state: "Paraíba", plan: "Mensal", minutes: 6 },
-    { name: "Isabela Freitas", state: "Espírito Santo", plan: "Anual", minutes: 7 },
-    { name: "Thiago Moreira", state: "Maranhão", plan: "Semestral", minutes: 1 },
-    { name: "Larissa Oliveira", state: "Mato Grosso", plan: "Trimestral", minutes: 2 },
-    { name: "André Ribeiro", state: "Amazonas", plan: "Mensal", minutes: 3 },
-    { name: "Renata Souza", state: "Alagoas", plan: "Anual", minutes: 4 },
-    { name: "Caio Mendes", state: "Pará", plan: "Semestral", minutes: 5 },
-    { name: "Beatriz Cardoso", state: "Rio Grande do Norte", plan: "Trimestral", minutes: 6 },
-    { name: "Vinícius Teixeira", state: "Sergipe", plan: "Mensal", minutes: 7 },
-  ];
-  const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    let hide: ReturnType<typeof setTimeout>;
-    let repeat: ReturnType<typeof setInterval> | undefined;
-    const reveal = () => {
-      setVisible(true);
-      hide = setTimeout(() => setVisible(false), 3000);
-    };
-    const first = setTimeout(() => {
-      reveal();
-      repeat = setInterval(() => {
-        setIndex((current) => (current + 1) % buyers.length);
-        reveal();
-      }, 6000);
-    }, 4000);
-    return () => {
-      clearTimeout(first);
-      clearTimeout(hide);
-      if (repeat) clearInterval(repeat);
-    };
-  }, [buyers.length]);
-  return (
-    <div
-      className={`fixed bottom-6 left-5 z-40 flex max-w-[285px] items-center gap-3 rounded-2xl border border-blue-100 bg-white/95 p-3.5 shadow-2xl shadow-blue-950/15 backdrop-blur transition-[opacity,transform] duration-500 ${visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"}`}
-    >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">
-        {buyers[index]!.name.slice(0, 1)}
-      </span>
-      <div className="min-w-0 text-xs leading-5 text-slate-600">
-        <p className="truncate">
-          <b className="text-slate-800">{buyers[index]!.name}</b> · {buyers[index]!.state}
-        </p>
-        <p>
-          Plano <b className="text-slate-700">{buyers[index]!.plan}</b> · há {buyers[index]!.minutes}{" "}
-          min
-          <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-        </p>
-        <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-400">
-          Demonstração
-        </span>
-      </div>
-    </div>
-  );
-}
+
 function Sidebar({
   view,
   setView,
@@ -3397,6 +3334,9 @@ function Checkout({ back, done }: { back: () => void; done: () => void }) {
                       <img
                         src={`data:image/png;base64,${pixModalData.qrCodeImage}`}
                         alt="QR Code PIX"
+                        width={192}
+                        height={192}
+                        decoding="async"
                         className="h-48 w-48 rounded-xl border border-slate-200 p-2 shadow-inner"
                       />
                     </div>
