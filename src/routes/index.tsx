@@ -122,10 +122,18 @@ function Nexus() {
     };
     reader.readAsDataURL(file);
   };
+  const [selectedCycle, setSelectedCycle] = useState("Mensal");
+
   if (view === "landing")
     return (
       <>
-        <Landing access={() => setView("login")} start={() => setView("checkout")} />
+        <Landing
+          access={() => setView("login")}
+          start={(plan?: string) => {
+            if (plan) setSelectedCycle(plan);
+            setView("checkout");
+          }}
+        />
         <RecentBuyersPopup />
       </>
     );
@@ -143,6 +151,7 @@ function Nexus() {
     return (
       <>
         <Checkout
+          initialCycle={selectedCycle}
           back={() => setView("landing")}
           done={() =>
             say("Pagamento iniciado. O acesso será liberado após a confirmação pela Asaas.")
@@ -331,24 +340,10 @@ const PanelContent = memo(function PanelContent({
   return <Dashboard admin={openAdmin} say={say} company={company} />;
 });
 
-function Landing({ access, start }: { access: () => void; start: () => void }) {
+function Landing({ access, start }: { access: () => void; start: (plan?: string) => void }) {
   const wa =
     "https://wa.me/5585920109136?text=" +
     encodeURIComponent("Olá! Quero conhecer o ND7 e transformar a gestão da minha empresa.");
-  const [cycle, setCycle] = useState("Mensal");
-  const cycles = ["Mensal", "Trimestral", "Semestral", "Anual"];
-  const prices: Record<string, string> = {
-    Mensal: "R$ 129,90",
-    Trimestral: "R$ 119,90",
-    Semestral: "R$ 109,90",
-    Anual: "R$ 99,90",
-  };
-  const billingByCycle: Record<string, string> = {
-    Mensal: "cobrado mensalmente",
-    Trimestral: "R$ 359,70 a cada 3 meses",
-    Semestral: "R$ 659,40 a cada 6 meses",
-    Anual: "R$ 1.198,80 a cada 12 meses",
-  };
   return (
     <div className="landing-page overflow-hidden bg-[#ffffff] text-slate-900">
       <header className="fixed inset-x-0 top-0 z-40 border-b border-white/40 bg-[#ffffff]/80 backdrop-blur-xl">
@@ -780,74 +775,235 @@ function Landing({ access, start }: { access: () => void; start: () => void }) {
       </section>
       <section
         id="planos"
-        className="cv-auto relative overflow-hidden bg-[#071a3d] px-5 py-24 text-center text-white"
+        className="cv-auto relative overflow-hidden bg-[#071a3d] px-4 py-20 sm:px-6 lg:px-8 text-white"
       >
-        <div className="pointer-events-none absolute left-1/2 top-1/3 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-blue-500/15 blur-[120px]" />
-        <div className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl" />
-        <div className="relative mx-auto max-w-5xl">
-          <div className="mx-auto max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-blue-300/25 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-100">
-              <Sparkles className="h-3.5 w-3.5" /> Oferta ND7
+        <div className="pointer-events-none absolute left-1/2 top-1/4 h-[44rem] w-[44rem] -translate-x-1/2 rounded-full bg-blue-500/15 blur-[140px]" />
+        <div className="pointer-events-none absolute -left-28 bottom-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-28 top-20 h-96 w-96 rounded-full bg-cyan-500/15 blur-3xl" />
+
+        <div className="relative mx-auto max-w-7xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="inline-flex items-center gap-2 rounded-full border border-blue-300/25 bg-white/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-blue-100 backdrop-blur-md">
+              <Sparkles className="h-3.5 w-3.5 text-cyan-300" /> OFERTA ESPECIAL ND7
             </p>
-            <h2 className="mt-5 text-3xl font-black tracking-tight md:text-5xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-white md:text-5xl">
               Escolha o prazo. <span className="text-blue-300">Leve o ND7 inteiro.</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-300">
-              A única diferença entre os planos é a forma de cobrança. Seu acesso é total, sem
-              módulos bloqueados, em qualquer escolha.
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+              Acesso 100% completo e sem limitações em qualquer plano. Você só escolhe a periodicidade ideal para o caixa da sua empresa.
             </p>
           </div>
-          <div className="mx-auto mt-10 grid max-w-4xl grid-cols-2 rounded-2xl border border-white/10 bg-white/[.035] p-1.5 text-left sm:grid-cols-4">
-            {cycles.map((item) => (
-              <button
-                key={item}
-                onClick={() => setCycle(item)}
-                className={`rounded-xl px-3 py-3 text-center transition duration-300 ${cycle === item ? "bg-[#0d6efd] text-white shadow-[0_10px_30px_rgba(13,110,253,.28)]" : "text-slate-300 hover:bg-white/[.06] hover:text-white"}`}
+
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            {[
+              {
+                id: "Mensal",
+                name: "Plano Mensal",
+                badge: "Flexibilidade",
+                badgeStyle: "bg-slate-800 text-slate-300 border-slate-700/80",
+                description: "Ideal para começar sem compromisso a longo prazo.",
+                anchorPrice: null,
+                priceInt: "129",
+                priceDec: ",90",
+                billingText: "Cobrança mensal recorrente",
+                savingsText: "Sem contrato de fidelidade",
+                highlight: false,
+                ctaLabel: "Começar Mensal",
+                ctaClass: "bg-white/10 hover:bg-white/20 text-white border border-white/15",
+                features: [
+                  "Acesso integral ao ND7",
+                  "Contatos e negócios ilimitados",
+                  "Funis em kanban, grade e lista",
+                  "Automações e mensagens",
+                  "Equipe, permissões e métricas",
+                  "Agenda e gestão de tarefas",
+                  "Cancele quando quiser",
+                ],
+              },
+              {
+                id: "Trimestral",
+                name: "Plano Trimestral",
+                badge: "Economize 8%",
+                badgeStyle: "bg-cyan-950/90 text-cyan-300 border-cyan-700/60",
+                description: "Tempo ideal para validar e consolidar o funil comercial.",
+                anchorPrice: "R$ 129,90",
+                priceInt: "119",
+                priceDec: ",90",
+                billingText: "R$ 359,70 a cada 3 meses",
+                savingsText: "Economia de R$ 30,00 no trimestre",
+                highlight: false,
+                ctaLabel: "Assinar Trimestral",
+                ctaClass: "bg-blue-600/90 hover:bg-blue-600 text-white shadow-lg shadow-blue-600/25",
+                features: [
+                  "Acesso integral ao ND7",
+                  "Contatos e negócios ilimitados",
+                  "Funis em kanban, grade e lista",
+                  "Automações e mensagens",
+                  "Equipe, permissões e métricas",
+                  "Agenda e gestão de tarefas",
+                  "Sem taxa de implantação",
+                ],
+              },
+              {
+                id: "Semestral",
+                name: "Plano Semestral",
+                badge: "✦ 15% de Desconto",
+                badgeStyle: "bg-indigo-950/90 text-indigo-300 border-indigo-700/60",
+                description: "Ritmo contínuo e previsibilidade para sua equipe vender mais.",
+                anchorPrice: "R$ 129,90",
+                priceInt: "109",
+                priceDec: ",90",
+                billingText: "R$ 659,40 a cada 6 meses",
+                savingsText: "Economia de R$ 120,00 no semestre",
+                highlight: false,
+                ctaLabel: "Assinar Semestral",
+                ctaClass: "bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30",
+                features: [
+                  "Acesso integral ao ND7",
+                  "Contatos e negócios ilimitados",
+                  "Funis em kanban, grade e lista",
+                  "Automações e mensagens",
+                  "Equipe, permissões e métricas",
+                  "Agenda e gestão de tarefas",
+                  "Suporte técnico ágil",
+                ],
+              },
+              {
+                id: "Anual",
+                name: "Plano Anual",
+                badge: "🔥 Mais Vendido · 23% OFF",
+                badgeStyle: "bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 text-white border-transparent shadow-md shadow-rose-950/40",
+                topRibbon: "✦ MELHOR ESCOLHA · MAIOR ECONOMIA",
+                description: "Máxima economia e estabilidade. O menor custo mensal do ND7.",
+                anchorPrice: "R$ 129,90",
+                priceInt: "99",
+                priceDec: ",90",
+                billingText: "R$ 1.198,80 faturado anualmente",
+                savingsText: "Economia total de R$ 360,00 no ano",
+                highlight: true,
+                ctaLabel: "Garantir Plano Anual 🔥",
+                ctaClass: "bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-black shadow-xl shadow-blue-500/40 hover:scale-[1.02]",
+                features: [
+                  "Acesso integral ao ND7",
+                  "Contatos e negócios ilimitados",
+                  "Funis em kanban, grade e lista",
+                  "Automações e mensagens",
+                  "Equipe, permissões e métricas",
+                  "Agenda e gestão de tarefas",
+                  "Suporte VIP prioritário",
+                ],
+              },
+            ].map((plan) => (
+              <div
+                key={plan.id}
+                className={`relative flex flex-col justify-between rounded-3xl p-5 sm:p-6 transition-all duration-300 ${
+                  plan.highlight
+                    ? "border-2 border-cyan-400 bg-gradient-to-b from-[#0e1d3e] to-[#09132b] shadow-[0_0_40px_rgba(6,182,212,0.22)] ring-1 ring-cyan-400/40 lg:-translate-y-3"
+                    : "border border-white/10 bg-[#0c162e]/90 hover:border-blue-400/30 hover:bg-[#0e1a38] shadow-xl shadow-black/20"
+                }`}
               >
-                <b className="block text-sm">{item}</b>
-                <span className={`mt-1 block text-[10px] font-bold ${cycle === item ? "text-blue-100" : "text-blue-300"}`}>
-                  {item === "Mensal" ? "flexível" : item === "Trimestral" ? "8% menor" : item === "Semestral" ? "15% menor" : "23% menor"}
-                </span>
-              </button>
+                {plan.topRibbon && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-600 px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-lg shadow-rose-950/50">
+                    {plan.topRibbon}
+                  </div>
+                )}
+
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider border ${plan.badgeStyle}`}
+                    >
+                      {plan.badge}
+                    </span>
+                    {plan.highlight && (
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-cyan-300">
+                        <Zap className="h-3 w-3 fill-cyan-300 text-cyan-300" /> TOP
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="mt-3.5 text-xl font-black text-white tracking-tight">{plan.name}</h3>
+                  <p className="mt-1 text-xs text-slate-400 leading-relaxed min-h-[36px]">
+                    {plan.description}
+                  </p>
+
+                  <div className="mt-5 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-3.5 text-center">
+                    {plan.anchorPrice ? (
+                      <p className="text-[11px] font-medium text-slate-400 line-through">
+                        De {plan.anchorPrice}/mês
+                      </p>
+                    ) : (
+                      <p className="text-[11px] font-medium text-slate-400">
+                        A partir de
+                      </p>
+                    )}
+                    <div className="mt-0.5 flex items-baseline justify-center gap-1">
+                      <span className="text-lg font-black text-blue-400">R$</span>
+                      <strong className="text-4xl sm:text-5xl font-black tracking-tight text-white">
+                        {plan.priceInt}
+                      </strong>
+                      <span className="text-lg font-black text-blue-400">{plan.priceDec}</span>
+                      <span className="text-xs font-semibold text-slate-400">/mês</span>
+                    </div>
+                    <p className="mt-1 text-[11px] font-medium text-slate-400">
+                      {plan.billingText}
+                    </p>
+
+                    <div className="mt-2.5 flex items-center justify-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[11px] font-bold text-emerald-300">
+                      <Sparkles className="h-3 w-3 shrink-0" />
+                      <span>{plan.savingsText}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => start(plan.id)}
+                    className={`group mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 px-4 text-xs font-black uppercase tracking-wider transition-all duration-200 ${plan.ctaClass}`}
+                  >
+                    <span>{plan.ctaLabel}</span>
+                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1" />
+                  </button>
+
+                  <div className="my-5 h-px bg-white/10" />
+
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+                      Incluso no plano:
+                    </p>
+                    <ul className="space-y-2 text-xs text-slate-200">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2">
+                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                          <span className="leading-tight">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-3 border-t border-white/[0.06] text-center">
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-400">
+                    <ShieldCheck className="h-3 w-3 text-emerald-400" /> Liberação Imediata
+                  </span>
+                </div>
+              </div>
             ))}
           </div>
-          <div className="mx-auto mt-10 max-w-4xl rounded-[28px] border border-blue-300/20 bg-[#111827] p-6 text-left shadow-[0_0_0_1px_rgba(255,255,255,.03),0_26px_70px_rgba(0,0,0,.5)] md:p-10">
-            <div className="mx-auto mb-7 w-fit rounded-full bg-[#0d6efd] px-4 py-1.5 text-xs font-black text-white shadow-lg shadow-blue-500/25">
-              {cycle === "Anual" ? "✦ Melhor custo" : cycle === "Semestral" ? "✦ Escolha inteligente" : "✦ Acesso total"}
+
+          <div className="mt-14 mx-auto max-w-4xl rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center sm:flex sm:items-center sm:justify-around sm:text-left backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-300 py-1.5 sm:py-0">
+              <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+              <span>Pagamento Protegido via Asaas</span>
             </div>
-            <p className="text-center text-sm font-bold uppercase tracking-[.16em] text-slate-400">Plano {cycle}</p>
-            <div className="mt-4 text-center">
-              <span className="text-3xl font-black md:text-4xl">R$</span>{" "}
-              <strong className="text-6xl font-black tracking-tighter text-blue-400 md:text-7xl">{prices[cycle]!.replace("R$ ", "").replace(",90", "")}</strong>
-              <span className="text-3xl font-black text-blue-400">,90</span>
-              <span className="ml-2 text-base font-medium text-slate-400">/mês</span>
+            <div className="hidden sm:block h-4 w-px bg-white/10" />
+            <div className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-300 py-1.5 sm:py-0">
+              <Sparkles className="h-4 w-4 text-cyan-400 shrink-0" />
+              <span>Acesso Completo sem Recursos Bloqueados</span>
             </div>
-            <p className="mt-3 text-center text-sm text-slate-400">{billingByCycle[cycle]}</p>
-            <p className="mx-auto mt-6 max-w-xl rounded-xl border border-blue-300/15 bg-blue-500/10 px-4 py-3 text-center text-sm font-semibold text-blue-100">
-              Acesso integral ao ND7 em qualquer plano. Você escolhe a frequência, nunca recursos limitados.
-            </p>
-            <div className="mt-8 grid gap-x-10 gap-y-4 text-sm sm:grid-cols-2">
-              {[
-                "Contatos e negócios ilimitados",
-                "Funis em kanban, grade e lista",
-                "Automação e mensagens para clientes",
-                "Equipe, permissões e indicadores",
-                "Agenda, tarefas e histórico completo",
-                "Suporte especializado incluso",
-              ].map((item) => (
-                <p key={item} className="font-medium text-slate-100">
-                  <Check className="mr-2 inline h-4 w-4 text-blue-400" />
-                  {item}
-                </p>
-              ))}
+            <div className="hidden sm:block h-4 w-px bg-white/10" />
+            <div className="flex items-center justify-center gap-2 text-xs font-semibold text-slate-300 py-1.5 sm:py-0">
+              <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0" />
+              <span>Cancele a qualquer momento sem burocracia</span>
             </div>
-            <button
-              onClick={start}
-              className="group mt-10 w-full rounded-2xl bg-[#0d6efd] px-6 py-4 text-base font-black text-white shadow-[0_14px_35px_rgba(13,110,253,.3)] transition hover:-translate-y-1 hover:bg-blue-500"
-            >
-              Assinar plano {cycle} <ArrowRight className="ml-2 inline h-5 w-5 transition group-hover:translate-x-1" />
-            </button>
-            <p className="mt-4 text-center text-xs text-slate-500">Pagamento protegido pela Asaas · Cancele quando quiser</p>
           </div>
         </div>
       </section>
@@ -3042,9 +3198,17 @@ function Login({ back, enter }: { back: () => void; enter: () => void }) {
     </div>
   );
 }
-function Checkout({ back, done }: { back: () => void; done: () => void }) {
+function Checkout({
+  back,
+  done,
+  initialCycle = "Mensal",
+}: {
+  back: () => void;
+  done: () => void;
+  initialCycle?: string;
+}) {
   const [payment, setPayment] = useState<"card" | "pix" | "boleto">("card");
-  const [cycle, setCycle] = useState("Mensal");
+  const [cycle, setCycle] = useState(initialCycle);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
