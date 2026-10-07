@@ -32,7 +32,7 @@ export default defineConfig({
     }),
     react(),
     nitro({
-      preset: process.env['NITRO_PRESET'] || "vercel",
+      preset: process.env['NITRO_PRESET'] || "cloudflare-pages",
     }),
   ],
 });
