@@ -119,15 +119,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: seoDescription },
       { property: "og:type", content: "website" },
       { property: "og:url", content: seoUrl },
-      { property: "og:image", content: seoImage },
-      { property: "og:image:width", content: "1728" },
-      { property: "og:image:height", content: "909" },
-      { property: "og:image:alt", content: "ND7 — CRM inteligente para empresas que crescem" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: seoTitle },
       { name: "twitter:description", content: seoDescription },
-      { name: "twitter:image", content: seoImage },
-      { name: "twitter:image:alt", content: "ND7 — CRM inteligente para empresas que crescem" },
     ],
     links: [
       {

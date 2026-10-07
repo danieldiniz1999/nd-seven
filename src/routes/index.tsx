@@ -39,7 +39,19 @@ import {
 import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { RecentBuyersPopup } from "@/components/RecentBuyersPopup";
 
-export const Route = createFileRoute("/")({ component: Nexus });
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "ND7 | CRM inteligente para vendas e relacionamento" },
+      { name: "description", content: "Centralize clientes, vendas, equipe e processos com o ND7, o CRM para empresas que querem crescer com controle." },
+      { property: "og:title", content: "ND7 | CRM inteligente para vendas e relacionamento" },
+      { property: "og:description", content: "Centralize clientes, vendas, equipe e processos com o ND7, o CRM para empresas que querem crescer com controle." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Nexus,
+});
 type View =
   | "landing"
   | "crm"
