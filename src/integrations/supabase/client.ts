@@ -23,6 +23,10 @@ const SUPABASE_PUBLISHABLE_KEY =
     : undefined) ||
   DEFAULT_SUPABASE_PUBLISHABLE_KEY;
 
+export const DEFAULT_SUPABASE_ANON_KEY = DEFAULT_SUPABASE_PUBLISHABLE_KEY;
+export const SUPABASE_ANON_KEY = SUPABASE_PUBLISHABLE_KEY;
+export const SUPABASE_URL_VALUE = SUPABASE_URL;
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
