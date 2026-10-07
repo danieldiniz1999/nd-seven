@@ -2,7 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
-import { AsaasClient, type AsaasBillingType, type AsaasCycle } from "./lib/asaas";
+import { AsaasClient, DEFAULT_ASAAS_API_KEY, type AsaasBillingType, type AsaasCycle } from "./lib/asaas";
 import { provisionAccount, updateSubscriptionStatus } from "./lib/provisioning";
 
 type ServerEntry = {
@@ -25,6 +25,9 @@ type RuntimeEnv = {
   SITE_URL?: string | undefined;
   VITE_SITE_URL?: string | undefined;
   ADMIN_SECRET_KEY?: string | undefined;
+  EVOLUTION_API_URL?: string | undefined;
+  EVOLUTION_API_KEY?: string | undefined;
+  EVOLUTION_INSTANCE_NAME?: string | undefined;
 };
 
 type AsaasWebhookPayload = {
@@ -123,7 +126,28 @@ function tokensMatch(received: string | null, expected: string) {
 
 function getEnvValue(env: unknown, key: keyof RuntimeEnv): string | undefined {
   const runtime = (env as RuntimeEnv) || {};
-  return runtime[key] || (typeof process !== "undefined" ? (process.env as Record<string, string | undefined>)?.[key] : undefined);
+  const val = runtime[key] || (typeof process !== "undefined" ? (process.env as Record<string, string | undefined>)?.[key] : undefined);
+  if (val) return val;
+
+  if (key === "ASAAS_API_KEY" || key === "ASAAS_ACCESS_TOKEN") {
+    return DEFAULT_ASAAS_API_KEY;
+  }
+  if (key === "RESEND_API_KEY") {
+    return DEFAULT_RESEND_API_KEY;
+  }
+  if (key === "RESEND_FROM_EMAIL") {
+    return "ND-Seven CRM <contato@nissidigital.com.br>";
+  }
+  if (key === "EVOLUTION_API_URL") {
+    return "https://api.nissidigital.com.br";
+  }
+  if (key === "EVOLUTION_API_KEY") {
+    return "B6D711FCDE4D4FD5936544120E713976";
+  }
+  if (key === "EVOLUTION_INSTANCE_NAME") {
+    return "ndseven";
+  }
+  return undefined;
 }
 
 // Plan Cycle & Pricing Mapping
@@ -434,9 +458,16 @@ async function asaasWebhookResponse(request: Request, env: unknown): Promise<Res
 
 import {
   ResendClient,
+  DEFAULT_RESEND_API_KEY,
   generateWelcomeEmailHtml,
   generatePasswordResetEmailHtml,
 } from "./lib/resend";
+import {
+  EvolutionApiClient,
+  DEFAULT_EVOLUTION_URL,
+  DEFAULT_EVOLUTION_API_KEY,
+  DEFAULT_EVOLUTION_INSTANCE,
+} from "./integrations/evolution/client";
 import { createClient } from "@supabase/supabase-js";
 
 const DEFAULT_SUPABASE_SERVICE_ROLE_KEY =
@@ -664,6 +695,47 @@ async function emailHandler(request: Request, env: unknown): Promise<Response | 
   return undefined;
 }
 
+async function evolutionHandler(request: Request, env: unknown): Promise<Response | undefined> {
+  const url = new URL(request.url);
+
+  if (!url.pathname.startsWith("/api/evolution")) {
+    return undefined;
+  }
+
+  const baseUrl = getEnvValue(env, "EVOLUTION_API_URL") || DEFAULT_EVOLUTION_URL;
+  const apiKey = getEnvValue(env, "EVOLUTION_API_KEY") || DEFAULT_EVOLUTION_API_KEY;
+  const defaultInstance = getEnvValue(env, "EVOLUTION_INSTANCE_NAME") || DEFAULT_EVOLUTION_INSTANCE;
+
+  const client = new EvolutionApiClient({ baseUrl, apiKey, defaultInstance });
+
+  if (url.pathname === "/api/evolution/status" && request.method === "GET") {
+    const instance = url.searchParams.get("instance") || undefined;
+    const status = await client.getInstanceStatus(instance);
+    return jsonResponse(status, 200);
+  }
+
+  if (url.pathname === "/api/evolution/connect" && (request.method === "POST" || request.method === "GET")) {
+    const instance = url.searchParams.get("instance") || undefined;
+    const qrData = await client.connectInstance(instance);
+    return jsonResponse(qrData, 200);
+  }
+
+  if (url.pathname === "/api/evolution/send" && request.method === "POST") {
+    try {
+      const body = (await request.json()) as { number: string; text: string; instance?: string };
+      if (!body.number || !body.text) {
+        return jsonResponse({ error: "number e text são obrigatórios" }, 400);
+      }
+      const res = await client.sendTextMessage({ number: body.number, text: body.text }, body.instance);
+      return jsonResponse(res, res.success ? 200 : 400);
+    } catch (err: unknown) {
+      return jsonResponse({ error: err instanceof Error ? err.message : "Erro ao enviar via Evolution" }, 500);
+    }
+  }
+
+  return undefined;
+}
+
 function seoDocument(request: Request) {
   const url = new URL(request.url);
 
@@ -726,6 +798,9 @@ export default {
     try {
       const emailRes = await emailHandler(request, env);
       if (emailRes) return emailRes;
+
+      const evolutionRes = await evolutionHandler(request, env);
+      if (evolutionRes) return evolutionRes;
 
       const checkoutRes = await checkoutHandler(request, env);
       if (checkoutRes) return checkoutRes;

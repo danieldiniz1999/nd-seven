@@ -2265,25 +2265,41 @@ function CustomerSettings({
 function WhatsAppConnection({ company, say }: { company: string; say: (message: string) => void }) {
   const [connecting, setConnecting] = useState(false);
   const [qrReady, setQrReady] = useState(false);
+  const [qrCodeImage, setQrCodeImage] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
-  const connect = () => {
+
+  const connect = async () => {
     setConnecting(true);
-    window.setTimeout(() => {
+    try {
+      const res = await fetch("/api/evolution/connect", { method: "POST" });
+      if (res.ok) {
+        const data = (await res.json()) as { base64?: string };
+        if (data?.base64) {
+          setQrCodeImage(data.base64);
+        }
+      }
+    } catch (e) {
+      console.warn("Evolution connect notice:", e);
+    } finally {
       setConnecting(false);
       setQrReady(true);
       say("QR Code disponível. Leia-o no WhatsApp para concluir a conexão.");
-    }, 650);
+    }
   };
+
   const confirmRead = () => {
     setQrReady(false);
     setConnected(true);
     say("Canal WhatsApp conectado.");
   };
+
   const disconnect = () => {
     setConnected(false);
     setQrReady(false);
+    setQrCodeImage(null);
     say("Canal WhatsApp desconectado.");
   };
+
   return (
     <div className="mx-auto max-w-[1200px] p-5 md:p-8">
       <div className="grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
@@ -2322,8 +2338,16 @@ function WhatsAppConnection({ company, say }: { company: string; say: (message: 
           ) : qrReady ? (
             <div className="mt-7 rounded-2xl border border-blue-200 dark:border-blue-800/60 bg-blue-50 dark:bg-slate-800/80 p-5">
               <div className="flex flex-wrap items-center gap-5">
-                <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-xl border-8 border-white dark:border-slate-700 bg-[repeating-conic-gradient(#0f172a_0_25%,#fff_0_50%)] p-3 shadow-sm">
-                  <div className="h-full w-full bg-white/95" />
+                <div className="flex h-36 w-36 shrink-0 items-center justify-center rounded-xl border-8 border-white dark:border-slate-700 bg-[repeating-conic-gradient(#0f172a_0_25%,#fff_0_50%)] p-1 shadow-sm overflow-hidden">
+                  {qrCodeImage ? (
+                    <img
+                      src={qrCodeImage.startsWith("data:") ? qrCodeImage : `data:image/png;base64,${qrCodeImage}`}
+                      alt="QR Code WhatsApp"
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-white/95" />
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-blue-950 dark:text-white">QR Code pronto para leitura</p>
