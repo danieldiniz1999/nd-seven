@@ -32,7 +32,12 @@ export default defineConfig({
     }),
     react(),
     nitro({
-      preset: process.env['NITRO_PRESET'] || "cloudflare-pages",
+      preset: process.env['NITRO_PRESET'] || "cloudflare-module",
+      output: {
+        dir: "dist",
+        serverDir: "dist/server",
+        publicDir: "dist/client",
+      },
     }),
   ],
 });
